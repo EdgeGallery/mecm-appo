@@ -1,6 +1,6 @@
 # Prepare stage for multistage image build
 ## START OF STAGE0 ##
-FROM openjdk:8-jdk-alpine
+FROM openjdk:8u201-jdk-alpine
 
 # Define all environment variable here
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
