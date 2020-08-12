@@ -15,8 +15,8 @@ RUN mkdir -p /usr/app
 ENV APP_HOME=/usr/app
 ENV UID=166
 ENV GID=166
-ENV USER_NAME=app
-ENV GROUP_NAME=app
+ENV USER_NAME=eguser
+ENV GROUP_NAME=eggroup
 ENV ENV="/etc/profile"
 
 # Create an app user so our program doesn't run as root.
