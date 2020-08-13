@@ -35,8 +35,8 @@ ADD configs/*.sh $APP_HOME/
 RUN chmod 750 $APP_HOME &&\
     chmod 550 $APP_HOME/*.sh &&\
     chmod 550 $APP_HOME/appo-0.0.1-SNAPSHOT.jar &&\
-    chown -R app:app /var/log &&\
-    chown -R app:app $APP_HOME
+    chown -R $USER_NAME:$GROUP_NAME /var/log &&\
+    chown -R $USER_NAME:$GROUP_NAME $APP_HOME
 
 # Exposed port
 EXPOSE 8282
