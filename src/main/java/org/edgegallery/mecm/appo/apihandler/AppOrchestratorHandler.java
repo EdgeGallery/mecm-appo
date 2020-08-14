@@ -18,6 +18,8 @@ package org.edgegallery.mecm.appo.apihandler;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import java.util.List;
+import java.util.Map;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,9 +30,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Application orchestrator API handler.
@@ -46,12 +45,12 @@ public class AppOrchestratorHandler {
     /**
      * Creates an application instance.
      *
-     * @param tenantId tenant ID
+     * @param tenantId    tenant ID
      * @param createParam input parameters for creation request
      * @return application instance ID on success, error code on failure
      */
     @ApiOperation(value = "Creates application instance", response = Map.class)
-    @RequestMapping(path = "/tenants/{tenant_id}/app_instance",
+    @RequestMapping(path = "/tenants/{tenant_id}/app_instances",
             method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, String>> createAppInstance(@PathVariable("tenant_id") String tenantId,
                                                                  @RequestBody CreateParam createParam) {
@@ -62,8 +61,8 @@ public class AppOrchestratorHandler {
     /**
      * Instantiates an application instance.
      *
-     * @param tenantId tenant ID
-     * @param appInstanceId application instance ID
+     * @param tenantId         tenant ID
+     * @param appInstanceId    application instance ID
      * @param instantiateParam input parameters for instantiate request
      * @return status code 200 on success, error code on failure
      */
@@ -80,13 +79,13 @@ public class AppOrchestratorHandler {
     /**
      * Retrieves an application instance information.
      *
-     * @param tenantId tenant ID
+     * @param tenantId      tenant ID
      * @param appInstanceId application instance ID
      * @return application instance info & status code 200 on success, error code on failure
      */
     @ApiOperation(value = "Retrieves application instance information", response = AppInstanceInfo.class)
     @RequestMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}",
-        method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+            method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AppInstanceInfo> getAppInstance(@PathVariable("tenant_id") String tenantId,
                                                           @PathVariable("app_instance_id") String appInstanceId) {
         // TODO: implementation
@@ -101,8 +100,8 @@ public class AppOrchestratorHandler {
      */
     @ApiOperation(value = "Retrieves application instance information", response = List.class)
     @RequestMapping(path = "/tenants/{tenant_id}/app_instances",
-        method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<AppInstanceInfo>>  getAllAppInstance(@PathVariable("tenant_id") String tenantId) {
+            method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<AppInstanceInfo>> getAllAppInstance(@PathVariable("tenant_id") String tenantId) {
         // TODO: implementation
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -110,15 +109,47 @@ public class AppOrchestratorHandler {
     /**
      * Terminates an application instance.
      *
-     * @param tenantId tenant ID
+     * @param tenantId      tenant ID
      * @param appInstanceId application instance ID
      * @return status code 200 on success, error code on failure
      */
     @ApiOperation(value = "Terminates application instance", response = String.class)
-    @RequestMapping(path = "/tenant/{tenant_id}/app_instance/{app_instance_id}",
-        method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
+    @RequestMapping(path = "/tenant/{tenant_id}/app_instances/{app_instance_id}",
+            method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> terminateAppInstance(@PathVariable("tenant_id") String tenantId,
                                                        @PathVariable("app_instance_id") String appInstanceId) {
+        // TODO: implementation
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves edge host performance statistics.
+     *
+     * @param tenantId tenant ID
+     * @param hostIp   edge host IP
+     * @return status code 200 on success, error code on failure
+     */
+    @ApiOperation(value = "Retrieves edge host performance statistics", response = String.class)
+    @RequestMapping(path = "/tenant/{tenant_id}/hosts/{host_ip}/kpi",
+            method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> queryKpi(@PathVariable("tenant_id") String tenantId,
+                                           @PathVariable("host_ip") String hostIp) {
+        // TODO: implementation
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves edge host platform capabilities.
+     *
+     * @param tenantId tenant ID
+     * @param hostIp   edge host IP
+     * @return status code 200 on success, error code on failure
+     */
+    @ApiOperation(value = "Retrieves edge host platform capabilities", response = String.class)
+    @RequestMapping(path = "/tenant/{tenant_id}/hosts/{host_ip}/mep_capabilities",
+            method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> queryEdgehostCapabilities(@PathVariable("tenant_id") String tenantId,
+                                                            @PathVariable("host_ip") String hostIp) {
         // TODO: implementation
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -126,8 +157,5 @@ public class AppOrchestratorHandler {
     /*
     TODO: TBD
     1. Application container usage info from host
-    2. Query KPI
-    3. Query MEP capabilities
-    4. Upload config file
      */
 }
