@@ -50,7 +50,7 @@ public class AppOrchestratorHandler {
      * @return application instance ID on success, error code on failure
      */
     @ApiOperation(value = "Creates application instance", response = Map.class)
-    @RequestMapping(path = "/tenants/{tenant_id}/app_instance",
+    @RequestMapping(path = "/tenants/{tenant_id}/app_instances",
             method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, String>> createAppInstance(@PathVariable("tenant_id") String tenantId,
                                                                  @RequestBody CreateParam createParam) {
@@ -114,7 +114,7 @@ public class AppOrchestratorHandler {
      * @return status code 200 on success, error code on failure
      */
     @ApiOperation(value = "Terminates application instance", response = String.class)
-    @RequestMapping(path = "/tenant/{tenant_id}/app_instance/{app_instance_id}",
+    @RequestMapping(path = "/tenant/{tenant_id}/app_instances/{app_instance_id}",
             method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<String> terminateAppInstance(@PathVariable("tenant_id") String tenantId,
                                                        @PathVariable("app_instance_id") String appInstanceId) {
@@ -122,11 +122,40 @@ public class AppOrchestratorHandler {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Retrieves edge host performance statistics.
+     *
+     * @param tenantId tenant ID
+     * @param hostIp   edge host IP
+     * @return status code 200 on success, error code on failure
+     */
+    @ApiOperation(value = "Retrieves edge host performance statistics", response = String.class)
+    @RequestMapping(path = "/tenant/{tenant_id}/hosts/{host_ip}/kpi",
+            method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> queryKpi(@PathVariable("tenant_id") String tenantId,
+                                           @PathVariable("host_ip") String hostIp) {
+        // TODO: implementation
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves edge host platform capabilities.
+     *
+     * @param tenantId tenant ID
+     * @param hostIp   edge host IP
+     * @return status code 200 on success, error code on failure
+     */
+    @ApiOperation(value = "Retrieves edge host platform capabilities", response = String.class)
+    @RequestMapping(path = "/tenant/{tenant_id}/hosts/{host_ip}/mep_capabilities",
+            method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> queryEdgehostCapabilities(@PathVariable("tenant_id") String tenantId,
+                                                            @PathVariable("host_ip") String hostIp) {
+        // TODO: implementation
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     /*
     TODO: TBD
     1. Application container usage info from host
-    2. Query KPI
-    3. Query MEP capabilities
-    4. Upload config file
      */
 }
