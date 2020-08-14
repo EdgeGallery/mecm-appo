@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServic
  */
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
 public class AppOrchestratorApplication {
+
     private static final Logger logger = LoggerFactory.getLogger(AppOrchestratorApplication.class);
 
     /**
