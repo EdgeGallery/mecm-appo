@@ -16,17 +16,27 @@
 
 package org.edgegallery.mecm.appo.apihandler;
 
+import static org.edgegallery.mecm.appo.common.Constants.TENENT_ID_REGEX;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import java.util.List;
 import java.util.Map;
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
-import org.springframework.http.HttpStatus;
+import org.edgegallery.mecm.appo.service.interfaces.AppoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +50,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AppOrchestratorHandler {
 
-    // TODO pre authorization & parameter validations
+    private static final Logger logger = LoggerFactory.getLogger(AppOrchestratorHandler.class);
+
+    @Autowired
+    private AppoService appoService;
 
     /**
      * Creates an application instance.
@@ -52,28 +65,40 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Creates application instance", response = Map.class)
     @RequestMapping(path = "/tenants/{tenant_id}/app_instances",
             method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, String>> createAppInstance(@PathVariable("tenant_id") String tenantId,
-                                                                 @RequestBody CreateParam createParam) {
-        // TODO: implementation
-        return new ResponseEntity<>(HttpStatus.OK);
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "request accepted ", response = String.class),
+            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    })
+    public ResponseEntity<Map<String, String>> createAppInstance(@RequestHeader("access_token") String accessToken,
+                                                                 @PathVariable("tenant_id")
+                                                                 @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
+                                                                 @Valid @RequestBody CreateParam createParam) {
+        logger.debug("Application create request received...");
+
+        return appoService.createAppInstance(accessToken, tenantId, createParam);
     }
 
     /**
      * Instantiates an application instance.
      *
-     * @param tenantId         tenant ID
-     * @param appInstanceId    application instance ID
-     * @param instantiateParam input parameters for instantiate request
-     * @return status code 200 on success, error code on failure
+     * @param tenantId      tenant ID
+     * @param appInstanceId application instance ID
+     * @return status code 201, error code on failure
      */
     @ApiOperation(value = "Instantiate application instance", response = String.class)
     @RequestMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}",
             method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> instantiateAppInstance(@PathVariable("tenant_id") String tenantId,
-                                                         @PathVariable("app_instance_id") String appInstanceId,
-                                                         @RequestBody InstantiateParam instantiateParam) {
-        // TODO: implementation
-        return new ResponseEntity<>(HttpStatus.OK);
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "request accepted ", response = String.class),
+            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    })
+    public ResponseEntity<String> instantiateAppInstance(@RequestHeader("access_token") String accessToken,
+                                                         @PathVariable("tenant_id")
+                                                         @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
+                                                         @PathVariable("app_instance_id") String appInstanceId) {
+        logger.debug("Application instantiation request received...");
+
+        return appoService.instantiateAppInstance(accessToken, tenantId, appInstanceId);
     }
 
     /**
@@ -86,10 +111,13 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Retrieves application instance information", response = AppInstanceInfo.class)
     @RequestMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}",
             method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AppInstanceInfo> getAppInstance(@PathVariable("tenant_id") String tenantId,
+    public ResponseEntity<AppInstanceInfo> getAppInstance(@RequestHeader("access_token") String accessToken,
+                                                          @PathVariable("tenant_id")
+                                                          @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
                                                           @PathVariable("app_instance_id") String appInstanceId) {
-        // TODO: implementation
-        return new ResponseEntity<>(HttpStatus.OK);
+        logger.debug("Query application info request received...");
+
+        return appoService.getAppInstance(accessToken, tenantId, appInstanceId);
     }
 
     /**
@@ -101,9 +129,12 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Retrieves application instance information", response = List.class)
     @RequestMapping(path = "/tenants/{tenant_id}/app_instances",
             method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<AppInstanceInfo>> getAllAppInstance(@PathVariable("tenant_id") String tenantId) {
-        // TODO: implementation
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<List<AppInstanceInfo>> getAllAppInstance(@RequestHeader("access_token") String accessToken,
+                                                                   @PathVariable("tenant_id")
+                                                                   @Pattern(regexp = TENENT_ID_REGEX) String tenantId) {
+        logger.debug("Query all application info request received...");
+
+        return appoService.getAllAppInstance(accessToken, tenantId);
     }
 
     /**
@@ -111,15 +142,22 @@ public class AppOrchestratorHandler {
      *
      * @param tenantId      tenant ID
      * @param appInstanceId application instance ID
-     * @return status code 200 on success, error code on failure
+     * @return status code 201, error code on failure
      */
     @ApiOperation(value = "Terminates application instance", response = String.class)
     @RequestMapping(path = "/tenant/{tenant_id}/app_instances/{app_instance_id}",
             method = RequestMethod.DELETE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> terminateAppInstance(@PathVariable("tenant_id") String tenantId,
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "request accepted ", response = String.class),
+            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    })
+    public ResponseEntity<String> terminateAppInstance(@RequestHeader("access_token") String accessToken,
+                                                       @PathVariable("tenant_id")
+                                                       @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
                                                        @PathVariable("app_instance_id") String appInstanceId) {
-        // TODO: implementation
-        return new ResponseEntity<>(HttpStatus.OK);
+        logger.debug("Terminate application info request received...");
+
+        return appoService.terminateAppInstance(accessToken, tenantId, appInstanceId);
     }
 
     /**
@@ -132,10 +170,13 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Retrieves edge host performance statistics", response = String.class)
     @RequestMapping(path = "/tenant/{tenant_id}/hosts/{host_ip}/kpi",
             method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> queryKpi(@PathVariable("tenant_id") String tenantId,
+    public ResponseEntity<String> queryKpi(@RequestHeader("access_token") String accessToken,
+                                           @PathVariable("tenant_id")
+                                           @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
                                            @PathVariable("host_ip") String hostIp) {
-        // TODO: implementation
-        return new ResponseEntity<>(HttpStatus.OK);
+        logger.debug("Query KPI request received...");
+
+        return appoService.queryKpi(accessToken, tenantId, hostIp);
     }
 
     /**
@@ -148,10 +189,13 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Retrieves edge host platform capabilities", response = String.class)
     @RequestMapping(path = "/tenant/{tenant_id}/hosts/{host_ip}/mep_capabilities",
             method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> queryEdgehostCapabilities(@PathVariable("tenant_id") String tenantId,
+    public ResponseEntity<String> queryEdgehostCapabilities(@RequestHeader("access_token") String accessToken,
+                                                            @PathVariable("tenant_id")
+                                                            @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
                                                             @PathVariable("host_ip") String hostIp) {
-        // TODO: implementation
-        return new ResponseEntity<>(HttpStatus.OK);
+        logger.debug("Query MEP capabilities request received...");
+
+        return appoService.queryEdgehostCapabilities(accessToken, tenantId, hostIp);
     }
 
     /*
