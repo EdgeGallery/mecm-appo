@@ -16,33 +16,14 @@
 
 package org.edgegallery.mecm.appo.common;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class AppoProcessFlowResponse {
 
     String response;
     String processInstanceID;
     private int responseCode;
-
-    public String getProcessInstanceID() {
-        return processInstanceID;
-    }
-
-    public void setProcessInstanceID(String processInstanceID) {
-        this.processInstanceID = processInstanceID;
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
-
-    public int getResponseCode() {
-        return responseCode;
-    }
-
-    public void setResponseCode(int responseCode) {
-        this.responseCode = responseCode;
-    }
 }

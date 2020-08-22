@@ -10,5 +10,5 @@ public class Constants {
     public static final String APP_PKG_ID_REGX = "[0-9a-f]{32}";
     public static final String TENENT_ID_REGEX = "[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}";
 
-    public static final String NOT_EXIST = "Record not exist";
+    public static final String RECORD_NOT_FOUND = "Record not found";
 }
