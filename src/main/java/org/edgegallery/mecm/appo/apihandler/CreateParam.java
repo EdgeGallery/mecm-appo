@@ -16,9 +16,50 @@
 
 package org.edgegallery.mecm.appo.apihandler;
 
+import static org.edgegallery.mecm.appo.common.Constants.APP_PKG_ID_REGX;
+import static org.edgegallery.mecm.appo.common.Constants.HOST_IP_REGX;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.validation.annotation.Validated;
+
 /**
  * Create instance input schema.
  */
+@Validated
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateParam {
-    // TODO implementation
+
+    @Size(max = 50)
+    private String requestId;
+
+    @NotEmpty(message = "Package ID is mandatory")
+    @Pattern(regexp = APP_PKG_ID_REGX)
+    private String appPackageId;
+
+    @NotEmpty(message = "Application name is mandatory")
+    @Size(min = 1, max = 200)
+    private String appName;
+
+    @NotEmpty(message = "Application instance descriptor ID is mandatory")
+    @Size(min = 1, max = 50)
+    private String appdId;
+
+    @NotEmpty(message = "Application instance descriptor is mandatory")
+    @Size(min = 1, max = 500)
+    private String appInstanceDescription;
+
+    @NotEmpty(message = "MEC host is mandatory")
+    @Pattern(regexp = HOST_IP_REGX)
+    private String mecHost;
 }
