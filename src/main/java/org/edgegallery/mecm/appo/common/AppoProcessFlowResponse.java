@@ -16,14 +16,20 @@
 
 package org.edgegallery.mecm.appo.common;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
-public class AppoProcessFlowResponse {
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public final class AppoProcessFlowResponse {
 
-    String response;
-    String processInstanceID;
+    private String response;
+    private String processInstanceID;
     private int responseCode;
 }

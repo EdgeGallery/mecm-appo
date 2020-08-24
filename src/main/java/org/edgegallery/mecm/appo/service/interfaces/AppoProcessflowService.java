@@ -6,7 +6,9 @@ import org.edgegallery.mecm.appo.common.AppoProcessFlowResponse;
 public interface AppoProcessflowService {
 
     /**
-     * Start processing process flow asychronously.
+     * Start processing process flow asychronously, process flow status
+     * can be obtained by querying app instance info table using app
+     * instance ID.
      *
      * @param processKey   process key
      * @param requestInput input parameters
