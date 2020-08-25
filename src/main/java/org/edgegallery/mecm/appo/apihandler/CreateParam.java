@@ -16,9 +16,51 @@
 
 package org.edgegallery.mecm.appo.apihandler;
 
+import static org.edgegallery.mecm.appo.common.Constants.APPD_ID_REGEX;
+import static org.edgegallery.mecm.appo.common.Constants.APP_NAME_REGEX;
+import static org.edgegallery.mecm.appo.common.Constants.APP_PKG_ID_REGX;
+import static org.edgegallery.mecm.appo.common.Constants.HOST_IP_REGX;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.springframework.validation.annotation.Validated;
+
 /**
  * Create instance input schema.
  */
-public class CreateParam {
-    // TODO implementation
+@Validated
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+public final class CreateParam {
+
+    @NotEmpty(message = "Package ID is mandatory")
+    @Size(max = 50)
+    @Pattern(regexp = APP_PKG_ID_REGX)
+    private String appPackageId;
+
+    @NotEmpty(message = "Application name is mandatory")
+    @Size(max = 200)
+    @Pattern(regexp = APP_NAME_REGEX)
+    private String appName;
+
+    @NotEmpty(message = "Application instance descriptor ID is mandatory")
+    @Size(max = 50)
+    @Pattern(regexp = APPD_ID_REGEX)
+    private String appdId;
+
+    @NotEmpty(message = "Application instance descriptor is mandatory")
+    @Size(max = 300)
+    private String appInstanceDescription;
+
+    @NotEmpty(message = "MEC host is mandatory")
+    @Size(max = 40)
+    @Pattern(regexp = HOST_IP_REGX)
+    private String mecHost;
 }
