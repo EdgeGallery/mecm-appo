@@ -102,11 +102,8 @@ public class AppoTraceLogFilter extends OncePerRequestFilter implements Ordered 
 
         private String accessId;
         private String path;
-        private String userId;
-        private String parameterMap;
         private String method;
         private String time;
-        private String requestBody;
         private String remoteAddr;
     }
 
@@ -119,6 +116,5 @@ public class AppoTraceLogFilter extends OncePerRequestFilter implements Ordered 
         private String accessId;
         private Integer status;
         private String time;
-        private String body;
     }
 }
