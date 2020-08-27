@@ -54,25 +54,20 @@ public class AccessTokenFilter extends OncePerRequestFilter {
             response.sendError(HttpStatus.UNAUTHORIZED.value(), "Access token is empty");
             return;
         }
+
         OAuth2AccessToken accessToken = jwtTokenStore.readAccessToken(accessTokenStr);
-        if (accessToken == null) {
+        if (accessToken == null || accessToken.isExpired()) {
             response.sendError(HttpStatus.UNAUTHORIZED.value(), invalidToken);
             return;
         }
-        if (accessToken.isExpired()) {
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), invalidToken);
-            return;
-        }
+
         Map<String, Object> additionalInfoMap = accessToken.getAdditionalInformation();
-        if (additionalInfoMap == null) {
+        OAuth2Authentication auth = jwtTokenStore.readAuthentication(accessToken);
+        if (additionalInfoMap == null || auth == null) {
             response.sendError(HttpStatus.UNAUTHORIZED.value(), invalidToken);
             return;
         }
-        OAuth2Authentication auth = jwtTokenStore.readAuthentication(accessToken);
-        if (auth == null) {
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid access token");
-            return;
-        }
+
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
