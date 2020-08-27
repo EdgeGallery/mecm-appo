@@ -29,6 +29,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
     <lombok.version>1.18.10</lombok.version>
+    <spring-security-oauth2-autoconfigure.version>2.2.2.RELEASE</spring-security-oauth2-autoconfigure.version>
   </properties>
 
   <dependencyManagement>
@@ -102,6 +103,17 @@
       <groupId>com.google.code.gson</groupId>
       <version>2.8.2</version>
     </dependency>
+    <dependency>
+      <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>jackson-mapper-asl</artifactId>
+          <groupId>org.codehaus.jackson</groupId>
+        </exclusion>
+      </exclusions>
+      <groupId>org.springframework.security.oauth.boot</groupId>
+      <version>${spring-security-oauth2-autoconfigure.version}</version>
+    </dependency>    
   </dependencies>
 
   <build>
