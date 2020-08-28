@@ -58,7 +58,7 @@ public class AppInstanceInfoHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AppInstanceInfoHandler.class);
 
-    private AppInstanceInfoService appInstanceInfoService;
+    private final AppInstanceInfoService appInstanceInfoService;
 
     @Autowired
     public AppInstanceInfoHandler(AppInstanceInfoService appInstanceInfoService) {
