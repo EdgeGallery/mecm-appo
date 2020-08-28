@@ -41,7 +41,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         logger.debug("Get all application instance info of tenant {} ... from DB", tenantId);
 
         List<AppInstanceInfo> tenantAppInstanceInfos = new LinkedList<>();
-        appInstanceInfoRepository.findAll().forEach(appInstanceInfo -> {
+        appInstanceInfoRepository.findAll().forEach((AppInstanceInfo appInstanceInfo) -> {
             if (appInstanceInfo.getTenant().equals(tenantId)) {
                 tenantAppInstanceInfos.add(appInstanceInfo);
             }
