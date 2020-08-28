@@ -44,7 +44,7 @@ public class AppOrchestratorApplication {
      *
      * @param args arguments
      */
-    public static void main(String[] args) throws NoSuchAlgorithmException, KeyManagementException {
+    public static void main(String[] args) {
 
         logger.info("Edge application orchestrator starting----");
 
@@ -64,12 +64,17 @@ public class AppOrchestratorApplication {
                 }
             }
         };
-        SSLContext sc = SSLContext.getInstance("TLSv1.2");
-        sc.init(null, trustAllCerts, new java.security.SecureRandom());
-        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        HttpsURLConnection.setDefaultHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-
-        SpringApplication.run(AppOrchestratorApplication.class, args);
+        SSLContext sc = null;
+        try {
+            sc = SSLContext.getInstance("TLSv1.2");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+            HttpsURLConnection.setDefaultHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+            
+            SpringApplication.run(AppOrchestratorApplication.class, args);
+        } catch (KeyManagementException | NoSuchAlgorithmException e) {
+            logger.info("SSL context init error... exiting system");
+        }
     }
 
 }
