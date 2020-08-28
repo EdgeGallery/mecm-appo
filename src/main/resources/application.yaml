@@ -22,7 +22,16 @@ server:
   tomcat:
     max-threads: 200
 
+  ssl:
+    enabled: ${SSL_ENABLED:false}
+    protocol: TLS
+    enabled-Protocols: [TLSv1.2]
 
+    # Keystore
+    key-store: ${SSL_KEY_STORE_PATH:}
+    key-store-password: ${SSL_KEY_STORE_PASSWORD:}
+    key-store-type: ${SSL_KEY_STORE_TYPE:}
+    key-alias: ${SSL_KEY_ALIAS:}
 spring:
   http:
     multipart:
@@ -35,4 +44,5 @@ security:
     resource:
       jwt:
         key-uri: ${AUTH_SERVER_ADDRESS:http://user-mgmt-svc:8067}/oauth/token_key
+
 

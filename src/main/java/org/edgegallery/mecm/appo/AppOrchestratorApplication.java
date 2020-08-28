@@ -16,6 +16,14 @@
 
 package org.edgegallery.mecm.appo;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -36,9 +44,31 @@ public class AppOrchestratorApplication {
      *
      * @param args arguments
      */
-    public static void main(String[] args) {
-        // TODO: Token & https based support.
+    public static void main(String[] args) throws NoSuchAlgorithmException, KeyManagementException {
+
         logger.info("Edge application orchestrator starting----");
+
+        // do not check host name
+        TrustManager[] trustAllCerts = new TrustManager[]{
+            new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() {
+                        return new X509Certificate[0];
+                    }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    logger.info("checks client trusted");
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    logger.info("checks server trusted");
+                }
+            }
+        };
+        SSLContext sc = SSLContext.getInstance("TLSv1.2");
+        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        HttpsURLConnection.setDefaultHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+
         SpringApplication.run(AppOrchestratorApplication.class, args);
     }
 
