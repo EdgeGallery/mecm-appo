@@ -26,6 +26,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
@@ -37,30 +38,31 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
 public final class CreateParam {
 
     @NotEmpty(message = "Package ID is mandatory")
-    @Size(max = 50)
+    @Size(max = 64)
     @Pattern(regexp = APP_PKG_ID_REGX)
     private String appPackageId;
 
     @NotEmpty(message = "Application name is mandatory")
-    @Size(max = 200)
+    @Size(max = 128)
     @Pattern(regexp = APP_NAME_REGEX)
     private String appName;
 
     @NotEmpty(message = "Application instance descriptor ID is mandatory")
-    @Size(max = 50)
+    @Size(max = 64)
     @Pattern(regexp = APPD_ID_REGEX)
     private String appdId;
 
     @NotEmpty(message = "Application instance descriptor is mandatory")
-    @Size(max = 300)
+    @Size(max = 256)
     private String appInstanceDescription;
 
     @NotEmpty(message = "MEC host is mandatory")
-    @Size(max = 40)
+    @Size(max = 15)
     @Pattern(regexp = HOST_IP_REGX)
     private String mecHost;
 }

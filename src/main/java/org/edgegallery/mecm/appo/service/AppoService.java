@@ -1,4 +1,4 @@
-package org.edgegallery.mecm.appo.service.interfaces;
+package org.edgegallery.mecm.appo.service;
 
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ public interface AppoService {
      * @return application instance ID on success, error code on failure
      */
 
-    public ResponseEntity<Map<String, String>> createAppInstance(String accessToken,
+    ResponseEntity<Map<String, String>> createAppInstance(String accessToken,
                                                                  String tenantId,
                                                                  CreateParam createParam);
 
@@ -31,7 +31,7 @@ public interface AppoService {
      * @return status code 200 on success, error code on failure
      */
 
-    public ResponseEntity<String> instantiateAppInstance(String accessToken,
+    ResponseEntity<String> instantiateAppInstance(String accessToken,
                                                          String tenantId,
                                                          String appInstanceId);
 
@@ -44,9 +44,9 @@ public interface AppoService {
      * @return application instance info & status code 200 on success, error code on failure
      */
 
-    public ResponseEntity<AppInstanceInfo> getAppInstance(String accessToken,
-                                                          String tenantId,
-                                                          String appInstanceId);
+    ResponseEntity<String> getAppInstance(String accessToken,
+                                                 String tenantId,
+                                                 String appInstanceId);
 
     /**
      * Retrieves all application instance information.
@@ -56,7 +56,7 @@ public interface AppoService {
      * @return all application instances & status code 200 on success, error code on failure
      */
 
-    public ResponseEntity<List<AppInstanceInfo>> getAllAppInstance(String accessToken,
+    ResponseEntity<List<AppInstanceInfo>> getAllAppInstance(String accessToken,
                                                                    String tenantId);
 
     /**
@@ -68,7 +68,7 @@ public interface AppoService {
      * @return status code 200 on success, error code on failure
      */
 
-    public ResponseEntity<String> terminateAppInstance(String accessToken,
+    ResponseEntity<String> terminateAppInstance(String accessToken,
                                                        String tenantId,
                                                        String appInstanceId);
 
@@ -81,7 +81,7 @@ public interface AppoService {
      * @return status code 200 on success, error code on failure
      */
 
-    public ResponseEntity<String> queryKpi(String accessToken,
+    ResponseEntity<String> queryKpi(String accessToken,
                                            String tenantId,
                                            String hostIp);
 
@@ -94,7 +94,7 @@ public interface AppoService {
      * @return status code 200 on success, error code on failure
      */
 
-    public ResponseEntity<String> queryEdgehostCapabilities(String accessToken,
+    ResponseEntity<String> queryEdgehostCapabilities(String accessToken,
                                                             String tenantId,
                                                             String hostIp);
 }
