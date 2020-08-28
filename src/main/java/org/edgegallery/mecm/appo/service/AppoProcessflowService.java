@@ -35,7 +35,7 @@ public interface AppoProcessflowService {
      *
      * @param processKey   process key
      * @param requestInput input parameters
-     * @return workflow response
+     * @return processflow response on success
      */
     AppoProcessFlowResponse executeProcessSync(String processKey, Map<String, String> requestInput);
 }

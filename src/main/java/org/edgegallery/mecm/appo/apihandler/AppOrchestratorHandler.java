@@ -72,14 +72,14 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Creates application instance", response = Map.class)
     @PostMapping(path = "/tenants/{tenant_id}/app_instances", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = String.class),
-                           @ApiResponse(code = 500, message = "internal server error", response = String.class)
+                @ApiResponse(code = 500, message = "internal server error", response = String.class)
                 })
     public ResponseEntity<Map<String, String>> createAppInstance(
-                                    @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
-                                    @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-                                    @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
-                                    @ApiParam(value = "create application instance")
-                                    @Valid @RequestBody CreateParam createParam) {
+            @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
+            @ApiParam(value = "tenant id") @PathVariable("tenant_id")
+            @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
+            @ApiParam(value = "create application instance")
+            @Valid @RequestBody CreateParam createParam) {
         logger.debug("Application create request received...");
 
         return appoService.createAppInstance(accessToken, tenantId, createParam);
@@ -95,7 +95,7 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Instantiate application instance", response = String.class)
     @PostMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = String.class),
-                           @ApiResponse(code = 500, message = "internal server error", response = String.class)
+                @ApiResponse(code = 500, message = "internal server error", response = String.class)
                 })
     public ResponseEntity<String> instantiateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
@@ -157,7 +157,7 @@ public class AppOrchestratorHandler {
     @DeleteMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = String.class),
-                           @ApiResponse(code = 500, message = "internal server error", response = String.class)
+                @ApiResponse(code = 500, message = "internal server error", response = String.class)
                 })
     public ResponseEntity<String> terminateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,

@@ -22,17 +22,37 @@ server:
   tomcat:
     max-threads: 200
 
+  ssl:
+    enabled: ${SSL_ENABLED:false}
+    protocol: TLS
+    enabled-Protocols: [TLSv1.2]
 
+    # Keystore
+    key-store: ${SSL_KEY_STORE_PATH:}
+    key-store-password: ${SSL_KEY_STORE_PASSWORD:}
+    key-store-type: ${SSL_KEY_STORE_TYPE:}
+    key-alias: ${SSL_KEY_ALIAS:}
 spring:
   http:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  
+  datasource:
+    url: jdbc:postgresql://${APPO_DB_HOST:}:${APPO_DB_PORT:}/${APPO_DB:}
+    username: ${APPO_DB_USER:}
+    password: ${APPO_DB_PASSWORD:}
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        ddl-auto: validate
+    open-in-view: false
 #### security config ####
 security:
   oauth2:
     resource:
       jwt:
         key-uri: ${AUTH_SERVER_ADDRESS:http://user-mgmt-svc:8067}/oauth/token_key
+
 
