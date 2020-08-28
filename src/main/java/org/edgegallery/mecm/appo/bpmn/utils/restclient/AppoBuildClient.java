@@ -50,14 +50,11 @@ public class AppoBuildClient {
     public static final int WAIT_PERIOD = 10;
 
     private Boolean isRetryAllowed(IOException exception, int retries, int maxRetry) {
-        if ((retries >= maxRetry) || exception instanceof InterruptedIOException
-                || exception instanceof UnknownHostException
-                || exception instanceof SSLException) {
+        if (retries >= maxRetry) {
             return false;
-        } else if (exception instanceof HttpHostConnectException) {
-            return true;
         }
-        return true;
+        return (!(exception instanceof InterruptedIOException)) && (!(exception instanceof UnknownHostException))
+                && ((!(exception instanceof SSLException)) && (!(exception instanceof HttpHostConnectException)));
     }
 
     private HttpRequestRetryHandler retryMechanism(int maxRetry) {
