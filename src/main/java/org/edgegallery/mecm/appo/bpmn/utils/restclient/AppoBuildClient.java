@@ -38,7 +38,6 @@ import org.apache.http.impl.client.DefaultServiceUnavailableRetryStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContexts;
-import org.edgegallery.mecm.appo.exception.AppoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,18 +48,24 @@ public class AppoBuildClient {
     public static final int MAX_RETRY = 3;
     public static final int WAIT_PERIOD = 10;
 
-    private static HttpRequestRetryHandler retryMechanism(int maxRetry) {
+    private Boolean isRetryAllowed(IOException exception, int retries, int maxRetry) {
+        if ((retries >= maxRetry) || exception instanceof InterruptedIOException
+                || exception instanceof UnknownHostException
+                || exception instanceof SSLException) {
+            return false;
+        } else if (exception instanceof HttpHostConnectException) {
+            return true;
+        }
+        return true;
+    }
+
+    private HttpRequestRetryHandler retryMechanism(int maxRetry) {
         return (IOException exception, int retries, HttpContext ctx) -> {
 
-            if ((retries >= maxRetry) || exception instanceof InterruptedIOException
-                    || exception instanceof UnknownHostException
-                    || exception instanceof SSLException) {
+            if (Boolean.FALSE.equals(isRetryAllowed(exception, retries, maxRetry))) {
                 return false;
             }
 
-            if (exception instanceof HttpHostConnectException) {
-                return true;
-            }
             HttpClientContext clientCtx = HttpClientContext.adapt(ctx);
             HttpRequest request = clientCtx.getRequest();
             boolean idempotent = !(request instanceof HttpEntityEnclosingRequest);
@@ -77,15 +82,17 @@ public class AppoBuildClient {
      * @param httpRequest http request
      * @return http client on success
      */
-    public CloseableHttpClient buildHttpClient(HttpRequestBase httpRequest)
-            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+    public CloseableHttpClient buildHttpClient(HttpRequestBase httpRequest) throws IOException {
         LOGGER.info("Get client based on protocol...");
         CloseableHttpClient httpClient = null;
         try {
             if (httpRequest.getURI().toString().startsWith("https")) {
                 SSLContext sslcxt = null;
 
-                sslcxt = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+                sslcxt = SSLContexts.custom()
+                        .loadTrustMaterial(null, new TrustSelfSignedStrategy())
+                        .setProtocol("TLSv1.2")
+                        .build();
                 SSLConnectionSocketFactory sslFactory = new SSLConnectionSocketFactory(sslcxt,
                     (s, sslSession) -> false);
 
@@ -102,10 +109,9 @@ public class AppoBuildClient {
                                 new DefaultServiceUnavailableRetryStrategy(MAX_RETRY, WAIT_PERIOD))
                         .build();
             }
-
-        } catch (AppoException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-            LOGGER.info("Failed to get client...");
-            throw e;
+        } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+            LOGGER.info("Failed to get client...{}",  e.getMessage());
+            throw new IOException(e.getMessage());
         }
         return httpClient;
     }

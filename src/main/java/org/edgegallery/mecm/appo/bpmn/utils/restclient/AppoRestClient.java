@@ -18,10 +18,8 @@ package org.edgegallery.mecm.appo.bpmn.utils.restclient;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.http.HttpEntity;
@@ -118,7 +116,7 @@ public class AppoRestClient {
                     .addBinaryBody("file", file, ContentType.DEFAULT_BINARY, file.getName()).build();
             return entity;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Failed to encode entity {}", e.getMessage());
         }
         return data;
     }
@@ -132,8 +130,8 @@ public class AppoRestClient {
         HttpEntity entity = null;
         try {
             entity = new StringEntity(requestBody);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error("Failed to encode entity {}", e.getMessage());
         }
         return entity;
     }
@@ -213,7 +211,7 @@ public class AppoRestClient {
      *
      * @param httpRequest request
      * @return response
-     * @throws IOException on failure
+     * @throws AppoException on failure
      */
     public CloseableHttpResponse sendRequest(HttpRequestBase httpRequest) throws IOException {
 
@@ -224,7 +222,7 @@ public class AppoRestClient {
         try {
             CloseableHttpClient client = appoBuildClient.buildHttpClient(httpRequest);
             httpclient = client.execute(httpRequest);
-        } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+        } catch (IOException | AppoException e) {
             throw new IOException("Failed to send request");
         }
         return httpclient;
