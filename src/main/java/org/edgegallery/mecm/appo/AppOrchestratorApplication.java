@@ -73,7 +73,7 @@ public class AppOrchestratorApplication {
             
             SpringApplication.run(AppOrchestratorApplication.class, args);
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            logger.info("SSL context init error... exiting system");
+            logger.info("SSL context init error... exiting system {}", e.getMessage());
         }
     }
 
