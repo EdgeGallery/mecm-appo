@@ -38,6 +38,7 @@ import org.apache.http.impl.client.DefaultServiceUnavailableRetryStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContexts;
+import org.edgegallery.mecm.appo.exception.AppoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +83,7 @@ public class AppoBuildClient {
      * @param httpRequest http request
      * @return http client on success
      */
-    public CloseableHttpClient buildHttpClient(HttpRequestBase httpRequest) throws IOException {
+    public CloseableHttpClient buildHttpClient(HttpRequestBase httpRequest) {
         LOGGER.info("Get client based on protocol...");
         CloseableHttpClient httpClient = null;
         try {
@@ -111,7 +112,7 @@ public class AppoBuildClient {
             }
         } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
             LOGGER.info("Failed to get client...{}",  e.getMessage());
-            throw new IOException(e.getMessage());
+            throw new AppoException(e.getMessage());
         }
         return httpClient;
     }

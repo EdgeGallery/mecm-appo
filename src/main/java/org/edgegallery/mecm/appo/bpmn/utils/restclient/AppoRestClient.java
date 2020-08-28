@@ -213,7 +213,7 @@ public class AppoRestClient {
      * @return response
      * @throws AppoException on failure
      */
-    public CloseableHttpResponse sendRequest(HttpRequestBase httpRequest) throws IOException {
+    public CloseableHttpResponse sendRequest(HttpRequestBase httpRequest) {
 
         LOGGER.info("Sending request : {}", httpRequest.getURI());
 
@@ -223,7 +223,7 @@ public class AppoRestClient {
             CloseableHttpClient client = appoBuildClient.buildHttpClient(httpRequest);
             httpclient = client.execute(httpRequest);
         } catch (IOException | AppoException e) {
-            throw new IOException("Failed to send request");
+            throw new AppoException("Failed to send request");
         }
         return httpclient;
     }
