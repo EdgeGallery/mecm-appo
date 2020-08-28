@@ -55,8 +55,12 @@ public class AppOrchestratorHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AppOrchestratorHandler.class);
 
+    private final AppoService appoService;
+
     @Autowired
-    private AppoService appoService;
+    public AppOrchestratorHandler(AppoService appoService) {
+        this.appoService = appoService;
+    }
 
     /**
      * Creates an application instance.
