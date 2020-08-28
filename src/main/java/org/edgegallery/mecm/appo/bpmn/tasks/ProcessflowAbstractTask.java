@@ -45,7 +45,7 @@ public abstract class ProcessflowAbstractTask {
     public void setProcessflowResponseAttributes(DelegateExecution delegateExecution,
                                                  String response, String responseCode) {
         if (responseCode == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
         delegateExecution.setVariable(RESPONSE, response);
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
@@ -61,7 +61,7 @@ public abstract class ProcessflowAbstractTask {
     public void setProcessflowErrorResponseAttributes(DelegateExecution delegateExecution,
                                                       String response, String responseCode) {
         if (responseCode == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
         delegateExecution.setVariable(ERROR_RESPONSE, response);
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
@@ -77,7 +77,7 @@ public abstract class ProcessflowAbstractTask {
     public void setProcessflowExceptionResponseAttributes(DelegateExecution delegateExecution,
                                                           String response, String responseCode) {
         if (responseCode == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
         delegateExecution.setVariable(FLOW_EXCEPTION, response);
