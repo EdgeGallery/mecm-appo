@@ -170,6 +170,21 @@
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.5</version>
+    </dependency>
+    <dependency>
+      <artifactId>httpmime</artifactId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <version>4.3.1</version>
+    </dependency>
+    <dependency>
+      <artifactId>jose4j</artifactId>
+      <groupId>org.bitbucket.b_c</groupId>
+      <version>0.7.2</version>
+    </dependency>
   </dependencies>
 
 <build>
