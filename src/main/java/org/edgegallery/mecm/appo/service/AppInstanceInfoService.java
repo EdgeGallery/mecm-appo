@@ -1,7 +1,6 @@
 package org.edgegallery.mecm.appo.service;
 
 import java.util.List;
-import org.edgegallery.mecm.appo.exception.AppoDbException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 
 public interface AppInstanceInfoService {
@@ -13,7 +12,7 @@ public interface AppInstanceInfoService {
      * @param appInstanceId application instance ID
      * @return application instance information
      */
-    AppInstanceInfo getAppInstanceInfo(String tenantId, String appInstanceId) throws AppoDbException;
+    AppInstanceInfo getAppInstanceInfo(String tenantId, String appInstanceId);
 
     /**
      * Retrieves all application instance information.
@@ -21,7 +20,7 @@ public interface AppInstanceInfoService {
      * @param tenantId tenant ID
      * @return application instance information
      */
-    List<AppInstanceInfo> getAllAppInstanceInfo(String tenantId) throws AppoDbException;
+    List<AppInstanceInfo> getAllAppInstanceInfo(String tenantId);
 
     /**
      * Creates application instance info.
@@ -30,8 +29,7 @@ public interface AppInstanceInfoService {
      * @param appInstanceInfo application information
      * @return application information
      */
-    AppInstanceInfo createAppInstanceInfo(String tenantId,
-                                          AppInstanceInfo appInstanceInfo) throws AppoDbException;
+    AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo);
 
     /**
      * Deletes application instance information.
@@ -39,7 +37,7 @@ public interface AppInstanceInfoService {
      * @param tenantId      tenant ID
      * @param appInstanceId application instance ID
      */
-    void deleteAppInstanceInfo(String tenantId, String appInstanceId) throws AppoDbException;
+    void deleteAppInstanceInfo(String tenantId, String appInstanceId);
 
     /**
      * Updates application instance info.
@@ -48,6 +46,5 @@ public interface AppInstanceInfoService {
      * @param appInstanceInfo application information
      * @return application information
      */
-    AppInstanceInfo updateAppInstanceInfo(String tenantId,
-                                          AppInstanceInfo appInstanceInfo) throws AppoDbException;
+    AppInstanceInfo updateAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo);
 }

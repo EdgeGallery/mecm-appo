@@ -27,7 +27,6 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceInfoDto;
-import org.edgegallery.mecm.appo.exception.AppoDbException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.modelmapper.ModelMapper;
@@ -85,15 +84,12 @@ public class AppInstanceInfoHandler {
             @ApiParam(value = "application instance id") @PathVariable("appInstance_id")
             @Pattern(regexp = APP_INST_ID_REGX) String appInstanceId) {
 
-        AppInstanceInfo appInstanceInfo = null;
-        AppInstanceInfoDto dto = null;
-        try {
-            appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
-            ModelMapper mapper = new ModelMapper();
-            dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
-        } catch (AppoDbException e) {
-            logger.debug("Query app instance info failed: {}", e.getMessage());
-        }
+        logger.info("Retrieve application instance info: {}", appInstanceId);
+
+        AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
+        ModelMapper mapper = new ModelMapper();
+        AppInstanceInfoDto dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
+
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
@@ -110,17 +106,16 @@ public class AppInstanceInfoHandler {
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId) {
-        List<AppInstanceInfo> appInstanceInfos = null;
+
+        logger.info("Retrieve application instance infos");
+
         List<AppInstanceInfoDto> appInstanceInfosDto = new LinkedList<>();
-        try {
-            appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
-            for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
-                ModelMapper mapper = new ModelMapper();
-                appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
-            }
-        } catch (AppoDbException e) {
-            logger.debug("Query all app instance info failed: {}", e.getMessage());
+        List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
+        for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
+            ModelMapper mapper = new ModelMapper();
+            appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
         }
+
         return new ResponseEntity<>(appInstanceInfosDto, HttpStatus.OK);
     }
 
@@ -139,15 +134,15 @@ public class AppInstanceInfoHandler {
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
             @ApiParam(value = "application instance") @RequestBody AppInstanceInfoDto appInstInfoDto) {
+
+        logger.info("Create application instance info: {}", appInstInfoDto.getAppInstanceId());
+
         ModelMapper mapper = new ModelMapper();
         AppInstanceInfo appInstanceInfo = mapper.map(appInstInfoDto, AppInstanceInfo.class);
-        AppInstanceInfoDto dto = null;
-        try {
-            appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
-            dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
-        } catch (AppoDbException e) {
-            logger.debug("Create app instance info failed: {}", e.getMessage());
-        }
+
+        appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
+
+        AppInstanceInfoDto dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
@@ -168,11 +163,8 @@ public class AppInstanceInfoHandler {
             @ApiParam(value = "application instance id") @PathVariable("appInstance_id")
             @Pattern(regexp = APP_INST_ID_REGX) String appInstanceId) {
 
-        try {
-            appInstanceInfoService.deleteAppInstanceInfo(tenantId, appInstanceId);
-        } catch (AppoDbException e) {
-            logger.debug("Delete app instance info failed: {}", e.getMessage());
-        }
+        logger.info("Delete application instance info: {}", appInstanceId);
+        appInstanceInfoService.deleteAppInstanceInfo(tenantId, appInstanceId);
 
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
@@ -196,16 +188,15 @@ public class AppInstanceInfoHandler {
             @Pattern(regexp = APP_INST_ID_REGX) String appInstanceId,
             @ApiParam(value = "application instance") @Valid @RequestBody AppInstanceInfoDto instInfo) {
 
+        logger.info("Update application instance info: {}", instInfo.getAppInstanceId());
+
         ModelMapper mapper = new ModelMapper();
         AppInstanceInfo appInstanceInfo = mapper.map(instInfo, AppInstanceInfo.class);
         appInstanceInfo.setAppInstanceId(appInstanceId);
-        AppInstanceInfoDto dto = null;
-        try {
-            appInstanceInfo = appInstanceInfoService.updateAppInstanceInfo(tenantId, appInstanceInfo);
-            dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
-        } catch (AppoDbException e) {
-            logger.debug("Update app instance info failed: {}", e.getMessage());
-        }
+
+        appInstanceInfo = appInstanceInfoService.updateAppInstanceInfo(tenantId, appInstanceInfo);
+        AppInstanceInfoDto dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
+
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 }
