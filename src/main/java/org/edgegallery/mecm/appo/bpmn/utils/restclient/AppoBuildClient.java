@@ -77,7 +77,8 @@ public class AppoBuildClient {
      * @param httpRequest http request
      * @return http client on success
      */
-    public CloseableHttpClient buildHttpClient(HttpRequestBase httpRequest) {
+    public CloseableHttpClient buildHttpClient(HttpRequestBase httpRequest)
+            throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         LOGGER.info("Get client based on protocol...");
         CloseableHttpClient httpClient = null;
         try {
@@ -104,7 +105,7 @@ public class AppoBuildClient {
 
         } catch (AppoException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
             LOGGER.info("Failed to get client...");
-            throw new AppoException("Failed to get http client...");
+            throw e;
         }
         return httpClient;
     }

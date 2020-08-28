@@ -19,6 +19,9 @@ package org.edgegallery.mecm.appo.bpmn.utils.restclient;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.http.HttpEntity;
@@ -217,7 +220,13 @@ public class AppoRestClient {
         LOGGER.info("Sending request : {}", httpRequest.getURI());
 
         AppoBuildClient appoBuildClient = new AppoBuildClient();
-        CloseableHttpClient httpclient = appoBuildClient.buildHttpClient(httpRequest);
-        return httpclient.execute(httpRequest);
+        CloseableHttpResponse httpclient = null;
+        try {
+            CloseableHttpClient client = appoBuildClient.buildHttpClient(httpRequest);
+            httpclient = client.execute(httpRequest);
+        } catch (IOException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+            throw new IOException("Failed to send request");
+        }
+        return httpclient;
     }
 }
