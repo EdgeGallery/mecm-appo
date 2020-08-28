@@ -52,8 +52,8 @@ public class AppOrchestratorApplication {
         TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
                 public X509Certificate[] getAcceptedIssuers() {
-                        return new X509Certificate[0];
-                    }
+                    return new X509Certificate[0];
+                }
 
                 public void checkClientTrusted(X509Certificate[] certs, String authType) {
                     logger.info("checks client trusted");
