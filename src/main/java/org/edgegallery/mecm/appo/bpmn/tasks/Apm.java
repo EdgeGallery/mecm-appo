@@ -98,9 +98,10 @@ public class Apm extends ProcessflowAbstractTask {
     }
 
     void downloadPackage(String url, String appPackageId, String appInstanceId) throws IOException {
+        FileOutputStream fileOs = null;
         try (InputStream inputStream = new URL(url).openStream()) {
-            FileOutputStream fileOS = new FileOutputStream(packagePath + appInstanceId + "/" + appPackageId);
-            IOUtils.copy(inputStream, fileOS);
+            fileOs = new FileOutputStream(packagePath + appInstanceId + "/" + appPackageId);
+            IOUtils.copy(inputStream, fileOs);
         } catch (MalformedURLException | FileNotFoundException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
             throw new IOException(e.getMessage());
@@ -108,6 +109,10 @@ public class Apm extends ProcessflowAbstractTask {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
             LOGGER.debug("Failed to download application package from APM");
             throw new IOException(e.getMessage());
+        } finally {
+            if (fileOs != null) {
+                fileOs.close();
+            }
         }
     }
 }
