@@ -18,6 +18,7 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.edgegallery.mecm.appo.common.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProcessflowResponse implements JavaDelegate {
 
-    private final Logger logger = LoggerFactory.getLogger(ProcessflowResponse.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessflowResponse.class);
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
@@ -35,18 +36,19 @@ public class ProcessflowResponse implements JavaDelegate {
         String responseCode = (String) delegateExecution.getVariable("ResponseCode");
 
         if (responseType.equals("success")) {
-            logger.info("Set success response....");
+            LOGGER.info("Set success response....");
 
-            delegateExecution.setVariable("ProcessflowResponseCode", responseCode);
-            delegateExecution.setVariable("ProcessflowResponse", response);
+            delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);
+            delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP, response);
         } else if (responseType.equals("failure")) {
-            logger.info("Set failure response....");
+            LOGGER.info("Set failure response....");
 
-            delegateExecution.setVariable("ProcessflowResponseCode", responseCode);
-            delegateExecution.setVariable("ProcessflowErrResponse", response);
+            delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);
+            delegateExecution.setVariable(Constants.PROCESS_FLOW_ERR_RESP, response);
         } else {
-            delegateExecution.setVariable("ProcessflowResponseCode", responseCode);
-            delegateExecution.setVariable("ProcessflowException", response);
+            LOGGER.info("Unknow oper type, exception....");
+            delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);
+            delegateExecution.setVariable(Constants.PROCESS_FLOW_EXCEPTION, response);
         }
     }
 }

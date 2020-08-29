@@ -58,6 +58,10 @@ public final class Constants {
 
     public static final String PROCESS_FLOW_OK = "200";
     public static final String PROCESS_FLOW_ERROR = "500";
+    public static final String PROCESS_FLOW_RESP_CODE = "ProcessflowResponseCode";
+    public static final String PROCESS_FLOW_RESP = "ProcessflowResponse";
+    public static final String PROCESS_FLOW_ERR_RESP = "ProcessflowErrResponse";
+    public static final String PROCESS_FLOW_EXCEPTION = "ProcessflowException";
 
     private Constants() {
     }
