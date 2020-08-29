@@ -81,7 +81,6 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
             Map<String, Object> wfInputParmas;
             wfInputParmas = convertInputToObjectMap(requestInput);
 
-            //Generate request ID if not provided in request
             String requestID = getRequestID(wfInputParmas);
 
             RuntimeService runtimeService = getEngineServices().getRuntimeService();
@@ -89,8 +88,13 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
                     .startProcessInstanceByKey(processKey, requestID, wfInputParmas);
             processInstanceId = processInstance.getId();
 
-            logger.debug("processKey: {}  processInstanceId: {} Status: {} ", processKey, processInstanceId,
-                    (processInstance.isEnded() ? "ENDED" : "RUNNING"));
+            String processInstanceState = "RUNNING";
+            if (processInstance.isEnded()) {
+                processInstanceState = "ENDED";
+            }
+
+            logger.debug("processKey: {}  processInstanceId: {} Status: {} ", processKey,
+                    processInstanceId, processInstanceState);
         } catch (Exception e) {
             AppoProcessFlowResponse appoProcessFlowResponse = new AppoProcessFlowResponse();
             appoProcessFlowResponse.setResponse("Error occurred while executing the process: " + e.getMessage());
@@ -110,7 +114,6 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
             Map<String, Object> wfInputParmas;
             wfInputParmas = convertInputToObjectMap(requestInput);
 
-            //Generate request ID if not provided in request
             String requestID = getRequestID(wfInputParmas);
 
             RuntimeService runtimeService = getEngineServices().getRuntimeService();
@@ -118,8 +121,12 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
                     .startProcessInstanceByKey(processKey, requestID, wfInputParmas);
             processInstanceId = processInstance.getId();
 
+            String processInstanceState = "RUNNING";
+            if (processInstance.isEnded()) {
+                processInstanceState = "ENDED";
+            }
             logger.debug("processName: {}  processInstanceId: {} Status: {} ", processKey, processInstanceId,
-                    (processInstance.isEnded() ? "ENDED" : "RUNNING"));
+                    processInstanceState);
 
             appoProcessFlowResponse = getProcessInstanceData(processInstance);
             if (appoProcessFlowResponse != null) {
