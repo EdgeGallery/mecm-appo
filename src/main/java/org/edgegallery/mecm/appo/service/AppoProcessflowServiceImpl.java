@@ -202,24 +202,25 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
         AppoProcessFlowResponse appoProcessFlowResponse = new AppoProcessFlowResponse();
 
         Object exceptionObject = getWorkflowResponseObject(processInstanceId, "ProcessflowException");
-        if (exceptionObject != null) {
-            String exceptionResponse = null;
-            if (exceptionObject instanceof AppoProcessflowException) {
-                AppoProcessflowException exception = (AppoProcessflowException) exceptionObject;
-                exceptionResponse = exception.toString();
-
-                appoProcessFlowResponse.setResponse(exceptionResponse);
-                appoProcessFlowResponse.setResponseCode(Integer.parseInt(exception.getErrorCode().toString()));
-                return appoProcessFlowResponse;
-            } else if (exceptionObject instanceof String) {
-
-                exceptionResponse = (String) exceptionObject;
-                appoProcessFlowResponse.setResponse(exceptionResponse);
-                appoProcessFlowResponse.setResponseCode(Integer.parseInt(responseCode));
-                return appoProcessFlowResponse;
-            }
+        if (exceptionObject == null) {
+            return null;
         }
-        return null;
+        String exceptionResponse = null;
+        if (exceptionObject instanceof AppoProcessflowException) {
+            AppoProcessflowException exception = (AppoProcessflowException) exceptionObject;
+            exceptionResponse = exception.toString();
+
+            appoProcessFlowResponse.setResponse(exceptionResponse);
+            appoProcessFlowResponse.setResponseCode(Integer.parseInt(responseCode));
+        } else if (exceptionObject instanceof String) {
+
+            exceptionResponse = (String) exceptionObject;
+            appoProcessFlowResponse.setResponse(exceptionResponse);
+            appoProcessFlowResponse.setResponseCode(Integer.parseInt(responseCode));
+        } else {
+            appoProcessFlowResponse = null;
+        }
+        return appoProcessFlowResponse;
     }
 
     /**
@@ -258,7 +259,12 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
     private String getProcessflowResponse(String processInstanceId, String variableName) {
 
         Object responseData = getProcessInstanceVariable(processInstanceId, variableName);
-        String response = responseData == null ? null : String.valueOf(responseData);
+        String response;
+        if (responseData == null) {
+            response = null;
+        } else {
+            response = String.valueOf(responseData);
+        }
         logger.debug("processInstId: {} %p processInstanceData: %p           {} : {}",
                 processInstanceId, variableName, response);
         return response;
