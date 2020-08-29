@@ -65,6 +65,7 @@ public final class Constants {
 
     public static final Integer HTTP_STATUS_CODE_200 = 200;
     public static final Integer HTTP_STATUS_CODE_299 = 299;
+
     private Constants() {
     }
 }
