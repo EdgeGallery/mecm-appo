@@ -114,11 +114,11 @@ public class Mepm extends ProcessflowAbstractTask {
 
         try (CloseableHttpResponse response = appoRestClient.doPost(url, entity)) {
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < 200 || statusCode > 299) {
+            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = appoRestClient.getErrorInfo(response, "Instantiate failed");
                 setProcessflowErrorResponseAttributes(delegateExecution, error, String.valueOf(statusCode));
             } else {
-                setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_OK);
+                setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
             }
         } catch (IOException | ParseException | AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
@@ -147,12 +147,12 @@ public class Mepm extends ProcessflowAbstractTask {
 
         try (CloseableHttpResponse response = appoRestClient.doGet(url)) {
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < 200 || statusCode > 299) {
+            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Query app instance failed");
                 setProcessflowErrorResponseAttributes(delegateExecution, error, String.valueOf(statusCode));
             } else {
                 String responseStr = EntityUtils.toString(response.getEntity());
-                setProcessflowResponseAttributes(delegateExecution, responseStr, Constants.PROCESS_FLOW_OK);
+                setProcessflowResponseAttributes(delegateExecution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
             }
         } catch (IOException | ParseException | AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
@@ -182,12 +182,12 @@ public class Mepm extends ProcessflowAbstractTask {
 
         try (CloseableHttpResponse response = appoRestClient.doDelete(url)) {
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < 200 || statusCode > 299) {
+            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Terminate failed");
                 setProcessflowErrorResponseAttributes(delegateExecution, error, String.valueOf(statusCode));
             } else {
                 String responseStr = EntityUtils.toString(response.getEntity());
-                setProcessflowResponseAttributes(delegateExecution, responseStr, Constants.PROCESS_FLOW_OK);
+                setProcessflowResponseAttributes(delegateExecution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
             }
         } catch (IOException | ParseException | AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
@@ -215,12 +215,12 @@ public class Mepm extends ProcessflowAbstractTask {
 
         try (CloseableHttpResponse response = appoRestClient.doGet(url)) {
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < 200 || statusCode > 299) {
+            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Query KPI failed");
                 setProcessflowErrorResponseAttributes(delegateExecution, error, String.valueOf(statusCode));
             } else {
                 String responseStr = EntityUtils.toString(response.getEntity());
-                setProcessflowResponseAttributes(delegateExecution, responseStr, Constants.PROCESS_FLOW_OK);
+                setProcessflowResponseAttributes(delegateExecution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
             }
         } catch (IOException | ParseException | AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
@@ -249,12 +249,12 @@ public class Mepm extends ProcessflowAbstractTask {
 
         try (CloseableHttpResponse response = appoRestClient.doGet(url)) {
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < 200 || statusCode > 299) {
+            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Query capabilities failed");
                 setProcessflowErrorResponseAttributes(delegateExecution, error, String.valueOf(statusCode));
             } else {
                 String responseStr = EntityUtils.toString(response.getEntity());
-                setProcessflowResponseAttributes(delegateExecution, responseStr, Constants.PROCESS_FLOW_OK);
+                setProcessflowResponseAttributes(delegateExecution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
             }
         } catch (IOException | ParseException | AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
@@ -275,6 +275,10 @@ public class Mepm extends ProcessflowAbstractTask {
             throws IOException, ParseException {
         String responseStr = EntityUtils.toString(response.getEntity());
         JSONObject jsonResponse = (JSONObject) new JSONParser().parse(responseStr);
-        return jsonResponse.get("error") != null ? jsonResponse.get("error").toString() : error;
+        if (jsonResponse.get("error") != null) {
+            return jsonResponse.get("error").toString();
+        } else {
+            return error;
+        }
     }
 }

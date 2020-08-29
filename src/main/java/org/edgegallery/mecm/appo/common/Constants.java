@@ -56,13 +56,15 @@ public final class Constants {
     public static final String APPLCM_QUERY_KPI_URI = "/lcmbroker/v1/kpi";
     public static final String APPLCM_QUERY_CAPABILITY_URI = "/lcmbroker/v1/mep_capabilities";
 
-    public static final String PROCESS_FLOW_OK = "200";
+    public static final String PROCESS_FLOW_SUCCESS = "200";
     public static final String PROCESS_FLOW_ERROR = "500";
     public static final String PROCESS_FLOW_RESP_CODE = "ProcessflowResponseCode";
     public static final String PROCESS_FLOW_RESP = "ProcessflowResponse";
     public static final String PROCESS_FLOW_ERR_RESP = "ProcessflowErrResponse";
     public static final String PROCESS_FLOW_EXCEPTION = "ProcessflowException";
 
+    public static final Integer HTTP_STATUS_CODE_200 = 200;
+    public static final Integer HTTP_STATUS_CODE_299 = 299;
     private Constants() {
     }
 }
