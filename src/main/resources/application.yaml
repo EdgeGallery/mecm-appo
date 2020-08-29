@@ -23,7 +23,7 @@ server:
     max-threads: 200
 
   ssl:
-    enabled: ${SSL_ENABLED:false}
+    enabled: ${SSL_ENABLED:}
     protocol: TLS
     enabled-Protocols: [TLSv1.2]
 
@@ -55,4 +55,9 @@ security:
       jwt:
         key-uri: ${AUTH_SERVER_ADDRESS:http://user-mgmt-svc:8067}/oauth/token_key
 
+appo:
+  async:
+    corepool-size: 50
+    maxpool-size: 50
+    queue-capacity: 500
 

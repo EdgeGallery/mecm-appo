@@ -19,25 +19,43 @@ package org.edgegallery.mecm.appo;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.Executor;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
  * Edge application orchestrator.
  */
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
+@EnableAsync
+@EnableProcessApplication
 public class AppOrchestratorApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(AppOrchestratorApplication.class);
+
+    @Value("${appo.async.corepool-size}")
+    private int corePoolSize;
+
+    @Value("${appo.async.maxpool-size}")
+    private int maxPoolSize;
+
+    @Value("${appo.async.queue-capacity}")
+    private int queueCapacity;
 
     /**
      * Edge application orchestrator entry function.
@@ -75,6 +93,23 @@ public class AppOrchestratorApplication {
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
             logger.info("SSL context init error... exiting system {}", e.getMessage());
         }
+    }
+
+    /**
+     * Asychronous configurations.
+     *
+     * @return thread pool task executor
+     */
+    @Bean
+    @Primary
+    public Executor asyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(corePoolSize);
+        executor.setMaxPoolSize(maxPoolSize);
+        executor.setQueueCapacity(queueCapacity);
+        executor.setThreadNamePrefix("appo-Camunda-");
+        executor.initialize();
+        return executor;
     }
 
 }
