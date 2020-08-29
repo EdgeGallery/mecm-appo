@@ -214,6 +214,10 @@ public class Inventory extends ProcessflowAbstractTask {
             throws IOException, ParseException {
         String responseStr = EntityUtils.toString(response.getEntity());
         JSONObject jsonResponse = (JSONObject) new JSONParser().parse(responseStr);
-        return jsonResponse.get("error") != null ? jsonResponse.get("error").toString() : error;
+        if (jsonResponse.get("error") != null) {
+            return jsonResponse.get("error").toString();
+        } else {
+            return error;
+        }
     }
 }
