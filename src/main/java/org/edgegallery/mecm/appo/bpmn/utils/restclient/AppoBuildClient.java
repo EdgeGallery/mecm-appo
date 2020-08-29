@@ -44,10 +44,9 @@ import org.slf4j.LoggerFactory;
 
 public class AppoBuildClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppoBuildClient.class);
-
     public static final int MAX_RETRY = 3;
     public static final int WAIT_PERIOD = 10;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppoBuildClient.class);
 
     private Boolean isRetryAllowed(IOException exception, int retries, int maxRetry) {
         if (retries >= maxRetry) {
@@ -108,7 +107,7 @@ public class AppoBuildClient {
                         .build();
             }
         } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-            LOGGER.info("Failed to get client...{}",  e.getMessage());
+            LOGGER.info("Failed to get client...{}", e.getMessage());
             throw new AppoException(e.getMessage());
         }
         return httpClient;

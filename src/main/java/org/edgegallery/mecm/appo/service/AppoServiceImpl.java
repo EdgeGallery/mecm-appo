@@ -59,7 +59,7 @@ public class AppoServiceImpl implements AppoService {
         requestBodyParam.put(Constants.MEC_HOST, createParam.getMecHost());
 
         logger.debug("Create instance input parameters: {}", requestBodyParam);
-        
+
         String appInstanceID = UUID.randomUUID().toString();
         requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceID);
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
