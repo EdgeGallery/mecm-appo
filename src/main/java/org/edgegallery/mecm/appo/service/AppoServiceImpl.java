@@ -59,13 +59,11 @@ public class AppoServiceImpl implements AppoService {
         requestBodyParam.put(Constants.MEC_HOST, createParam.getMecHost());
 
         logger.debug("Create instance input parameters: {}", requestBodyParam);
-
-        //Generate application instantiate ID
+        
         String appInstanceID = UUID.randomUUID().toString();
         requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceID);
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
-        //Async flow
         processflowService.executeProcessAsync("createApplicationInstance", requestBodyParam);
 
         Map<String, String> response = new HashMap<>();
@@ -96,7 +94,6 @@ public class AppoServiceImpl implements AppoService {
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
-        //Async flow
         processflowService.executeProcessAsync("instantiateApplicationInstance", requestBodyParam);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
