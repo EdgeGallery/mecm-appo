@@ -1,7 +1,5 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
-import java.util.Map;
-import javax.ws.rs.core.UriBuilder;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public abstract class ProcessflowAbstractTask {
