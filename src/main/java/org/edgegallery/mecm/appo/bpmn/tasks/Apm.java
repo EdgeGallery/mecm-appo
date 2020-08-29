@@ -27,6 +27,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.bpmn.utils.UrlUtility;
 import org.edgegallery.mecm.appo.bpmn.utils.restclient.AppoRestClient;
 import org.edgegallery.mecm.appo.common.Constants;
+import org.edgegallery.mecm.appo.exception.AppoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,23 +93,23 @@ public class Apm extends ProcessflowAbstractTask {
 
             setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
 
-        } catch (IOException e) {
+        } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
         }
     }
 
-    void downloadPackage(String url, String appPackageId, String appInstanceId) throws IOException {
+    void downloadPackage(String url, String appPackageId, String appInstanceId) {
         FileOutputStream fileOs = null;
         try (InputStream inputStream = new URL(url).openStream()) {
             fileOs = new FileOutputStream(packagePath + appInstanceId + "/" + appPackageId);
             IOUtils.copy(inputStream, fileOs);
         } catch (MalformedURLException | FileNotFoundException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
-            throw new IOException(e.getMessage());
+            throw new AppoException(e.getMessage());
         } catch (IOException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
             LOGGER.debug("Failed to download application package from APM");
-            throw new IOException(e.getMessage());
+            throw new AppoException(e.getMessage());
         } finally {
             if (fileOs != null) {
                 fileOs.close();
