@@ -112,7 +112,11 @@ public class Apm extends ProcessflowAbstractTask {
             throw new AppoException(e.getMessage());
         } finally {
             if (fileOs != null) {
-                fileOs.close();
+                try {
+                    fileOs.close();
+                } catch (IOException e) {
+                    throw new AppoException(e.getMessage());
+                }
             }
         }
     }

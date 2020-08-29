@@ -16,22 +16,9 @@
 
 package org.edgegallery.mecm.appo.exception;
 
-import org.edgegallery.mecm.appo.common.AppoProcessFlowResponse;
-
 public class AppoProcessflowException extends RuntimeException {
 
-    AppoProcessFlowResponse appoProcessFlowResponse;
-    private int errorCode;
-
-    public AppoProcessflowException(AppoProcessFlowResponse appoProcessFlowResponse) {
-        this.appoProcessFlowResponse = appoProcessFlowResponse;
-    }
-
-    public AppoProcessFlowResponse getWorkflowResponse() {
-        return appoProcessFlowResponse;
-    }
-
-    public Object getErrorCode() {
-        return errorCode;
+    public AppoProcessflowException(String msg) {
+        super(msg);
     }
 }
