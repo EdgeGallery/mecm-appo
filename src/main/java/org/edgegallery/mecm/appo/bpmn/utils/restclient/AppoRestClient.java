@@ -213,7 +213,7 @@ public class AppoRestClient {
      * @return response
      * @throws AppoException on failure
      */
-    public CloseableHttpResponse sendRequest(HttpRequestBase httpRequest) {
+    private CloseableHttpResponse sendRequest(HttpRequestBase httpRequest) {
 
         LOGGER.info("Sending request : {}", httpRequest.getURI());
 
