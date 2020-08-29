@@ -24,18 +24,6 @@ public abstract class ProcessflowAbstractTask {
     }
 
     /**
-     * Replaces path variables in URL.
-     *
-     * @param urlString  url string
-     * @param parameters parameters to replace
-     * @return url string with replaced parameters
-     */
-    public String replaceParamsInUrl(String urlString, Map<String, String> parameters) {
-        UriBuilder builder = UriBuilder.fromPath(urlString);
-        return builder.buildFromMap(parameters).toString();
-    }
-
-    /**
      * Sets process flow response attributes to delegate execution.
      *
      * @param delegateExecution delegate execution
