@@ -89,7 +89,6 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo.setAppdId((String) delegateExecution.getVariable(Constants.APPD_ID));
             appInstanceInfo.setAppDescriptor((String) delegateExecution.getVariable(Constants.APP_DESCR));
             appInstanceInfo.setOperationalStatus("Creating");
-            //appInstanceInfo.setApplcmHost(".");
             appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
             setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
             LOGGER.info("App instance info record inserted ");
