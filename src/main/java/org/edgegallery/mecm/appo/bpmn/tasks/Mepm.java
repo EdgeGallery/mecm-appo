@@ -38,6 +38,7 @@ public class Mepm extends ProcessflowAbstractTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(Mepm.class);
     private final DelegateExecution delegateExecution;
     private final String action;
+    private final String packagePath;
     private final String applcmKpiUrl;
     private final String applcmUrl;
     private final String applcmCapabilitiesUrl;
@@ -46,10 +47,12 @@ public class Mepm extends ProcessflowAbstractTask {
      * MEPM Constructor.
      *
      * @param delegateExecution delegate execution
-     * @param isSslEnabled      ssl enabled flog
+     * @param isSslEnabled      ssl support
+     * @param packagePath      package path
      */
-    public Mepm(DelegateExecution delegateExecution, String isSslEnabled) {
+    public Mepm(DelegateExecution delegateExecution, String isSslEnabled, String packagePath) {
         this.delegateExecution = delegateExecution;
+        this.packagePath = packagePath;
         String protocol = getProtocol(isSslEnabled);
 
         String urlBase = "{applcm_ip}:{applcm_port}";
@@ -109,7 +112,7 @@ public class Mepm extends ProcessflowAbstractTask {
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
 
-        HttpEntity entity = appoRestClient.addFileEntity("./" + appInstanceInfo.getAppInstanceId()
+        HttpEntity entity = appoRestClient.addFileEntity(packagePath + appInstanceInfo.getAppInstanceId()
                 + "/" + appInstanceInfo.getAppPackageId());
 
         try (CloseableHttpResponse response = appoRestClient.doPost(url, entity)) {

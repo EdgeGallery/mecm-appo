@@ -27,9 +27,12 @@ public class MepmAdapter implements JavaDelegate {
     @Value("${SSL_ENABLED:}")
     private String isSslEnabled;
 
+    @Value("${PACKAGE_PATH:}")
+    private String packagePath;
+
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
-        Mepm mepm = new Mepm(delegateExecution, isSslEnabled);
+        Mepm mepm = new Mepm(delegateExecution, isSslEnabled, packagePath);
         mepm.execute();
     }
 }
