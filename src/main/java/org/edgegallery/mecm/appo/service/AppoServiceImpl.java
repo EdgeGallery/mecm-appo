@@ -16,16 +16,13 @@
 
 package org.edgegallery.mecm.appo.service;
 
-import static org.edgegallery.mecm.appo.common.Constants.ACCESS_TOKEN;
-import static org.edgegallery.mecm.appo.common.Constants.APP_INSTANCE_ID;
-import static org.edgegallery.mecm.appo.common.Constants.TENANT_ID;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.edgegallery.mecm.appo.apihandler.CreateParam;
 import org.edgegallery.mecm.appo.common.AppoProcessFlowResponse;
+import org.edgegallery.mecm.appo.common.Constants;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +36,7 @@ public class AppoServiceImpl implements AppoService {
 
     public static final Logger logger = LoggerFactory.getLogger(AppoServiceImpl.class);
 
-    //@Autowired
     private AppoProcessflowService processflowService;
-
-    //@Autowired
     private AppInstanceInfoService appInstanceInfoService;
 
     @Autowired
@@ -57,25 +51,25 @@ public class AppoServiceImpl implements AppoService {
         logger.debug("Application create request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
-        requestBodyParam.put("tenant_id", tenantId);
-        requestBodyParam.put("app_package_id", createParam.getAppPackageId());
-        requestBodyParam.put("appd_id", createParam.getAppdId());
-        requestBodyParam.put("app_name", createParam.getAppName());
-        requestBodyParam.put("app_instance_description", createParam.getAppInstanceDescription());
-        requestBodyParam.put("mec_host", createParam.getMecHost());
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.APP_PACKAGE_ID, createParam.getAppPackageId());
+        requestBodyParam.put(Constants.APPD_ID, createParam.getAppdId());
+        requestBodyParam.put(Constants.APP_NAME, createParam.getAppName());
+        requestBodyParam.put(Constants.APP_INSTANCE_ID, createParam.getAppInstanceDescription());
+        requestBodyParam.put(Constants.MEC_HOST, createParam.getMecHost());
 
         logger.debug("Create instance input parameters: {}", requestBodyParam);
 
         //Generate application instantiate ID
         String appInstanceID = UUID.randomUUID().toString();
-        requestBodyParam.put(APP_INSTANCE_ID, appInstanceID);
-        requestBodyParam.put(ACCESS_TOKEN, accessToken);
+        requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceID);
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         //Async flow
         processflowService.executeProcessAsync("createApplicationInstance", requestBodyParam);
 
         Map<String, String> response = new HashMap<>();
-        response.put(APP_INSTANCE_ID, appInstanceID);
+        response.put(Constants.APP_INSTANCE_ID, appInstanceID);
 
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
@@ -96,11 +90,11 @@ public class AppoServiceImpl implements AppoService {
         }
 
         Map<String, String> requestBodyParam = new HashMap<>();
-        requestBodyParam.put(TENANT_ID, tenantId);
-        requestBodyParam.put(APP_INSTANCE_ID, appInstanceId);
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceId);
         logger.debug("Instantiate input params: {}", requestBodyParam);
 
-        requestBodyParam.put(ACCESS_TOKEN, accessToken);
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         //Async flow
         processflowService.executeProcessAsync("instantiateApplicationInstance", requestBodyParam);
@@ -112,11 +106,11 @@ public class AppoServiceImpl implements AppoService {
         logger.debug("Query application info request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
-        requestBodyParam.put(TENANT_ID, tenantId);
-        requestBodyParam.put(APP_INSTANCE_ID, appInstanceId);
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceId);
         logger.debug("Query application instance input params: {}", requestBodyParam);
 
-        requestBodyParam.put(ACCESS_TOKEN, accessToken);
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         AppoProcessFlowResponse response = processflowService.executeProcessSync("queryApplicationInstance",
                 requestBodyParam);
@@ -134,10 +128,10 @@ public class AppoServiceImpl implements AppoService {
         logger.debug("Query all application info request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
-        requestBodyParam.put(TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
         logger.debug("Get all application instance input params: {}", requestBodyParam);
 
-        requestBodyParam.put(ACCESS_TOKEN, accessToken);
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
     }
@@ -149,11 +143,11 @@ public class AppoServiceImpl implements AppoService {
         logger.debug("Terminate application info request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
-        requestBodyParam.put(TENANT_ID, tenantId);
-        requestBodyParam.put(APP_INSTANCE_ID, appInstanceId);
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceId);
         logger.debug("Terminate input params: {}", requestBodyParam);
 
-        requestBodyParam.put(ACCESS_TOKEN, accessToken);
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         processflowService.executeProcessAsync("terminateApplicationInstance", requestBodyParam);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -166,11 +160,11 @@ public class AppoServiceImpl implements AppoService {
         logger.debug("Query KPI request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
-        requestBodyParam.put(TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put("host_ip", hostIp);
         logger.debug("Request input: {}", requestBodyParam);
 
-        requestBodyParam.put(ACCESS_TOKEN, accessToken);
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         AppoProcessFlowResponse response = processflowService.executeProcessSync("queryKpi", requestBodyParam);
         logger.debug("Query response : {} ", response.getResponse());
@@ -189,11 +183,11 @@ public class AppoServiceImpl implements AppoService {
         logger.debug("Query MEP capabilities request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
-        requestBodyParam.put(TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put("host_ip", hostIp);
         logger.debug("Request input: {}", requestBodyParam);
 
-        requestBodyParam.put(ACCESS_TOKEN, accessToken);
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         AppoProcessFlowResponse response = processflowService.executeProcessSync("queryEdgeCapabilities",
                 requestBodyParam);
