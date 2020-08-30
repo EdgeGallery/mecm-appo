@@ -70,8 +70,8 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Creates application instance", response = AppoResponse.class)
     @PostMapping(path = "/tenants/{tenant_id}/app_instances", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
-    })
+                @ApiResponse(code = 500, message = "internal server error", response = String.class)
+                })
     public ResponseEntity<AppoResponse> createAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
@@ -93,8 +93,8 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Instantiate application instance", response = AppoResponse.class)
     @PostMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
-    })
+                @ApiResponse(code = 500, message = "internal server error", response = String.class)
+            })
     public ResponseEntity<AppoResponse> instantiateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
@@ -156,7 +156,7 @@ public class AppOrchestratorHandler {
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
             @ApiResponse(code = 500, message = "internal server error", response = AppoResponse.class)
-    })
+            })
     public ResponseEntity<AppoResponse> terminateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
