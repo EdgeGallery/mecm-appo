@@ -94,7 +94,7 @@ public class AppOrchestratorHandler {
     @PostMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}", produces = MediaType.TEXT_PLAIN_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
                 @ApiResponse(code = 500, message = "internal server error", response = String.class)
-            })
+                })
     public ResponseEntity<AppoResponse> instantiateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
@@ -155,8 +155,8 @@ public class AppOrchestratorHandler {
     @DeleteMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
-            @ApiResponse(code = 500, message = "internal server error", response = AppoResponse.class)
-            })
+                @ApiResponse(code = 500, message = "internal server error", response = AppoResponse.class)
+                })
     public ResponseEntity<AppoResponse> terminateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
