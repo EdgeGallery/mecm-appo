@@ -13,4 +13,9 @@
         create_time timestamp default current_timestamp,
         update_time timestamp default current_timestamp,
         primary key (app_instance_id)
-    )
+    );
+
+    create table appotenant (
+        tenant  varchar(255) not null,
+        primary key (tenant)
+    );

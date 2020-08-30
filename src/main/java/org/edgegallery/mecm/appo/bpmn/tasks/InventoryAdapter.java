@@ -33,11 +33,10 @@ public class InventoryAdapter implements JavaDelegate {
     @Value("${INVENTORY_PORT:3201}")
     private String inventoryServicePort;
 
-    private String inventoryEndPoint = inventoryService + ":" + inventoryServicePort;
-
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
+        String inventoryEndPoint = inventoryService + ":" + inventoryServicePort;
         Inventory inventory = new Inventory(delegateExecution, isSslEnabled, inventoryEndPoint);
         inventory.execute();
     }

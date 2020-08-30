@@ -36,10 +36,9 @@ public class ApmAdapter implements JavaDelegate {
     @Value("${PACKAGE_PATH:}")
     private String packagePath;
 
-    private String apmEndPoint = apmService + ":" + apmServicePort;
-
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
+        String apmEndPoint = apmService + ":" + apmServicePort;
         Apm apm = new Apm(delegateExecution, isSslEnabled, apmEndPoint, packagePath);
         apm.execute();
     }

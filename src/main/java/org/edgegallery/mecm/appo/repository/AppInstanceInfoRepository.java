@@ -16,9 +16,19 @@
 
 package org.edgegallery.mecm.appo.repository;
 
+import java.util.List;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 public interface AppInstanceInfoRepository extends CrudRepository<AppInstanceInfo, String> {
 
+    @Query(value = "SELECT * FROM appinstanceinfo m WHERE m.tenant=:tenant", nativeQuery = true)
+    List<AppInstanceInfo> findByTenantId(@Param("tenant") String tenant);
+
+    @Query(value = "SELECT * FROM appinstanceinfo m WHERE m.tenant=:tenant and m.app_instance_id=:app_instance_id",
+            nativeQuery = true)
+    AppInstanceInfo findByTenantIdAndAppInstanceId(@Param("tenant") String tenant,
+                                                   @Param("app_instance_id") String appInstanceId);
 }
