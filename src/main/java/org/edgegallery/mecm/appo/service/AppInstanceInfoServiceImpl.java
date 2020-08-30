@@ -117,10 +117,6 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             info.setAppPackageId(appInstanceInfo.getAppPackageId());
         }
 
-        if (appInstanceInfo.getTenant() != null) {
-            info.setTenant(appInstanceInfo.getTenant());
-        }
-
         if (appInstanceInfo.getAppName() != null) {
             info.setAppName(appInstanceInfo.getAppName());
         }

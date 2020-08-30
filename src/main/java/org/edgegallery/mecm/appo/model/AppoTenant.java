@@ -16,7 +16,6 @@
 
 package org.edgegallery.mecm.appo.model;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,7 +31,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "appotenant")
-public final class AppoTenant implements Serializable {
+public final class AppoTenant {
 
     @Id
     @Column(name = "tenant")

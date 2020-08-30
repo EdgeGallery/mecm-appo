@@ -16,10 +16,8 @@
 
 package org.edgegallery.mecm.appo.repository;
 
-import java.util.List;
 import org.edgegallery.mecm.appo.model.AppoTenant;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
 public interface AppoTenantRepository extends CrudRepository<AppoTenant, String> {
 

@@ -16,7 +16,6 @@
 
 package org.edgegallery.mecm.appo.model;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +34,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 @Entity
 @Table(name = "appinstanceinfo")
-public final class AppInstanceInfo implements Serializable {
+public final class AppInstanceInfo {
 
     @Id
     @Column(name = "app_instance_id")
