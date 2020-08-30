@@ -14,11 +14,22 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.exception;
+package org.edgegallery.mecm.appo.bpmn.tasks;
 
-public class AppoProcessflowException extends RuntimeException {
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-    public AppoProcessflowException(String msg) {
-        super(msg);
+@Component
+public class DeComposeApplicationPackage implements JavaDelegate {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeComposeApplicationPackage.class);
+
+    @Override
+    public void execute(DelegateExecution delegateExecution) throws Exception {
+        LOGGER.info("Decompose application package...");
+
     }
 }

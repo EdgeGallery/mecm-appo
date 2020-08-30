@@ -1,7 +1,5 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
-import java.util.Map;
-import javax.ws.rs.core.UriBuilder;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 
 public abstract class ProcessflowAbstractTask {
@@ -21,18 +19,6 @@ public abstract class ProcessflowAbstractTask {
             return "https://";
         }
         return "http://";
-    }
-
-    /**
-     * Replaces path variables in URL.
-     *
-     * @param urlString  url string
-     * @param parameters parameters to replace
-     * @return url string with replaced parameters
-     */
-    public String replaceParamsInUrl(String urlString, Map<String, String> parameters) {
-        UriBuilder builder = UriBuilder.fromPath(urlString);
-        return builder.buildFromMap(parameters).toString();
     }
 
     /**

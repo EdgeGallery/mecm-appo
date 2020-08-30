@@ -14,11 +14,20 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.exception;
+package org.edgegallery.mecm.appo.bpmn.tasks;
 
-public class AppoProcessflowException extends RuntimeException {
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.springframework.stereotype.Component;
 
-    public AppoProcessflowException(String msg) {
-        super(msg);
+@Component
+public class GetRequestInputs implements JavaDelegate {
+
+    @Override
+    public void execute(DelegateExecution delegateExecution) {
+
+        InputParameters inputParameters = new InputParameters(delegateExecution);
+        inputParameters.setInputParameters();
+
     }
 }
