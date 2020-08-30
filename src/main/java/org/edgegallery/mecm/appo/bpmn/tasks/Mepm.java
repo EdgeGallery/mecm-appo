@@ -17,15 +17,16 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import java.io.IOException;
-import org.apache.http.HttpEntity;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.edgegallery.mecm.appo.bpmn.utils.UrlUtility;
-import org.edgegallery.mecm.appo.bpmn.utils.restclient.AppoRestClient;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.utils.AppoRestClient;
 import org.edgegallery.mecm.appo.utils.Constants;
+import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.jose4j.json.internal.json_simple.JSONObject;
 import org.jose4j.json.internal.json_simple.parser.JSONParser;
 import org.jose4j.json.internal.json_simple.parser.ParseException;
@@ -39,9 +40,7 @@ public class Mepm extends ProcessflowAbstractTask {
     private final DelegateExecution delegateExecution;
     private final String action;
     private final String packagePath;
-    private final String applcmKpiUrl;
-    private final String applcmUrl;
-    private final String applcmCapabilitiesUrl;
+    private String applcmUrlBase;
 
     /**
      * Creates an MEPM instance.
@@ -53,15 +52,8 @@ public class Mepm extends ProcessflowAbstractTask {
     public Mepm(DelegateExecution execution, String isSslEnabled, String path) {
         delegateExecution = execution;
         packagePath = path;
-        String protocol = getProtocol(isSslEnabled);
 
-        String urlBase = "{applcm_ip}:{applcm_port}";
-        String applcmUrlBase = protocol + urlBase;
-
-        applcmUrl = applcmUrlBase + Constants.APPLCM_INSTANTIATE_URI;
-        applcmKpiUrl = applcmUrlBase + Constants.APPLCM_QUERY_KPI_URI;
-        applcmCapabilitiesUrl = applcmUrlBase + Constants.APPLCM_QUERY_CAPABILITY_URI;
-
+        applcmUrlBase = getProtocol(isSslEnabled) + "{applcm_ip}:{applcm_port}";
         action = (String) delegateExecution.getVariable("action");
     }
 
@@ -71,19 +63,19 @@ public class Mepm extends ProcessflowAbstractTask {
     public void execute() {
         switch (action) {
             case "instantiate":
-                instantiate();
+                instantiate(applcmUrlBase + Constants.APPLCM_INSTANTIATE_URI);
                 break;
             case "query":
-                query();
+                query(applcmUrlBase + Constants.APPLCM_INSTANTIATE_URI);
                 break;
             case "terminate":
-                terminate();
+                terminate(applcmUrlBase + Constants.APPLCM_INSTANTIATE_URI);
                 break;
             case "querykpi":
-                querykpi();
+                querykpi(applcmUrlBase + Constants.APPLCM_QUERY_KPI_URI);
                 break;
             case "queryEdgeCapabilities":
-                queryEdgeCapabilities();
+                queryEdgeCapabilities(applcmUrlBase + Constants.APPLCM_QUERY_CAPABILITY_URI);
                 break;
             default:
                 LOGGER.info("Invalid MEPM action...{}", action);
@@ -92,7 +84,7 @@ public class Mepm extends ProcessflowAbstractTask {
         }
     }
 
-    private void instantiate() {
+    private void instantiate(String url) {
         LOGGER.info("Send Instantiate request to applcm");
 
         String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
@@ -100,22 +92,22 @@ public class Mepm extends ProcessflowAbstractTask {
 
         AppInstanceInfo appInstanceInfo = (AppInstanceInfo) delegateExecution.getVariable(Constants.APP_INSTANCE_INFO);
 
-        UrlUtility urlUtil = new UrlUtility();
+        UrlUtil urlUtil = new UrlUtil();
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
         urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
         urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
 
-        String url = urlUtil.getUrl(applcmUrl);
+        String instantiateUrl = urlUtil.getUrl(url);
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
+
         AppoRestClient appoRestClient = new AppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
-
-        HttpEntity entity = appoRestClient.addFileEntity(packagePath + appInstanceInfo.getAppInstanceId()
+        appoRestClient.addFileEntity(packagePath + appInstanceInfo.getAppInstanceId()
                 + "/" + appInstanceInfo.getAppPackageId());
 
-        try (CloseableHttpResponse response = appoRestClient.doPost(url, entity)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest("POST", instantiateUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = appoRestClient.getErrorInfo(response, "Instantiate failed");
@@ -128,7 +120,7 @@ public class Mepm extends ProcessflowAbstractTask {
         }
     }
 
-    private void query() {
+    private void query(String url) {
         LOGGER.info("Query app instance ");
 
         String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
@@ -136,19 +128,19 @@ public class Mepm extends ProcessflowAbstractTask {
 
         AppInstanceInfo appInstanceInfo = (AppInstanceInfo) delegateExecution.getVariable("app_instance_info");
 
-        UrlUtility urlUtil = new UrlUtility();
+        UrlUtil urlUtil = new UrlUtil();
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
         urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
         urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
 
-        String url = urlUtil.getUrl(applcmUrl);
+        String queryUrl = urlUtil.getUrl(url);
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
         AppoRestClient appoRestClient = new AppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
 
-        try (CloseableHttpResponse response = appoRestClient.doGet(url)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest("GET", queryUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Query app instance failed");
@@ -163,7 +155,7 @@ public class Mepm extends ProcessflowAbstractTask {
         }
     }
 
-    private void terminate() {
+    private void terminate(String url) {
         LOGGER.info("Terminate application instance");
 
         String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
@@ -171,19 +163,19 @@ public class Mepm extends ProcessflowAbstractTask {
 
         AppInstanceInfo appInstanceInfo = (AppInstanceInfo) delegateExecution.getVariable("app_instance_info");
 
-        UrlUtility urlUtil = new UrlUtility();
+        UrlUtil urlUtil = new UrlUtil();
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
         urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
         urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
 
-        String url = urlUtil.getUrl(applcmUrl);
+        String terminateUrl = urlUtil.getUrl(url);
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
         AppoRestClient appoRestClient = new AppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
 
-        try (CloseableHttpResponse response = appoRestClient.doDelete(url)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest("DELETE", terminateUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Terminate failed");
@@ -191,23 +183,26 @@ public class Mepm extends ProcessflowAbstractTask {
             } else {
                 String responseStr = EntityUtils.toString(response.getEntity());
                 setProcessflowResponseAttributes(delegateExecution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
+
+                Files.delete(Paths.get(packagePath + appInstanceInfo.getAppInstanceId()
+                        + "/" + appInstanceInfo.getAppPackageId()));
             }
         } catch (IOException | ParseException | AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
         }
     }
 
-    private void querykpi() {
+    private void querykpi(String url) {
         LOGGER.info("Send query request to applcm");
 
         String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
         String applcmPort = (String) delegateExecution.getVariable(Constants.APPLCM_PORT);
 
-        UrlUtility urlUtil = new UrlUtility();
+        UrlUtil urlUtil = new UrlUtil();
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
         urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
 
-        String url = urlUtil.getUrl(applcmKpiUrl);
+        String kpiUrl = urlUtil.getUrl(url);
 
         String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
@@ -216,7 +211,7 @@ public class Mepm extends ProcessflowAbstractTask {
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, mecHost);
 
-        try (CloseableHttpResponse response = appoRestClient.doGet(url)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest("GET", kpiUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Query KPI failed");
@@ -231,17 +226,17 @@ public class Mepm extends ProcessflowAbstractTask {
         }
     }
 
-    private void queryEdgeCapabilities() {
+    private void queryEdgeCapabilities(String url) {
         LOGGER.info("Send query request to applcm");
 
         String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
         String applcmPort = (String) delegateExecution.getVariable(Constants.APPLCM_PORT);
 
-        UrlUtility urlUtil = new UrlUtility();
+        UrlUtil urlUtil = new UrlUtil();
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
         urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
 
-        String url = urlUtil.getUrl(applcmCapabilitiesUrl);
+        String capabilityUrl = urlUtil.getUrl(url);
 
         String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
@@ -250,7 +245,7 @@ public class Mepm extends ProcessflowAbstractTask {
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, mecHost);
 
-        try (CloseableHttpResponse response = appoRestClient.doGet(url)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest("GET", capabilityUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Query capabilities failed");

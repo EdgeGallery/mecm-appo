@@ -14,14 +14,17 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.bpmn.utils.restclient;
+package org.edgegallery.mecm.appo.utils;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
@@ -73,19 +76,37 @@ public class AppoBuildClient {
         };
     }
 
+    private KeyStore getKeyStore(String keyStorePath, String password) {
+        KeyStore ks = null;
+        try (FileInputStream is = new FileInputStream(keyStorePath)) {
+            ks = KeyStore.getInstance(KeyStore.getDefaultType());
+            ks.load(is, password.toCharArray());
+        } catch (CertificateException | KeyStoreException
+                | NoSuchAlgorithmException | IOException e) {
+            throw new AppoException("keystore exception");
+        }
+        return ks;
+    }
+
+
     /**
-     * Retrieves HHTP client.
+     * Retrieves HTTP client.
      *
      * @param httpRequest http request
      * @return http client on success
      */
     public CloseableHttpClient buildHttpClient(HttpRequestBase httpRequest) {
-        LOGGER.info("Get client based on protocol...");
+        LOGGER.info("Build Http client...");
         CloseableHttpClient httpClient = null;
         try {
             if (httpRequest.getURI().toString().startsWith("https")) {
                 SSLContext sslcxt = null;
-
+                /*KeyStore ks = null;
+                try {
+                    ks = getKeyStore("/home/root1/certs/keystore.jks", "te9Fmv%qaq");
+                } catch (IOException | CertificateException e) {
+                    e.printStackTrace();
+                }*/
                 sslcxt = SSLContexts.custom()
                         .loadTrustMaterial(null, new TrustSelfSignedStrategy())
                         .setProtocol("TLSv1.2")
@@ -107,7 +128,7 @@ public class AppoBuildClient {
                         .build();
             }
         } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-            LOGGER.info("Failed to get client...{}", e.getMessage());
+            LOGGER.info("Failed to build client...{}", e.getMessage());
             throw new AppoException(e.getMessage());
         }
         return httpClient;
