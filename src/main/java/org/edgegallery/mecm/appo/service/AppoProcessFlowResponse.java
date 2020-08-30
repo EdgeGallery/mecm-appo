@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.common;
+package org.edgegallery.mecm.appo.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

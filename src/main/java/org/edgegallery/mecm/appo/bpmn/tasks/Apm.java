@@ -26,8 +26,8 @@ import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.bpmn.utils.UrlUtility;
 import org.edgegallery.mecm.appo.bpmn.utils.restclient.AppoRestClient;
-import org.edgegallery.mecm.appo.common.Constants;
 import org.edgegallery.mecm.appo.exception.AppoException;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

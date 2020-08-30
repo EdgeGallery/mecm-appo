@@ -26,7 +26,6 @@ import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.edgegallery.mecm.appo.common.AppoProcessFlowResponse;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.exception.AppoProcessflowException;
 import org.slf4j.Logger;

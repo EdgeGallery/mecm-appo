@@ -16,10 +16,10 @@
 
 package org.edgegallery.mecm.appo.apihandler;
 
-import static org.edgegallery.mecm.appo.common.Constants.APPD_ID_REGEX;
-import static org.edgegallery.mecm.appo.common.Constants.APP_NAME_REGEX;
-import static org.edgegallery.mecm.appo.common.Constants.APP_PKG_ID_REGX;
-import static org.edgegallery.mecm.appo.common.Constants.HOST_IP_REGX;
+import static org.edgegallery.mecm.appo.utils.Constants.APPD_ID_REGEX;
+import static org.edgegallery.mecm.appo.utils.Constants.APP_NAME_REGEX;
+import static org.edgegallery.mecm.appo.utils.Constants.APP_PKG_ID_REGX;
+import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
