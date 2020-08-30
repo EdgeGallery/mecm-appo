@@ -47,9 +47,9 @@ public class InventoryAdapter implements JavaDelegate {
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
         AppoTrustStore appoTrustStore = new AppoTrustStore(trustStorePath, trustStorePasswd, useDefaultStore);
-        //String inventoryEndPoint = inventoryService + ":" + inventoryServicePort;
-        String inventoryEndPoint = "127.0.0.1" + ":" + "30101";
-        isSslEnabled = "true";
+
+        String inventoryEndPoint = inventoryService + ":" + inventoryServicePort;
+
         Inventory inventory = new Inventory(delegateExecution, isSslEnabled, inventoryEndPoint, appoTrustStore);
         inventory.execute();
     }
