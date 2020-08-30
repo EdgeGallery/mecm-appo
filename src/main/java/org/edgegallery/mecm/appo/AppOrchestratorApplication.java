@@ -67,20 +67,19 @@ public class AppOrchestratorApplication {
         LOGGER.info("Edge application orchestrator starting----");
 
         // do not check host name
-        TrustManager[] trustAllCerts = new TrustManager[]{
-            new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }
-
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                    LOGGER.info("checks client trusted");
-                }
-
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                    LOGGER.info("checks server trusted");
-                }
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
             }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                LOGGER.info("checks client trusted");
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                LOGGER.info("checks server trusted");
+            }
+        }
         };
         SSLContext sc;
         try {
@@ -88,7 +87,7 @@ public class AppOrchestratorApplication {
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier(NoopHostnameVerifier.INSTANCE);
-            
+
             SpringApplication.run(AppOrchestratorApplication.class, args);
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
             LOGGER.info("SSL context init error... exiting system {}", e.getMessage());

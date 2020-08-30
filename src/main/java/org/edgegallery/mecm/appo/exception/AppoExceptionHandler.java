@@ -18,17 +18,23 @@ package org.edgegallery.mecm.appo.exception;
 
 import static org.edgegallery.mecm.appo.utils.Constants.RECORD_NOT_FOUND;
 
-import org.springframework.http.HttpHeaders;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class AppoExceptionHandler extends ResponseEntityExceptionHandler {
+public class AppoExceptionHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppoExceptionHandler.class);
 
     @ExceptionHandler(value = AppoException.class)
     public ResponseEntity<Object> exception(AppoException exception) {
@@ -49,13 +55,35 @@ public class AppoExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    /**
+     * Returns response entity with error details when input validation is failed.
+     *
+     * @param ex exception while validating input
+     * @return response entity with error details
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<AppoExceptionResponse> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        List<String> errorMsg = new ArrayList<>();
+        if (ex.getBindingResult().hasErrors()) {
+            ex.getBindingResult().getAllErrors().forEach(error -> errorMsg.add(error.getDefaultMessage()));
+        }
+        AppoExceptionResponse response = new AppoExceptionResponse(LocalDateTime.now(),
+                "input validation failed", errorMsg);
+        LOGGER.info("Method argument error: {}", response);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  HttpHeaders headers, HttpStatus status,
-                                                                  WebRequest request) {
-        AppoExceptionResponse appoExceptionResponse = new AppoExceptionResponse("Validation Failed",
-                ex.getMessage());
-        return new ResponseEntity(appoExceptionResponse, HttpStatus.BAD_REQUEST);
+    /**
+     * Returns response entity with error details when input validation is failed.
+     *
+     * @param ex exception while validating input
+     * @return response entity with error details
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<AppoExceptionResponse> handleConstraintViolationException(
+            ConstraintViolationException ex) {
+        AppoExceptionResponse response = new AppoExceptionResponse(LocalDateTime.now(),
+                "input validation failed", Collections.singletonList("URL parameter validation failed"));
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
