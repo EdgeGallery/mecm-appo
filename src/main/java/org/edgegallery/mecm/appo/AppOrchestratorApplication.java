@@ -46,7 +46,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableProcessApplication
 public class AppOrchestratorApplication {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppOrchestratorApplication.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppOrchestratorApplication.class);
 
     @Value("${appo.async.corepool-size}")
     private int corePoolSize;
@@ -64,7 +64,7 @@ public class AppOrchestratorApplication {
      */
     public static void main(String[] args) {
 
-        logger.info("Edge application orchestrator starting----");
+        LOGGER.info("Edge application orchestrator starting----");
 
         // do not check host name
         TrustManager[] trustAllCerts = new TrustManager[]{
@@ -74,15 +74,15 @@ public class AppOrchestratorApplication {
                 }
 
                 public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                    logger.info("checks client trusted");
+                    LOGGER.info("checks client trusted");
                 }
 
                 public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                    logger.info("checks server trusted");
+                    LOGGER.info("checks server trusted");
                 }
             }
         };
-        SSLContext sc = null;
+        SSLContext sc;
         try {
             sc = SSLContext.getInstance("TLSv1.2");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -91,7 +91,7 @@ public class AppOrchestratorApplication {
             
             SpringApplication.run(AppOrchestratorApplication.class, args);
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            logger.info("SSL context init error... exiting system {}", e.getMessage());
+            LOGGER.info("SSL context init error... exiting system {}", e.getMessage());
         }
     }
 

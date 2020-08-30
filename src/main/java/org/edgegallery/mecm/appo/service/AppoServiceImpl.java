@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppoServiceImpl implements AppoService {
 
-    public static final Logger logger = LoggerFactory.getLogger(AppoServiceImpl.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(AppoServiceImpl.class);
 
     private AppoProcessflowService processflowService;
     private AppInstanceInfoService appInstanceInfoService;
@@ -47,7 +47,7 @@ public class AppoServiceImpl implements AppoService {
     @Override
     public ResponseEntity<AppoResponse> createAppInstance(String accessToken, String tenantId,
                                                           CreateParam createParam) {
-        logger.debug("Application create request received...");
+        LOGGER.debug("Application create request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
@@ -57,7 +57,7 @@ public class AppoServiceImpl implements AppoService {
         requestBodyParam.put(Constants.APP_DESCR, createParam.getAppInstanceDescription());
         requestBodyParam.put(Constants.MEC_HOST, createParam.getMecHost());
 
-        logger.debug("Create instance input parameters: {}", requestBodyParam);
+        LOGGER.debug("Create instance input parameters: {}", requestBodyParam);
 
         String appInstanceID = UUID.randomUUID().toString();
         requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceID);
@@ -74,7 +74,7 @@ public class AppoServiceImpl implements AppoService {
     @Override
     public ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId,
                                                                String appInstanceId) {
-        logger.debug("Application instantiation request received...");
+        LOGGER.debug("Application instantiation request received...");
 
         AppInstanceInfo appInstanceInfo = null;
 
@@ -93,7 +93,7 @@ public class AppoServiceImpl implements AppoService {
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceId);
-        logger.debug("Instantiate input params: {}", requestBodyParam);
+        LOGGER.debug("Instantiate input params: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
@@ -104,18 +104,18 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> getAppInstance(String accessToken, String tenantId, String appInstanceId) {
-        logger.debug("Query application info request received...");
+        LOGGER.debug("Query application info request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceId);
-        logger.debug("Query application instance input params: {}", requestBodyParam);
+        LOGGER.debug("Query application instance input params: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         AppoProcessFlowResponse response = processflowService.executeProcessSync("queryApplicationInstance",
                 requestBodyParam);
-        logger.debug("Query application info response : {} ", response.getResponse());
+        LOGGER.debug("Query application info response : {} ", response.getResponse());
 
         if (response.getResponseCode() == HttpStatus.OK.value()) {
             return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);
@@ -126,11 +126,11 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> getAllAppInstance(String accessToken, String tenantId) {
-        logger.debug("Query all application info request received...");
+        LOGGER.debug("Query all application info request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
-        logger.debug("Get all application instance input params: {}", requestBodyParam);
+        LOGGER.debug("Get all application instance input params: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
@@ -141,12 +141,12 @@ public class AppoServiceImpl implements AppoService {
     public ResponseEntity<AppoResponse> terminateAppInstance(String accessToken,
                                                              String tenantId,
                                                              String appInstanceId) {
-        logger.debug("Terminate application info request received...");
+        LOGGER.debug("Terminate application info request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceId);
-        logger.debug("Terminate input params: {}", requestBodyParam);
+        LOGGER.debug("Terminate input params: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
@@ -159,17 +159,17 @@ public class AppoServiceImpl implements AppoService {
     public ResponseEntity<AppoResponse> queryKpi(String accessToken,
                                                  String tenantId,
                                                  String hostIp) {
-        logger.debug("Query KPI request received...");
+        LOGGER.debug("Query KPI request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.MEC_HOST, hostIp);
-        logger.debug("Request input: {}", requestBodyParam);
+        LOGGER.debug("Request input: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         AppoProcessFlowResponse response = processflowService.executeProcessSync("queryKpi", requestBodyParam);
-        logger.debug("Query response : {} ", response.getResponse());
+        LOGGER.debug("Query response : {} ", response.getResponse());
 
         if (response.getResponseCode() == HttpStatus.OK.value()) {
             return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);
@@ -180,18 +180,18 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp) {
-        logger.debug("Query MEP capabilities request received...");
+        LOGGER.debug("Query MEP capabilities request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.MEC_HOST, hostIp);
-        logger.debug("Request input: {}", requestBodyParam);
+        LOGGER.debug("Request input: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         AppoProcessFlowResponse response = processflowService.executeProcessSync("queryEdgeCapabilities",
                 requestBodyParam);
-        logger.debug("Query response : {} ", response.getResponse());
+        LOGGER.debug("Query response : {} ", response.getResponse());
 
         if (response.getResponseCode() == HttpStatus.OK.value()) {
             return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);

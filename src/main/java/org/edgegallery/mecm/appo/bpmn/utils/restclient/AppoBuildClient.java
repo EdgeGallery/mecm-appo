@@ -52,8 +52,8 @@ public class AppoBuildClient {
         if (retries >= maxRetry) {
             return false;
         }
-        return (!(exception instanceof InterruptedIOException)) && (!(exception instanceof UnknownHostException))
-                && ((!(exception instanceof SSLException)) && (!(exception instanceof HttpHostConnectException)));
+        return !(exception instanceof InterruptedIOException) && !(exception instanceof UnknownHostException)
+                && !(exception instanceof SSLException) && !(exception instanceof HttpHostConnectException);
     }
 
     private HttpRequestRetryHandler retryMechanism(int maxRetry) {
