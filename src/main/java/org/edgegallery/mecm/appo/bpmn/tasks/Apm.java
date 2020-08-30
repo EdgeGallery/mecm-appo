@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.utils.AppoRestClient;
+import org.edgegallery.mecm.appo.utils.AppoTrustStore;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ public class Apm extends ProcessflowAbstractTask {
     private final String operation;
     private final String packagePath;
     private String baseUrl;
+    private AppoTrustStore appoTrustStore;
 
 
     /**
@@ -48,9 +50,10 @@ public class Apm extends ProcessflowAbstractTask {
      * @param isSslEnabled      ssl enabled
      * @param endPoint          apm end point
      */
-    public Apm(DelegateExecution delegateExecution, String isSslEnabled, String endPoint, String packagePath) {
+    public Apm(DelegateExecution delegateExecution, String isSslEnabled, String endPoint,
+               String packagePath, AppoTrustStore trustStore) {
         this.delegateExecution = delegateExecution;
-
+        appoTrustStore = trustStore;
         baseUrl = getProtocol(isSslEnabled) + endPoint;
 
         this.packagePath = packagePath;
@@ -99,7 +102,7 @@ public class Apm extends ProcessflowAbstractTask {
     }
 
     void downloadPackage(String url, String appPackageId, String appInstanceId) {
-
+        LOGGER.info(" {}", appoTrustStore);
         try (InputStream inputStream = new URL(url).openStream();
                 FileOutputStream fileOs = new FileOutputStream(packagePath + appInstanceId + "/" + appPackageId)) {
             IOUtils.copy(inputStream, fileOs);

@@ -22,6 +22,7 @@ import org.apache.http.util.EntityUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.utils.AppoRestClient;
+import org.edgegallery.mecm.appo.utils.AppoTrustStore;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.jose4j.json.internal.json_simple.JSONObject;
@@ -36,20 +37,22 @@ public class Inventory extends ProcessflowAbstractTask {
 
     private final DelegateExecution delegateExecution;
     private final String table;
+    AppoTrustStore appoTrustStore;
     private String baseUrl;
 
     /**
      * Constructor for get inventory.
      *
-     * @param delegateExecution delegate execution
-     * @param isSslEnabled      ssl enabled flog
-     * @param endPoint          inventory end point
+     * @param execution    delegate execution
+     * @param isSslEnabled ssl enabled flog
+     * @param endPoint     inventory end point
      */
-    public Inventory(DelegateExecution delegateExecution, String isSslEnabled, String endPoint) {
-        this.delegateExecution = delegateExecution;
-
+    public Inventory(DelegateExecution execution, String isSslEnabled, String endPoint,
+                     AppoTrustStore trustStore) {
+        delegateExecution = execution;
+        appoTrustStore = trustStore;
         baseUrl = getProtocol(isSslEnabled) + endPoint;
-        this.table = (String) delegateExecution.getVariable("inventory");
+        table = (String) delegateExecution.getVariable("inventory");
     }
 
     /**
@@ -82,7 +85,7 @@ public class Inventory extends ProcessflowAbstractTask {
         String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient client = new AppoRestClient();
+        AppoRestClient client = new AppoRestClient(appoTrustStore);
         client.addHeader(Constants.ACCESS_TOKEN, accessToken);
 
         UrlUtil urlUtil = new UrlUtil();
@@ -127,7 +130,7 @@ public class Inventory extends ProcessflowAbstractTask {
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient client = new AppoRestClient();
+        AppoRestClient client = new AppoRestClient(appoTrustStore);
         client.addHeader(Constants.ACCESS_TOKEN, accessToken);
 
         UrlUtil urlUtil = new UrlUtil();

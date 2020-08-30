@@ -25,6 +25,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.utils.AppoRestClient;
+import org.edgegallery.mecm.appo.utils.AppoTrustStore;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.jose4j.json.internal.json_simple.JSONObject;
@@ -41,6 +42,7 @@ public class Mepm extends ProcessflowAbstractTask {
     private final String action;
     private final String packagePath;
     private String applcmUrlBase;
+    private AppoTrustStore appoTrustStore;
 
     /**
      * Creates an MEPM instance.
@@ -49,10 +51,10 @@ public class Mepm extends ProcessflowAbstractTask {
      * @param isSslEnabled ssl support
      * @param path         package path
      */
-    public Mepm(DelegateExecution execution, String isSslEnabled, String path) {
+    public Mepm(DelegateExecution execution, String isSslEnabled, String path, AppoTrustStore trustStore) {
         delegateExecution = execution;
         packagePath = path;
-
+        appoTrustStore = trustStore;
         applcmUrlBase = getProtocol(isSslEnabled) + "{applcm_ip}:{applcm_port}";
         action = (String) delegateExecution.getVariable("action");
     }
@@ -101,7 +103,7 @@ public class Mepm extends ProcessflowAbstractTask {
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient appoRestClient = new AppoRestClient();
+        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
         appoRestClient.addFileEntity(packagePath + appInstanceInfo.getAppInstanceId()
@@ -136,7 +138,7 @@ public class Mepm extends ProcessflowAbstractTask {
         String queryUrl = urlUtil.getUrl(url);
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
-        AppoRestClient appoRestClient = new AppoRestClient();
+        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
 
@@ -171,7 +173,7 @@ public class Mepm extends ProcessflowAbstractTask {
         String terminateUrl = urlUtil.getUrl(url);
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
-        AppoRestClient appoRestClient = new AppoRestClient();
+        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
 
@@ -207,7 +209,7 @@ public class Mepm extends ProcessflowAbstractTask {
         String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient appoRestClient = new AppoRestClient();
+        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, mecHost);
 
@@ -241,7 +243,7 @@ public class Mepm extends ProcessflowAbstractTask {
         String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient appoRestClient = new AppoRestClient();
+        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, mecHost);
 

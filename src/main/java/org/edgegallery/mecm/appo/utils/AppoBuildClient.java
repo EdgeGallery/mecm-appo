@@ -51,6 +51,12 @@ public class AppoBuildClient {
     public static final int WAIT_PERIOD = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(AppoBuildClient.class);
 
+    private AppoTrustStore appoTrustStore = null;
+
+    public AppoBuildClient(AppoTrustStore trustStore) {
+        appoTrustStore = trustStore;
+    }
+
     private Boolean isRetryAllowed(IOException exception, int retries, int maxRetry) {
         if (retries >= maxRetry) {
             return false;
@@ -98,17 +104,16 @@ public class AppoBuildClient {
     public CloseableHttpClient buildHttpClient(HttpRequestBase httpRequest) {
         LOGGER.info("Build Http client...");
         CloseableHttpClient httpClient = null;
+        KeyStore ks = null;
         try {
             if (httpRequest.getURI().toString().startsWith("https")) {
                 SSLContext sslcxt = null;
-                /*KeyStore ks = null;
-                try {
-                    ks = getKeyStore("/home/root1/certs/keystore.jks", "te9Fmv%qaq");
-                } catch (IOException | CertificateException e) {
-                    e.printStackTrace();
-                }*/
+                if (appoTrustStore != null && appoTrustStore.getUseDefaultStore().equals("false")) {
+                    ks = getKeyStore(appoTrustStore.getTrustStorePath(), appoTrustStore.getTrustStorePasswd());
+                }
+
                 sslcxt = SSLContexts.custom()
-                        .loadTrustMaterial(null, new TrustSelfSignedStrategy())
+                        .loadTrustMaterial(ks, new TrustSelfSignedStrategy())
                         .setProtocol("TLSv1.2")
                         .build();
                 SSLConnectionSocketFactory sslFactory = new SSLConnectionSocketFactory(sslcxt,

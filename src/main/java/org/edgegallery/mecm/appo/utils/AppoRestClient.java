@@ -55,7 +55,18 @@ public class AppoRestClient {
         addHeader("Content-Type", "application/json");
         addHeader("Accept", "application/json");
 
-        this.buildClient = new AppoBuildClient();
+        this.buildClient = new AppoBuildClient(null);
+    }
+
+    /**
+     * Creates rest client instance.
+     */
+    public AppoRestClient(AppoTrustStore appoTrustStore) {
+        headerMap = new HashMap<>();
+        addHeader("Content-Type", "application/json");
+        addHeader("Accept", "application/json");
+
+        buildClient = new AppoBuildClient(appoTrustStore);
     }
 
     /**
