@@ -16,28 +16,53 @@
 
 package org.edgegallery.mecm.appo.exception;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public class AppoExceptionResponse {
 
-    private String message;
-    private String details;
+    private final LocalDateTime timestamp;
+    private final String message;
+    private final List<String> details;
 
     /**
-     * Application exception response.
+     * Constructor to create exception response.
      *
-     * @param message message
-     * @param details exception reason
+     * @param t timestamp
+     * @param m message
+     * @param d details
      */
-    public AppoExceptionResponse(String message, String details) {
+    public AppoExceptionResponse(LocalDateTime t, String m, List<String> d) {
         super();
-        this.message = message;
-        this.details = details;
+        timestamp = t;
+        message = m;
+        details = d;
     }
 
+    /**
+     * Returns message.
+     *
+     * @return message
+     */
     public String getMessage() {
         return message;
     }
 
-    public String getDetails() {
+    /**
+     * Returns error details.
+     *
+     * @return error details
+     */
+    public List<String> getDetails() {
         return details;
+    }
+
+    /**
+     * Returns timestamp.
+     *
+     * @return timestamp
+     */
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 }
