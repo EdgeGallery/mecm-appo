@@ -16,7 +16,7 @@
 
 package org.edgegallery.mecm.appo.exception;
 
-import static org.edgegallery.mecm.appo.common.Constants.RECORD_NOT_FOUND;
+import static org.edgegallery.mecm.appo.utils.Constants.RECORD_NOT_FOUND;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

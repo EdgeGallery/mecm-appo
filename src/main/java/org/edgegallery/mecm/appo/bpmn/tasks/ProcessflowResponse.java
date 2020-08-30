@@ -18,7 +18,7 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.edgegallery.mecm.appo.common.Constants;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

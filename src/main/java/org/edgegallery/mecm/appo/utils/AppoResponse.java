@@ -14,22 +14,27 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.common;
+package org.edgegallery.mecm.appo.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+/**
+ * Status of REST request.
+ */
+public final class AppoResponse {
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public final class AppoProcessFlowResponse {
+    Object response;
 
-    private String response;
-    private String processInstanceID;
-    private int responseCode;
+    public AppoResponse(Object status) {
+        this.response = status;
+    }
+
+    private AppoResponse() {
+    }
+
+    public Object getResponse() {
+        return response;
+    }
+
+    public void setResponse(Object response) {
+        this.response = response;
+    }
 }

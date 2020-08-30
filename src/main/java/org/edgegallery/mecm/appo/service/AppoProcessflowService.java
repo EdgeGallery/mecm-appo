@@ -17,7 +17,6 @@
 package org.edgegallery.mecm.appo.service;
 
 import java.util.Map;
-import org.edgegallery.mecm.appo.common.AppoProcessFlowResponse;
 
 public interface AppoProcessflowService {
 

@@ -16,8 +16,8 @@
 
 package org.edgegallery.mecm.appo.apihandler;
 
-import static org.edgegallery.mecm.appo.common.Constants.APP_INST_ID_REGX;
-import static org.edgegallery.mecm.appo.common.Constants.TENENT_ID_REGEX;
+import static org.edgegallery.mecm.appo.utils.Constants.APP_INST_ID_REGX;
+import static org.edgegallery.mecm.appo.utils.Constants.TENENT_ID_REGEX;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +29,7 @@ import javax.validation.constraints.Pattern;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceInfoDto;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
+import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,10 +74,10 @@ public class AppInstanceInfoHandler {
      * @param appInstanceId application instance ID
      * @return application instance information
      */
-    @ApiOperation(value = "Retrieves application instance info", response = AppInstanceInfoDto.class)
+    @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
     @GetMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AppInstanceInfoDto> getAppInstanceInfo(
+    public ResponseEntity<AppoResponse> getAppInstanceInfo(
             @ApiParam(value = "access token")
             @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
@@ -90,7 +91,7 @@ public class AppInstanceInfoHandler {
         ModelMapper mapper = new ModelMapper();
         AppInstanceInfoDto dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
 
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(new AppoResponse(dto), HttpStatus.OK);
     }
 
     /**
@@ -100,9 +101,9 @@ public class AppInstanceInfoHandler {
      * @param tenantId    tenant ID
      * @return application instance information
      */
-    @ApiOperation(value = "Retrieves application instance info", response = List.class)
+    @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
     @GetMapping(value = "/tenants/{tenant_id}/app_instance_infos", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<AppInstanceInfoDto>> getAllAppInstanceInfo(
+    public ResponseEntity<AppoResponse> getAllAppInstanceInfo(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId) {
@@ -116,7 +117,7 @@ public class AppInstanceInfoHandler {
             appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
         }
 
-        return new ResponseEntity<>(appInstanceInfosDto, HttpStatus.OK);
+        return new ResponseEntity<>(new AppoResponse(appInstanceInfosDto), HttpStatus.OK);
     }
 
     /**
@@ -127,9 +128,9 @@ public class AppInstanceInfoHandler {
      * @param appInstInfoDto application instance info
      * @return application instance information
      */
-    @ApiOperation(value = "Creates application instance info", response = AppInstanceInfoDto.class)
+    @ApiOperation(value = "Creates application instance info", response = AppoResponse.class)
     @PostMapping(path = "/tenants/{tenant_id}/app_instance_infos", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AppInstanceInfoDto> createAppInstanceInfo(
+    public ResponseEntity<AppoResponse> createAppInstanceInfo(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
@@ -143,7 +144,7 @@ public class AppInstanceInfoHandler {
         appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
 
         AppInstanceInfoDto dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(new AppoResponse(dto), HttpStatus.OK);
     }
 
     /**
@@ -153,10 +154,10 @@ public class AppInstanceInfoHandler {
      * @param tenantId      tenant ID
      * @param appInstanceId application instance ID
      */
-    @ApiOperation(value = "Deletes application instance info", response = String.class)
+    @ApiOperation(value = "Deletes application instance info", response = AppoResponse.class)
     @DeleteMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> deleteAppInstanceInfo(
+    public ResponseEntity<AppoResponse> deleteAppInstanceInfo(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
@@ -166,7 +167,7 @@ public class AppInstanceInfoHandler {
         logger.info("Delete application instance info: {}", appInstanceId);
         appInstanceInfoService.deleteAppInstanceInfo(tenantId, appInstanceId);
 
-        return new ResponseEntity<>("success", HttpStatus.OK);
+        return new ResponseEntity<>(new AppoResponse("deleted successfully"), HttpStatus.OK);
     }
 
     /**
@@ -177,10 +178,10 @@ public class AppInstanceInfoHandler {
      * @param instInfo    application instance info
      * @return application instance information
      */
-    @ApiOperation(value = "Creates application instance info", response = AppInstanceInfoDto.class)
+    @ApiOperation(value = "Creates application instance info", response = AppoResponse.class)
     @PutMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AppInstanceInfoDto> updateAppInstanceInfo(
+    public ResponseEntity<AppoResponse> updateAppInstanceInfo(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
@@ -197,6 +198,6 @@ public class AppInstanceInfoHandler {
         appInstanceInfo = appInstanceInfoService.updateAppInstanceInfo(tenantId, appInstanceInfo);
         AppInstanceInfoDto dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
 
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(new AppoResponse(dto), HttpStatus.OK);
     }
 }

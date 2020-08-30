@@ -1,8 +1,8 @@
 package org.edgegallery.mecm.appo.apihandler.dto;
 
-import static org.edgegallery.mecm.appo.common.Constants.APP_INST_ID_REGX;
-import static org.edgegallery.mecm.appo.common.Constants.APP_PKG_ID_REGX;
-import static org.edgegallery.mecm.appo.common.Constants.TENENT_ID_REGEX;
+import static org.edgegallery.mecm.appo.utils.Constants.APP_INST_ID_REGX;
+import static org.edgegallery.mecm.appo.utils.Constants.APP_PKG_ID_REGX;
+import static org.edgegallery.mecm.appo.utils.Constants.TENENT_ID_REGEX;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;

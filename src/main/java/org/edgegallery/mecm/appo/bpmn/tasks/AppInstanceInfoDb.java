@@ -19,10 +19,10 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.variable.Variables;
 import org.camunda.bpm.engine.variable.value.ObjectValue;
-import org.edgegallery.mecm.appo.common.Constants;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

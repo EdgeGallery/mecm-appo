@@ -23,9 +23,9 @@ import org.apache.http.util.EntityUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.bpmn.utils.UrlUtility;
 import org.edgegallery.mecm.appo.bpmn.utils.restclient.AppoRestClient;
-import org.edgegallery.mecm.appo.common.Constants;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.jose4j.json.internal.json_simple.JSONObject;
 import org.jose4j.json.internal.json_simple.parser.JSONParser;
 import org.jose4j.json.internal.json_simple.parser.ParseException;
@@ -48,7 +48,7 @@ public class Mepm extends ProcessflowAbstractTask {
      *
      * @param delegateExecution delegate execution
      * @param isSslEnabled      ssl support
-     * @param packagePath      package path
+     * @param packagePath       package path
      */
     public Mepm(DelegateExecution delegateExecution, String isSslEnabled, String packagePath) {
         this.delegateExecution = delegateExecution;
