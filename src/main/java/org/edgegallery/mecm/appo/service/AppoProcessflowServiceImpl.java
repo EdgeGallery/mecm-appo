@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppoProcessflowServiceImpl extends AppoProcessEngineService implements AppoProcessflowService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppoProcessflowServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppoProcessflowServiceImpl.class);
 
     /**
      * Generate request ID.
@@ -74,7 +74,7 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
     @Override
     @Async
     public void executeProcessAsync(String processKey, Map<String, String> requestInput) {
-        logger.debug("Received Application orchestration request: processKey: {}", processKey);
+        LOGGER.debug("Received Application orchestration request: processKey: {}", processKey);
 
         String processInstanceId = null;
         try {
@@ -93,7 +93,7 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
                 processInstanceState = "ENDED";
             }
 
-            logger.debug("processKey: {}  processInstanceId: {} Status: {} ", processKey,
+            LOGGER.debug("processKey: {}  processInstanceId: {} Status: {} ", processKey,
                     processInstanceId, processInstanceState);
         } catch (Exception e) {
             AppoProcessFlowResponse appoProcessFlowResponse = new AppoProcessFlowResponse();
@@ -106,7 +106,7 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
 
     @Override
     public AppoProcessFlowResponse executeProcessSync(String processKey, Map<String, String> requestInput) {
-        logger.debug("Received Application orchestration request: processKey: {}", processKey);
+        LOGGER.debug("Received Application orchestration request: processKey: {}", processKey);
 
         String processInstanceId = null;
         AppoProcessFlowResponse appoProcessFlowResponse = null;
@@ -125,7 +125,7 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
             if (processInstance.isEnded()) {
                 processInstanceState = "ENDED";
             }
-            logger.debug("processName: {}  processInstanceId: {} Status: {} ", processKey, processInstanceId,
+            LOGGER.debug("processName: {}  processInstanceId: {} Status: {} ", processKey, processInstanceId,
                     processInstanceState);
 
             appoProcessFlowResponse = getProcessInstanceData(processInstance);
@@ -265,7 +265,7 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
         } else {
             response = String.valueOf(responseData);
         }
-        logger.debug("processInstId: {} %p processInstanceData: %p           {} : {}",
+        LOGGER.debug("processInstId: {} %p processInstanceData: %p           {} : {}",
                 processInstanceId, variableName, response);
         return response;
     }
@@ -283,7 +283,7 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
         if (responseData != null) {
             String response = String.valueOf(responseData);
 
-            logger.debug("processInstId: {} %p processInstanceData: %p           {} : {}",
+            LOGGER.debug("processInstId: {} %p processInstanceData: %p           {} : {}",
                     processInstanceId, variableName, response);
         }
         return responseData;
@@ -308,7 +308,7 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
             }
             return null;
         } catch (Exception e) {
-            logger.debug("Failed to retrieve variable {} from process instance {}: {}", variableName,
+            LOGGER.debug("Failed to retrieve variable {} from process instance {}: {}", variableName,
                     processInstanceId, e.getMessage());
             return null;
         }

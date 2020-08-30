@@ -44,25 +44,25 @@ public class Mepm extends ProcessflowAbstractTask {
     private final String applcmCapabilitiesUrl;
 
     /**
-     * MEPM Constructor.
+     * Creates an MEPM instance.
      *
-     * @param delegateExecution delegate execution
+     * @param execution delegate execution
      * @param isSslEnabled      ssl support
-     * @param packagePath       package path
+     * @param path       package path
      */
-    public Mepm(DelegateExecution delegateExecution, String isSslEnabled, String packagePath) {
-        this.delegateExecution = delegateExecution;
-        this.packagePath = packagePath;
+    public Mepm(DelegateExecution execution, String isSslEnabled, String path) {
+        delegateExecution = execution;
+        packagePath = path;
         String protocol = getProtocol(isSslEnabled);
 
         String urlBase = "{applcm_ip}:{applcm_port}";
         String applcmUrlBase = protocol + urlBase;
 
-        this.applcmUrl = applcmUrlBase + Constants.APPLCM_INSTANTIATE_URI;
-        this.applcmKpiUrl = applcmUrlBase + Constants.APPLCM_QUERY_KPI_URI;
-        this.applcmCapabilitiesUrl = applcmUrlBase + Constants.APPLCM_QUERY_CAPABILITY_URI;
+        applcmUrl = applcmUrlBase + Constants.APPLCM_INSTANTIATE_URI;
+        applcmKpiUrl = applcmUrlBase + Constants.APPLCM_QUERY_KPI_URI;
+        applcmCapabilitiesUrl = applcmUrlBase + Constants.APPLCM_QUERY_CAPABILITY_URI;
 
-        this.action = (String) delegateExecution.getVariable("action");
+        action = (String) delegateExecution.getVariable("action");
     }
 
     /**

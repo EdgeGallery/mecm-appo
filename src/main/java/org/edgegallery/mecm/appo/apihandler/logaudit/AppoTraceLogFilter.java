@@ -36,13 +36,14 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import org.springframework.web.util.WebUtils;
 
-public class AppoTraceLogFilter extends OncePerRequestFilter implements Ordered {
+class AppoTraceLogFilter extends OncePerRequestFilter implements Ordered {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppoTraceLogFilter.class);
+    public static final int OFFSET = 10;
 
     @Override
     public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE - 10;
+        return Ordered.LOWEST_PRECEDENCE - OFFSET;
     }
 
     @Override
