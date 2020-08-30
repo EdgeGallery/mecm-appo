@@ -63,6 +63,4 @@ public final class AppInstanceInfoDto {
 
     @Size(max = 128)
     private String operationInfo;
-    private String createTime;
-    private String updateTime;
 }
