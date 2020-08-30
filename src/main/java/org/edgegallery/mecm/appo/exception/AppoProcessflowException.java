@@ -16,8 +16,18 @@
 
 package org.edgegallery.mecm.appo.exception;
 
+/**
+ * Application orchestrator process flow exception.
+ */
 public class AppoProcessflowException extends RuntimeException {
 
+    private static final long serialVersionUID = 1311109258952411165L;
+
+    /**
+     * Constructor to create AppoProcessflowException with message.
+     *
+     * @param msg exception message
+     */
     public AppoProcessflowException(String msg) {
         super(msg);
     }
