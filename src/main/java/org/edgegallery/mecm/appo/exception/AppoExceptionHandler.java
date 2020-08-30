@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class AppoExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(AppoExceptionHandler.class);
 
     @ExceptionHandler(value = AppoException.class)
-    public ResponseEntity<Object> exception(AppoException exception) {
+    public ResponseEntity<String> exception(AppoException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -47,8 +48,8 @@ public class AppoExceptionHandler {
      * @param exception exception
      * @return return response
      */
-    @ExceptionHandler(value = AppoDbException.class)
-    public ResponseEntity<Object> exception(AppoDbException exception) {
+    @ExceptionHandler(value = AppoProcessflowException.class)
+    public ResponseEntity<String> exception(AppoProcessflowException exception) {
         if (exception.getMessage().equals(RECORD_NOT_FOUND)) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
         }
@@ -85,5 +86,34 @@ public class AppoExceptionHandler {
         AppoExceptionResponse response = new AppoExceptionResponse(LocalDateTime.now(),
                 "input validation failed", Collections.singletonList("URL parameter validation failed"));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Returns error code and message when argument is illegal.
+     *
+     * @param ex exception while processing request
+     * @return response entity with error code and message
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<AppoExceptionResponse> handleIllegalArgException(IllegalArgumentException ex) {
+
+        AppoExceptionResponse response = new AppoExceptionResponse(LocalDateTime.now(),
+                "Illegal argument", Collections.singletonList(ex.getMessage()));
+        LOGGER.info("Illegal argument error: {}", response);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Returns error code and message when record not found.
+     *
+     * @param ex exception while processing request
+     * @return response entity with error code and message
+     */
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<AppoExceptionResponse> handleNoSuchElementException(NoSuchElementException ex) {
+        AppoExceptionResponse response = new AppoExceptionResponse(LocalDateTime.now(),
+                "No such element", Collections.singletonList(ex.getMessage()));
+        LOGGER.info("No such element error: {}", response);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }
