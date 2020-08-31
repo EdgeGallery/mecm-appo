@@ -24,10 +24,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.edgegallery.mecm.appo.bpmn.utils.UrlUtility;
-import org.edgegallery.mecm.appo.bpmn.utils.restclient.AppoRestClient;
 import org.edgegallery.mecm.appo.exception.AppoException;
+import org.edgegallery.mecm.appo.utils.AppoRestClient;
+import org.edgegallery.mecm.appo.utils.AppoTrustStore;
 import org.edgegallery.mecm.appo.utils.Constants;
+import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +38,10 @@ public class Apm extends ProcessflowAbstractTask {
 
     private final DelegateExecution delegateExecution;
     private final String operation;
-    private final String apmDownloadUrl;
     private final String packagePath;
+    private String baseUrl;
+    private AppoTrustStore appoTrustStore;
+
 
     /**
      * Constructor for APM.
@@ -47,12 +50,12 @@ public class Apm extends ProcessflowAbstractTask {
      * @param isSslEnabled      ssl enabled
      * @param endPoint          apm end point
      */
-    public Apm(DelegateExecution delegateExecution, String isSslEnabled, String endPoint, String packagePath) {
+    public Apm(DelegateExecution delegateExecution, String isSslEnabled, String endPoint,
+               String packagePath, AppoTrustStore trustStore) {
         this.delegateExecution = delegateExecution;
-        String protocol = getProtocol(isSslEnabled);
-        String baseUrl = protocol + endPoint;
+        appoTrustStore = trustStore;
+        baseUrl = getProtocol(isSslEnabled) + endPoint;
 
-        this.apmDownloadUrl = baseUrl + Constants.APM_DOWNLOAD_URI;
         this.packagePath = packagePath;
         this.operation = (String) delegateExecution.getVariable("operationType");
     }
@@ -62,7 +65,7 @@ public class Apm extends ProcessflowAbstractTask {
      */
     public void execute() {
         if (operation.equals("download")) {
-            download(delegateExecution);
+            download(delegateExecution, baseUrl + Constants.APM_DOWNLOAD_URI);
         } else {
             LOGGER.info("Invalid APM action...{}", operation);
             setProcessflowExceptionResponseAttributes(delegateExecution, "Invalid APM action",
@@ -70,7 +73,7 @@ public class Apm extends ProcessflowAbstractTask {
         }
     }
 
-    private void download(DelegateExecution delegateExecution) {
+    private void download(DelegateExecution delegateExecution, String url) {
 
         LOGGER.info("Download package from APM");
         try {
@@ -82,14 +85,14 @@ public class Apm extends ProcessflowAbstractTask {
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
             String appPkgId = (String) delegateExecution.getVariable(Constants.APP_PACKAGE_ID);
 
-            UrlUtility urlUtil = new UrlUtility();
+            UrlUtil urlUtil = new UrlUtil();
             urlUtil.addParams(Constants.TENANT_ID, tenantId);
             urlUtil.addParams(Constants.APP_PACKAGE_ID, appPkgId);
-            String url = urlUtil.getUrl(apmDownloadUrl);
+            String downloadUrl = urlUtil.getUrl(url);
 
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
 
-            downloadPackage(url, appPkgId, appInstanceId);
+            downloadPackage(downloadUrl, appPkgId, appInstanceId);
 
             setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
 
@@ -99,7 +102,7 @@ public class Apm extends ProcessflowAbstractTask {
     }
 
     void downloadPackage(String url, String appPackageId, String appInstanceId) {
-
+        LOGGER.info(" {}", appoTrustStore);
         try (InputStream inputStream = new URL(url).openStream();
                 FileOutputStream fileOs = new FileOutputStream(packagePath + appInstanceId + "/" + appPackageId)) {
             IOUtils.copy(inputStream, fileOs);

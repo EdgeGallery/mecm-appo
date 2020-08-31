@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.bpmn.utils.restclient;
+package org.edgegallery.mecm.appo.utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -46,9 +45,28 @@ public class AppoRestClient {
 
     private Map<String, String> headerMap;
     private HttpEntity data = null;
+    private AppoBuildClient buildClient;
 
+    /**
+     * Creates rest client instance.
+     */
     public AppoRestClient() {
         this.headerMap = new HashMap<>();
+        addHeader("Content-Type", "application/json");
+        addHeader("Accept", "application/json");
+
+        this.buildClient = new AppoBuildClient(null);
+    }
+
+    /**
+     * Creates rest client instance.
+     */
+    public AppoRestClient(AppoTrustStore appoTrustStore) {
+        headerMap = new HashMap<>();
+        addHeader("Content-Type", "application/json");
+        addHeader("Accept", "application/json");
+
+        buildClient = new AppoBuildClient(appoTrustStore);
     }
 
     /**
@@ -77,6 +95,7 @@ public class AppoRestClient {
      * @param value parameter value
      */
     public void addHeader(String name, String value) {
+        LOGGER.info("Add header...");
         try {
             if (!name.isEmpty() && !value.isEmpty()) {
                 headerMap.put(name, value);
@@ -95,6 +114,7 @@ public class AppoRestClient {
      * @param value parameter value
      */
     public void addAuthHeader(String name, String value) {
+        LOGGER.info("Add auth header...");
         if (name.isEmpty() && value.isEmpty()) {
             headerMap.put(name, value);
         } else {
@@ -107,18 +127,15 @@ public class AppoRestClient {
      *
      * @param filePath file to send
      */
-    public HttpEntity addFileEntity(String filePath) {
-        HttpEntity entity = null;
+    public void addFileEntity(String filePath) {
+        LOGGER.info("Add file entity...");
         try {
             File file = new File(filePath);
-            // build multipart upload request
-            entity = MultipartEntityBuilder.create()
+            data = MultipartEntityBuilder.create()
                     .addBinaryBody("file", file, ContentType.DEFAULT_BINARY, file.getName()).build();
-            return entity;
         } catch (Exception e) {
             LOGGER.error("Failed to encode entity {}", e.getMessage());
         }
-        return data;
     }
 
     /**
@@ -126,104 +143,62 @@ public class AppoRestClient {
      *
      * @param requestBody body to send
      */
-    public HttpEntity addEntity(String requestBody) {
-        HttpEntity entity = null;
+    public void addEntity(String requestBody) {
+        LOGGER.info("Add entity...");
         try {
-            entity = new StringEntity(requestBody);
+            data = new StringEntity(requestBody);
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("Failed to encode entity {}", e.getMessage());
         }
-        return entity;
     }
 
     /**
-     * Send post request to server.
+     * Sends http request to remote entity.
      *
-     * @param url    post url
-     * @param entity request entity
-     * @return http response
-     * @throws AppoException on exceptionn
+     * @param method request method
+     * @param urlStr url
+     * @return http response on success, error on failure
      */
-    public CloseableHttpResponse doPost(String url, HttpEntity entity) {
-        LOGGER.info("Send POST request, url {}", url);
-        try {
-            URL postUrl = new URL(url);
-            HttpPost post = new HttpPost(postUrl.toString());
-            post.setEntity(entity);
-
-            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                post.addHeader(entry.getKey(), entry.getValue());
-            }
-            return sendRequest(post);
-        } catch (IOException | AppoException e) {
-            throw new AppoException("Failed to send instantiate request " + e.getMessage());
-        }
-    }
-
-    /**
-     * Send get request to server.
-     *
-     * @param url get url
-     * @return http response
-     * @throws AppoException on exceptionn
-     */
-    public CloseableHttpResponse doGet(String url) {
-        LOGGER.info("Send GET request, url {}", url);
-        try {
-            URL getUrl = new URL(url);
-            HttpGet httpGet = new HttpGet(getUrl.toString());
-
-            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                httpGet.addHeader(entry.getKey(), entry.getValue());
-            }
-
-            return sendRequest(httpGet);
-        } catch (IOException | AppoException e) {
-            throw new AppoException("Failed to send get request " + e.getMessage());
-        }
-    }
-
-    /**
-     * Send delete request to server.
-     *
-     * @param url delete url
-     * @return http response
-     * @throws AppoException on exceptionn
-     */
-    public CloseableHttpResponse doDelete(String url) {
-        LOGGER.info("Send DELETE request, url {}", url);
-        try {
-            URL deleteUrl = new URL(url);
-            HttpDelete httpDelete = new HttpDelete(deleteUrl.toString());
-
-            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                httpDelete.addHeader(entry.getKey(), entry.getValue());
-            }
-
-            return sendRequest(httpDelete);
-        } catch (IOException | AppoException e) {
-            throw new AppoException("Delete operation failed {} " + e.getMessage());
-        }
-    }
-
-    /**
-     * Sends request to intended remote entity.
-     *
-     * @param httpRequest request
-     * @return response
-     * @throws AppoException on failure
-     */
-    private CloseableHttpResponse sendRequest(HttpRequestBase httpRequest) {
-
-        LOGGER.info("Sending request : {}", httpRequest.getURI());
-
-        AppoBuildClient appoBuildClient = new AppoBuildClient();
+    public CloseableHttpResponse sendRequest(String method, String urlStr) {
+        LOGGER.info("Send http request: method: {},  url: {}", method, urlStr);
+        CloseableHttpClient client = null;
         CloseableHttpResponse httpclient = null;
         try {
-            CloseableHttpClient client = appoBuildClient.buildHttpClient(httpRequest);
-            httpclient = client.execute(httpRequest);
+
+            URL url = new URL(urlStr);
+            switch (method) {
+                case "GET":
+                    HttpGet httpGet = new HttpGet(url.toString());
+                    for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                        httpGet.addHeader(entry.getKey(), entry.getValue());
+                    }
+                    client = buildClient.buildHttpClient(httpGet);
+                    httpclient = client.execute(httpGet);
+                    break;
+                case "POST":
+                    HttpPost httpPost = new HttpPost(url.toString());
+                    for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                        httpPost.addHeader(entry.getKey(), entry.getValue());
+                    }
+                    httpPost.setEntity(data);
+                    client = buildClient.buildHttpClient(httpPost);
+                    httpclient = client.execute(httpPost);
+                    break;
+                case "DELETE":
+                    HttpDelete httpDelete = new HttpDelete(url.toString());
+                    for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                        httpDelete.addHeader(entry.getKey(), entry.getValue());
+                    }
+
+                    client = buildClient.buildHttpClient(httpDelete);
+                    httpclient = client.execute(httpDelete);
+                    break;
+                default:
+                    LOGGER.info("Method not allowed {}", method);
+                    throw new AppoException("Method not allowed");
+            }
         } catch (IOException | AppoException e) {
-            throw new AppoException("Failed to send request");
+            throw new AppoException("Failed to send request " + e.getMessage());
         }
         return httpclient;
     }

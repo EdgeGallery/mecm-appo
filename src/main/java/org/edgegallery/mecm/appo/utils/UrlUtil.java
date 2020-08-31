@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.bpmn.utils;
+package org.edgegallery.mecm.appo.utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,18 +22,18 @@ import javax.ws.rs.core.UriBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UrlUtility {
+public class UrlUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UrlUtility.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UrlUtil.class);
 
     private Map<String, String> pathParams;
 
-    public UrlUtility() {
+    public UrlUtil() {
         this.pathParams = new HashMap<>();
     }
 
     /**
-     * Adds header parameter to the request.
+     * Adds parameter required to replace in URL.
      *
      * @param name  parameter name
      * @param value parameter value
