@@ -17,12 +17,13 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import java.io.IOException;
+import javax.ws.rs.HttpMethod;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
+import org.edgegallery.mecm.appo.service.AppoRestClientService;
 import org.edgegallery.mecm.appo.utils.AppoRestClient;
-import org.edgegallery.mecm.appo.utils.AppoTrustStore;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.jose4j.json.internal.json_simple.JSONObject;
@@ -37,21 +38,20 @@ public class Inventory extends ProcessflowAbstractTask {
 
     private final DelegateExecution delegateExecution;
     private final String table;
-    AppoTrustStore appoTrustStore;
+    AppoRestClientService restClientService;
     private String baseUrl;
 
     /**
      * Constructor for get inventory.
      *
-     * @param execution    delegate execution
-     * @param isSslEnabled ssl enabled flog
-     * @param endPoint     inventory end point
+     * @param execution delegate execution
+     * @param endPoint  inventory end point
      */
-    public Inventory(DelegateExecution execution, String isSslEnabled, String endPoint,
-                     AppoTrustStore trustStore) {
+    public Inventory(DelegateExecution execution, String endPoint,
+                     AppoRestClientService appoRestClientService) {
         delegateExecution = execution;
-        appoTrustStore = trustStore;
-        baseUrl = getProtocol(isSslEnabled) + endPoint;
+        restClientService = appoRestClientService;
+        baseUrl = endPoint;
         table = (String) delegateExecution.getVariable("inventory");
     }
 
@@ -85,7 +85,7 @@ public class Inventory extends ProcessflowAbstractTask {
         String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient client = new AppoRestClient(appoTrustStore);
+        AppoRestClient client = restClientService.getAppoRestClient();
         client.addHeader(Constants.ACCESS_TOKEN, accessToken);
 
         UrlUtil urlUtil = new UrlUtil();
@@ -93,7 +93,7 @@ public class Inventory extends ProcessflowAbstractTask {
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
         String applcmUrl = urlUtil.getUrl(url);
 
-        try (CloseableHttpResponse response = client.sendRequest("GET", applcmUrl)) {
+        try (CloseableHttpResponse response = client.sendRequest(HttpMethod.GET, applcmUrl)) {
 
             JSONObject jsonResponse = getResponse(delegateExecution, response);
             if (jsonResponse == null) {
@@ -130,7 +130,7 @@ public class Inventory extends ProcessflowAbstractTask {
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient client = new AppoRestClient(appoTrustStore);
+        AppoRestClient client = restClientService.getAppoRestClient();
         client.addHeader(Constants.ACCESS_TOKEN, accessToken);
 
         UrlUtil urlUtil = new UrlUtil();
@@ -138,7 +138,7 @@ public class Inventory extends ProcessflowAbstractTask {
         urlUtil.addParams(Constants.MEC_HOST, mecHost);
         String mecUrl = urlUtil.getUrl(url);
 
-        try (CloseableHttpResponse response = client.sendRequest("GET", mecUrl)) {
+        try (CloseableHttpResponse response = client.sendRequest(HttpMethod.GET, mecUrl)) {
             if (response == null) {
                 LOGGER.info("doGet failed...");
                 return;

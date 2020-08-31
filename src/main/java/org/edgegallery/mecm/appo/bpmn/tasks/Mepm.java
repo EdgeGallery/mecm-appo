@@ -19,13 +19,14 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import javax.ws.rs.HttpMethod;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.service.AppoRestClientService;
 import org.edgegallery.mecm.appo.utils.AppoRestClient;
-import org.edgegallery.mecm.appo.utils.AppoTrustStore;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.jose4j.json.internal.json_simple.JSONObject;
@@ -42,20 +43,19 @@ public class Mepm extends ProcessflowAbstractTask {
     private final String action;
     private final String packagePath;
     private String applcmUrlBase;
-    private AppoTrustStore appoTrustStore;
+    private AppoRestClientService restClientService;
 
     /**
      * Creates an MEPM instance.
      *
-     * @param execution    delegate execution
-     * @param isSslEnabled ssl support
-     * @param path         package path
+     * @param execution delegate execution
+     * @param path      package path
      */
-    public Mepm(DelegateExecution execution, String isSslEnabled, String path, AppoTrustStore trustStore) {
+    public Mepm(DelegateExecution execution, String path, AppoRestClientService appoRestClientService) {
         delegateExecution = execution;
         packagePath = path;
-        appoTrustStore = trustStore;
-        applcmUrlBase = getProtocol(isSslEnabled) + "{applcm_ip}:{applcm_port}";
+        restClientService = appoRestClientService;
+        applcmUrlBase = "{applcm_ip}:{applcm_port}";
         action = (String) delegateExecution.getVariable("action");
     }
 
@@ -103,13 +103,13 @@ public class Mepm extends ProcessflowAbstractTask {
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
+        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
         appoRestClient.addFileEntity(packagePath + appInstanceInfo.getAppInstanceId()
                 + "/" + appInstanceInfo.getAppPackageId());
 
-        try (CloseableHttpResponse response = appoRestClient.sendRequest("POST", instantiateUrl)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest(HttpMethod.POST, instantiateUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = appoRestClient.getErrorInfo(response, "Instantiate failed");
@@ -138,11 +138,11 @@ public class Mepm extends ProcessflowAbstractTask {
         String queryUrl = urlUtil.getUrl(url);
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
-        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
+        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
 
-        try (CloseableHttpResponse response = appoRestClient.sendRequest("GET", queryUrl)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest(HttpMethod.GET, queryUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Query app instance failed");
@@ -173,11 +173,11 @@ public class Mepm extends ProcessflowAbstractTask {
         String terminateUrl = urlUtil.getUrl(url);
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
-        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
+        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
 
-        try (CloseableHttpResponse response = appoRestClient.sendRequest("DELETE", terminateUrl)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest(HttpMethod.DELETE, terminateUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Terminate failed");
@@ -209,11 +209,11 @@ public class Mepm extends ProcessflowAbstractTask {
         String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
+        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, mecHost);
 
-        try (CloseableHttpResponse response = appoRestClient.sendRequest("GET", kpiUrl)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest(HttpMethod.GET, kpiUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Query KPI failed");
@@ -243,11 +243,11 @@ public class Mepm extends ProcessflowAbstractTask {
         String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient appoRestClient = new AppoRestClient(appoTrustStore);
+        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, mecHost);
 
-        try (CloseableHttpResponse response = appoRestClient.sendRequest("GET", capabilityUrl)) {
+        try (CloseableHttpResponse response = appoRestClient.sendRequest(HttpMethod.GET, capabilityUrl)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                 String error = getErrorInfo(response, "Query capabilities failed");

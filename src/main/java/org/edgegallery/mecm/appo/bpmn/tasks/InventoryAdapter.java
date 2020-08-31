@@ -18,15 +18,16 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.edgegallery.mecm.appo.utils.AppoTrustStore;
+import org.edgegallery.mecm.appo.service.AppoRestClientService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class InventoryAdapter implements JavaDelegate {
 
-    @Value("${SSL_ENABLED:false}")
-    private String isSslEnabled;
+    @Autowired
+    private AppoRestClientService appoRestClientService;
 
     @Value("${INVENTORY_ENDPOINT:mecm-inventory-service}")
     private String inventoryService;
@@ -34,23 +35,13 @@ public class InventoryAdapter implements JavaDelegate {
     @Value("${INVENTORY_PORT:3201}")
     private String inventoryServicePort;
 
-    @Value("${SSL_TRUST_STORE:}")
-    private String trustStorePath;
-
-    @Value("${SSL_TRUST_PASSWORD:}")
-    private String trustStorePasswd;
-
-    @Value("${USE_DEFAULT_TRUST_STORE:}")
-    private String useDefaultStore;
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
-        AppoTrustStore appoTrustStore = new AppoTrustStore(trustStorePath, trustStorePasswd, useDefaultStore);
-
         String inventoryEndPoint = inventoryService + ":" + inventoryServicePort;
 
-        Inventory inventory = new Inventory(delegateExecution, isSslEnabled, inventoryEndPoint, appoTrustStore);
+        Inventory inventory = new Inventory(delegateExecution, inventoryEndPoint, appoRestClientService);
         inventory.execute();
     }
 }

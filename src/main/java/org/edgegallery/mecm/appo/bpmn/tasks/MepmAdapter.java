@@ -18,34 +18,24 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.edgegallery.mecm.appo.utils.AppoTrustStore;
+import org.edgegallery.mecm.appo.service.AppoRestClientService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MepmAdapter implements JavaDelegate {
 
-    @Value("${SSL_ENABLED:}")
-    private String isSslEnabled;
+    @Autowired
+    private AppoRestClientService appoRestClientService;
 
     @Value("${PACKAGE_PATH:}")
     private String packagePath;
 
-    @Value("${SSL_TRUST_STORE:}")
-    private String trustStorePath;
-
-    @Value("${SSL_TRUST_PASSWORD:}")
-    private String trustStorePasswd;
-
-    @Value("${USE_DEFAULT_TRUST_STORE:}")
-    private String useDefaultStore;
-
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
-        AppoTrustStore appoTrustStore = new AppoTrustStore(trustStorePath, trustStorePasswd, useDefaultStore);
-
-        Mepm mepm = new Mepm(delegateExecution, isSslEnabled, packagePath, appoTrustStore);
+        Mepm mepm = new Mepm(delegateExecution, packagePath, appoRestClientService);
         mepm.execute();
     }
 }

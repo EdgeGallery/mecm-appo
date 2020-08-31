@@ -18,15 +18,16 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.edgegallery.mecm.appo.utils.AppoTrustStore;
+import org.edgegallery.mecm.appo.service.AppoRestClientService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ApmAdapter implements JavaDelegate {
 
-    @Value("${SSL_ENABLED:}")
-    private String isSslEnabled;
+    @Autowired
+    private AppoRestClientService appoRestClientService;
 
     @Value("${APM_ENDPOINT:}")
     private String apmService;
@@ -37,22 +38,11 @@ public class ApmAdapter implements JavaDelegate {
     @Value("${PACKAGE_PATH:}")
     private String packagePath;
 
-    @Value("${SSL_TRUST_STORE:}")
-    private String trustStorePath;
-
-    @Value("${SSL_TRUST_PASSWORD:}")
-    private String trustStorePasswd;
-
-    @Value("${USE_DEFAULT_TRUST_STORE:}")
-    private String useDefaultStore;
-
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
-        AppoTrustStore appoTrustStore = new AppoTrustStore(trustStorePath, trustStorePasswd, useDefaultStore);
-
         String apmEndPoint = apmService + ":" + apmServicePort;
-        Apm apm = new Apm(delegateExecution, isSslEnabled, apmEndPoint, packagePath, appoTrustStore);
+        Apm apm = new Apm(delegateExecution, apmEndPoint, packagePath, appoRestClientService);
         apm.execute();
     }
 }
