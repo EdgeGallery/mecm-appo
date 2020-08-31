@@ -161,7 +161,6 @@ public class AppoRestClient {
      */
     public CloseableHttpResponse sendRequest(String method, String uri) {
         LOGGER.info("Send http request: method: {},  url: {}", method, uri);
-        CloseableHttpClient client = null;
         CloseableHttpResponse httpclient = null;
         try {
             URL url;
@@ -174,30 +173,13 @@ public class AppoRestClient {
 
             switch (method) {
                 case HttpMethod.GET:
-                    HttpGet httpGet = new HttpGet(url.toString());
-                    for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                        httpGet.addHeader(entry.getKey(), entry.getValue());
-                    }
-                    client = buildClient.buildHttpClient(httpGet);
-                    httpclient = client.execute(httpGet);
+                    httpclient = doGet(url);
                     break;
                 case HttpMethod.POST:
-                    HttpPost httpPost = new HttpPost(url.toString());
-                    for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                        httpPost.addHeader(entry.getKey(), entry.getValue());
-                    }
-                    httpPost.setEntity(data);
-                    client = buildClient.buildHttpClient(httpPost);
-                    httpclient = client.execute(httpPost);
+                    httpclient = doPost(url);
                     break;
                 case HttpMethod.DELETE:
-                    HttpDelete httpDelete = new HttpDelete(url.toString());
-                    for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                        httpDelete.addHeader(entry.getKey(), entry.getValue());
-                    }
-
-                    client = buildClient.buildHttpClient(httpDelete);
-                    httpclient = client.execute(httpDelete);
+                    httpclient = doDelete(url);
                     break;
                 default:
                     LOGGER.info("Method not allowed {}", method);
@@ -207,5 +189,41 @@ public class AppoRestClient {
             throw new AppoException("Failed to send request " + e.getMessage());
         }
         return httpclient;
+    }
+
+    private CloseableHttpResponse doGet(URL url) throws IOException {
+        CloseableHttpClient client = null;
+
+        HttpGet httpGet = new HttpGet(url.toString());
+        for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+            httpGet.addHeader(entry.getKey(), entry.getValue());
+        }
+        client = buildClient.buildHttpClient(httpGet);
+        return client.execute(httpGet);
+    }
+
+    private CloseableHttpResponse doPost(URL url) throws IOException {
+        CloseableHttpClient client = null;
+
+        HttpPost httpPost = new HttpPost(url.toString());
+        for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+            httpPost.addHeader(entry.getKey(), entry.getValue());
+        }
+        httpPost.setEntity(data);
+        client = buildClient.buildHttpClient(httpPost);
+
+        return client.execute(httpPost);
+    }
+
+    private CloseableHttpResponse doDelete(URL url) throws IOException {
+        CloseableHttpClient client = null;
+
+        HttpDelete httpDelete = new HttpDelete(url.toString());
+        for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+            httpDelete.addHeader(entry.getKey(), entry.getValue());
+        }
+
+        client = buildClient.buildHttpClient(httpDelete);
+        return client.execute(httpDelete);
     }
 }
