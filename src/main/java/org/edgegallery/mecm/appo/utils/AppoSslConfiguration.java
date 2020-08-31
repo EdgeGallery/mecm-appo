@@ -25,8 +25,9 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
-public class AppoTrustStore {
+public class AppoSslConfiguration {
 
+    private String isSslEnabled;
     private String trustStorePath;
     private String trustStorePasswd;
     private String useDefaultStore;

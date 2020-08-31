@@ -25,8 +25,8 @@ import java.net.URL;
 import org.apache.commons.io.IOUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
+import org.edgegallery.mecm.appo.service.AppoRestClientService;
 import org.edgegallery.mecm.appo.utils.AppoRestClient;
-import org.edgegallery.mecm.appo.utils.AppoTrustStore;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.slf4j.Logger;
@@ -40,21 +40,20 @@ public class Apm extends ProcessflowAbstractTask {
     private final String operation;
     private final String packagePath;
     private String baseUrl;
-    private AppoTrustStore appoTrustStore;
+    private AppoRestClientService restClientService;
 
 
     /**
      * Constructor for APM.
      *
      * @param delegateExecution delegate execution
-     * @param isSslEnabled      ssl enabled
      * @param endPoint          apm end point
      */
-    public Apm(DelegateExecution delegateExecution, String isSslEnabled, String endPoint,
-               String packagePath, AppoTrustStore trustStore) {
+    public Apm(DelegateExecution delegateExecution, String endPoint, String packagePath,
+               AppoRestClientService appoRestClientService) {
         this.delegateExecution = delegateExecution;
-        appoTrustStore = trustStore;
-        baseUrl = getProtocol(isSslEnabled) + endPoint;
+        restClientService = appoRestClientService;
+        baseUrl = endPoint;
 
         this.packagePath = packagePath;
         this.operation = (String) delegateExecution.getVariable("operationType");
@@ -102,7 +101,7 @@ public class Apm extends ProcessflowAbstractTask {
     }
 
     void downloadPackage(String url, String appPackageId, String appInstanceId) {
-        LOGGER.info(" {}", appoTrustStore);
+        LOGGER.info(" {}", restClientService.getAppoRestClient());
         try (InputStream inputStream = new URL(url).openStream();
                 FileOutputStream fileOs = new FileOutputStream(packagePath + appInstanceId + "/" + appPackageId)) {
             IOUtils.copy(inputStream, fileOs);

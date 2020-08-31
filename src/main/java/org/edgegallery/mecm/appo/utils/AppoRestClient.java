@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import javax.ws.rs.HttpMethod;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -52,21 +53,20 @@ public class AppoRestClient {
      */
     public AppoRestClient() {
         this.headerMap = new HashMap<>();
-        addHeader("Content-Type", "application/json");
-        addHeader("Accept", "application/json");
 
+        addHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
+        addHeader("Accept", ContentType.APPLICATION_JSON.toString());
         this.buildClient = new AppoBuildClient(null);
     }
 
     /**
      * Creates rest client instance.
      */
-    public AppoRestClient(AppoTrustStore appoTrustStore) {
+    public AppoRestClient(AppoSslConfiguration appoSslConfiguration) {
         headerMap = new HashMap<>();
-        addHeader("Content-Type", "application/json");
-        addHeader("Accept", "application/json");
-
-        buildClient = new AppoBuildClient(appoTrustStore);
+        addHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
+        addHeader("Accept", ContentType.APPLICATION_JSON.toString());
+        buildClient = new AppoBuildClient(appoSslConfiguration);
     }
 
     /**
@@ -156,42 +156,30 @@ public class AppoRestClient {
      * Sends http request to remote entity.
      *
      * @param method request method
-     * @param urlStr url
+     * @param uri    uri
      * @return http response on success, error on failure
      */
-    public CloseableHttpResponse sendRequest(String method, String urlStr) {
-        LOGGER.info("Send http request: method: {},  url: {}", method, urlStr);
-        CloseableHttpClient client = null;
+    public CloseableHttpResponse sendRequest(String method, String uri) {
+        LOGGER.info("Send http request: method: {},  url: {}", method, uri);
         CloseableHttpResponse httpclient = null;
         try {
+            URL url;
+            AppoSslConfiguration sslConfig = buildClient.getAppoSslConfiguration();
+            if (sslConfig != null && "true".equals(sslConfig.getIsSslEnabled())) {
+                url = new URL("https://" + uri);
+            } else {
+                url = new URL("http://" + uri);
+            }
 
-            URL url = new URL(urlStr);
             switch (method) {
-                case "GET":
-                    HttpGet httpGet = new HttpGet(url.toString());
-                    for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                        httpGet.addHeader(entry.getKey(), entry.getValue());
-                    }
-                    client = buildClient.buildHttpClient(httpGet);
-                    httpclient = client.execute(httpGet);
+                case HttpMethod.GET:
+                    httpclient = doGet(url);
                     break;
-                case "POST":
-                    HttpPost httpPost = new HttpPost(url.toString());
-                    for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                        httpPost.addHeader(entry.getKey(), entry.getValue());
-                    }
-                    httpPost.setEntity(data);
-                    client = buildClient.buildHttpClient(httpPost);
-                    httpclient = client.execute(httpPost);
+                case HttpMethod.POST:
+                    httpclient = doPost(url);
                     break;
-                case "DELETE":
-                    HttpDelete httpDelete = new HttpDelete(url.toString());
-                    for (Map.Entry<String, String> entry : headerMap.entrySet()) {
-                        httpDelete.addHeader(entry.getKey(), entry.getValue());
-                    }
-
-                    client = buildClient.buildHttpClient(httpDelete);
-                    httpclient = client.execute(httpDelete);
+                case HttpMethod.DELETE:
+                    httpclient = doDelete(url);
                     break;
                 default:
                     LOGGER.info("Method not allowed {}", method);
@@ -201,5 +189,41 @@ public class AppoRestClient {
             throw new AppoException("Failed to send request " + e.getMessage());
         }
         return httpclient;
+    }
+
+    private CloseableHttpResponse doGet(URL url) throws IOException {
+        CloseableHttpClient client = null;
+
+        HttpGet httpGet = new HttpGet(url.toString());
+        for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+            httpGet.addHeader(entry.getKey(), entry.getValue());
+        }
+        client = buildClient.buildHttpClient(httpGet);
+        return client.execute(httpGet);
+    }
+
+    private CloseableHttpResponse doPost(URL url) throws IOException {
+        CloseableHttpClient client = null;
+
+        HttpPost httpPost = new HttpPost(url.toString());
+        for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+            httpPost.addHeader(entry.getKey(), entry.getValue());
+        }
+        httpPost.setEntity(data);
+        client = buildClient.buildHttpClient(httpPost);
+
+        return client.execute(httpPost);
+    }
+
+    private CloseableHttpResponse doDelete(URL url) throws IOException {
+        CloseableHttpClient client = null;
+
+        HttpDelete httpDelete = new HttpDelete(url.toString());
+        for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+            httpDelete.addHeader(entry.getKey(), entry.getValue());
+        }
+
+        client = buildClient.buildHttpClient(httpDelete);
+        return client.execute(httpDelete);
     }
 }

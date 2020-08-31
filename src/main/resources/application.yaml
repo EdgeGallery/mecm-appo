@@ -26,6 +26,8 @@ server:
     enabled: ${SSL_ENABLED:}
     protocol: TLS
     enabled-Protocols: [TLSv1.2]
+    ciphers: [TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+              TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384]
 
     # Keystore
     key-store: ${SSL_KEY_STORE_PATH:}

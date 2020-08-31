@@ -25,9 +25,10 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -45,16 +46,18 @@ import org.edgegallery.mecm.appo.exception.AppoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Getter
+@Setter
 public class AppoBuildClient {
 
     public static final int MAX_RETRY = 3;
     public static final int WAIT_PERIOD = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(AppoBuildClient.class);
 
-    private AppoTrustStore appoTrustStore = null;
+    private AppoSslConfiguration appoSslConfiguration = null;
 
-    public AppoBuildClient(AppoTrustStore trustStore) {
-        appoTrustStore = trustStore;
+    public AppoBuildClient(AppoSslConfiguration sslConfig) {
+        appoSslConfiguration = sslConfig;
     }
 
     private Boolean isRetryAllowed(IOException exception, int retries, int maxRetry) {
@@ -83,15 +86,15 @@ public class AppoBuildClient {
     }
 
     private KeyStore getKeyStore(String keyStorePath, String password) {
-        KeyStore ks = null;
+        KeyStore keystore = null;
         try (FileInputStream is = new FileInputStream(keyStorePath)) {
-            ks = KeyStore.getInstance(KeyStore.getDefaultType());
-            ks.load(is, password.toCharArray());
+            keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keystore.load(is, password.toCharArray());
         } catch (CertificateException | KeyStoreException
                 | NoSuchAlgorithmException | IOException e) {
             throw new AppoException("keystore exception");
         }
-        return ks;
+        return keystore;
     }
 
 
@@ -108,24 +111,20 @@ public class AppoBuildClient {
         try {
             if (httpRequest.getURI().toString().startsWith("https")) {
                 SSLContext sslcxt = null;
-                if (appoTrustStore != null && appoTrustStore.getUseDefaultStore().equals("false")) {
-                    ks = getKeyStore(appoTrustStore.getTrustStorePath(), appoTrustStore.getTrustStorePasswd());
+                if (appoSslConfiguration != null && appoSslConfiguration.getUseDefaultStore().equals("false")) {
+                    ks = getKeyStore(appoSslConfiguration.getTrustStorePath(),
+                            appoSslConfiguration.getTrustStorePasswd());
                 }
 
-                sslcxt = SSLContexts.custom()
-                        .loadTrustMaterial(ks, new TrustSelfSignedStrategy())
-                        .setProtocol("TLSv1.2")
-                        .build();
+                sslcxt = SSLContexts.custom().loadTrustMaterial(ks, new TrustSelfSignedStrategy())
+                        .setProtocol("TLSv1.2").build();
                 SSLConnectionSocketFactory sslFactory = new SSLConnectionSocketFactory(sslcxt,
                     (s, sslSession) -> false);
-
-                final HostnameVerifier allHostsValid = (hostname, session) -> false;
 
                 httpClient = HttpClients.custom().setRetryHandler(retryMechanism(MAX_RETRY))
                         .setServiceUnavailableRetryStrategy(
                                 new DefaultServiceUnavailableRetryStrategy(MAX_RETRY, WAIT_PERIOD))
-                        .setSSLSocketFactory(sslFactory)
-                        .setSSLHostnameVerifier(allHostsValid).build();
+                        .setSSLSocketFactory(sslFactory).build();
             } else {
                 httpClient = HttpClients.custom().setRetryHandler(retryMechanism(MAX_RETRY))
                         .setServiceUnavailableRetryStrategy(
