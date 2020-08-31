@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -69,7 +69,6 @@ public class AppInstanceInfoHandler {
     /**
      * Retrieves application instance information.
      *
-     * @param accessToken   access token
      * @param tenantId      tenant ID
      * @param appInstanceId application instance ID
      * @return application instance information
@@ -77,9 +76,8 @@ public class AppInstanceInfoHandler {
     @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
     @GetMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> getAppInstanceInfo(
-            @ApiParam(value = "access token")
-            @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
             @ApiParam(value = "application instance id") @PathVariable("appInstance_id")
@@ -97,14 +95,13 @@ public class AppInstanceInfoHandler {
     /**
      * Retrieves application instance information.
      *
-     * @param accessToken access token
      * @param tenantId    tenant ID
      * @return application instance information
      */
     @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
     @GetMapping(value = "/tenants/{tenant_id}/app_instance_infos", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> getAllAppInstanceInfo(
-            @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId) {
 
@@ -123,15 +120,14 @@ public class AppInstanceInfoHandler {
     /**
      * Creates application instance information.
      *
-     * @param accessToken    access token
      * @param tenantId       tenant ID
      * @param appInstInfoDto application instance info
      * @return application instance information
      */
     @ApiOperation(value = "Creates application instance info", response = AppoResponse.class)
     @PostMapping(path = "/tenants/{tenant_id}/app_instance_infos", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> createAppInstanceInfo(
-            @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
             @ApiParam(value = "application instance") @RequestBody AppInstanceInfoDto appInstInfoDto) {
@@ -150,15 +146,14 @@ public class AppInstanceInfoHandler {
     /**
      * Deletes application instance information.
      *
-     * @param accessToken   access token
      * @param tenantId      tenant ID
      * @param appInstanceId application instance ID
      */
     @ApiOperation(value = "Deletes application instance info", response = AppoResponse.class)
     @DeleteMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> deleteAppInstanceInfo(
-            @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
             @ApiParam(value = "application instance id") @PathVariable("appInstance_id")
@@ -173,7 +168,6 @@ public class AppInstanceInfoHandler {
     /**
      * Updates application instance information.
      *
-     * @param accessToken access token
      * @param tenantId    tenant ID
      * @param instInfo    application instance info
      * @return application instance information
@@ -181,8 +175,8 @@ public class AppInstanceInfoHandler {
     @ApiOperation(value = "Creates application instance info", response = AppoResponse.class)
     @PutMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> updateAppInstanceInfo(
-            @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
             @ApiParam(value = "application instance id") @PathVariable("appInstance_id")

@@ -2,4 +2,4 @@
 
 echo "Running APPO"
 cd /usr/app
-java -jar apm-0.0.1-SNAPSHOT.jar
+java -jar appo-0.0.1-SNAPSHOT.jar
