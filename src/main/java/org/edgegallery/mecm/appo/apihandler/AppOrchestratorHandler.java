@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,6 +73,7 @@ public class AppOrchestratorHandler {
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
                 @ApiResponse(code = 500, message = "internal server error", response = String.class)
                 })
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> createAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
@@ -95,6 +97,7 @@ public class AppOrchestratorHandler {
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
                 @ApiResponse(code = 500, message = "internal server error", response = String.class)
                 })
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> instantiateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
@@ -115,6 +118,7 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Retrieves application instance information", response = AppoResponse.class)
     @GetMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> getAppInstance(@ApiParam(value = "access token")
                                                        @RequestHeader("access_token") String accessToken,
                                                        @ApiParam(value = "tenant id") @PathVariable("tenant_id")
@@ -134,6 +138,7 @@ public class AppOrchestratorHandler {
      */
     @ApiOperation(value = "Retrieves application instance information", response = AppoResponse.class)
     @GetMapping(path = "/tenants/{tenant_id}/app_instances", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> getAllAppInstance(@ApiParam(value = "access token")
                                                           @RequestHeader("access_token") String accessToken,
                                                           @ApiParam(value = "tenant id")
@@ -157,6 +162,7 @@ public class AppOrchestratorHandler {
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
                 @ApiResponse(code = 500, message = "internal server error", response = AppoResponse.class)
                 })
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> terminateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
@@ -176,6 +182,7 @@ public class AppOrchestratorHandler {
      */
     @ApiOperation(value = "Retrieves edge host performance statistics", response = AppoResponse.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/kpi", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> queryKpi(@ApiParam(value = "access token")
                                                  @RequestHeader("access_token") String accessToken,
                                                  @PathVariable("tenant_id")
@@ -197,6 +204,7 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Retrieves edge host platform capabilities", response = AppoResponse.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/mep_capabilities",
             produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> queryEdgehostCapabilities(@ApiParam(value = "access token")
                                                                   @RequestHeader("access_token") String accessToken,
                                                                   @ApiParam(value = "tenant id")
