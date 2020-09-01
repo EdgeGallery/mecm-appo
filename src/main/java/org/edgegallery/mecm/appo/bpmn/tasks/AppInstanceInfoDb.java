@@ -90,7 +90,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo.setAppDescriptor((String) delegateExecution.getVariable(Constants.APP_DESCR));
             appInstanceInfo.setOperationalStatus("Creating");
             appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
-            setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
             LOGGER.info("App instance info record added ");
         } catch (AppoException e) {
             LOGGER.info("Failed to add app instance info record {}", e.getMessage());
@@ -118,7 +118,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
                     .serializationDataFormat(Variables.SerializationDataFormats.JAVA)
                     .create();
             delegateExecution.setVariable("app_instance_info", dataValue);
-            setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
             LOGGER.info("Failed to get app instance info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to get app instance info record",
@@ -143,22 +143,25 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo = new AppInstanceInfo();
             appInstanceInfo.setAppInstanceId(appInstanceId);
 
-            String responseCode = (String) delegateExecution.getVariable("ResponseCode");
+            String responseCode = (String) delegateExecution.getVariable(RESPONSE_CODE);
 
             String operationalStatus = (String) delegateExecution.getVariable("operational_status");
             appInstanceInfo.setOperationalStatus(operationalStatus);
 
-            if (!responseCode.equals("200")) {
-                String response = (String) delegateExecution.getVariable("Response");
-                appInstanceInfo.setOperationalStatus(operationalStatus);
+            int statusCode = Integer.parseInt(responseCode);
+            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
+                String response = (String) delegateExecution.getVariable(ERROR_RESPONSE);
+                appInstanceInfo.setOperationInfo(response);
+            } else {
+                String response = (String) delegateExecution.getVariable(RESPONSE);
                 appInstanceInfo.setOperationInfo(response);
             }
 
             String tenantId = (String) delegateExecution.getVariable("tenant_id");
 
             appInstanceInfoService.updateAppInstanceInfo(tenantId, appInstanceInfo);
-            setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
-        } catch (AppoException e) {
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+        } catch (AppoException | NumberFormatException e) {
             LOGGER.info("Failed to update app instance info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
@@ -178,7 +181,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
 
             appInstanceInfoService.deleteAppInstanceInfo(tenantId, appInstanceId);
-            setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
             LOGGER.info("Failed to delete app instance info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to delete app instance info record",

@@ -32,23 +32,27 @@ public class ProcessflowResponse implements JavaDelegate {
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
         String responseType = (String) delegateExecution.getVariable("responseType");
-        String response = (String) delegateExecution.getVariable("Response");
-        String responseCode = (String) delegateExecution.getVariable("ResponseCode");
+
+        String responseCode = (String) delegateExecution.getVariable(ProcessflowAbstractTask.RESPONSE_CODE);
 
         if (responseType.equals("success")) {
-            LOGGER.info("Set success, response: {}, response code: {} ", response, responseCode);
+            String response = (String) delegateExecution.getVariable(ProcessflowAbstractTask.RESPONSE);
 
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP, response);
+            LOGGER.info("Set success, response: {}, response code: {} ", response, responseCode);
         } else if (responseType.equals("failure")) {
-            LOGGER.info("Set failure, response: {}, response code: {} ", response, responseCode);
+            String response = (String) delegateExecution.getVariable(ProcessflowAbstractTask.ERROR_RESPONSE);
 
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);
             delegateExecution.setVariable(Constants.PROCESS_FLOW_ERR_RESP, response);
+            LOGGER.info("Set failure, response: {}, response code: {} ", response, responseCode);
         } else {
-            LOGGER.info("Unknown, response: {}, response code: {} ", response, responseCode);
+            String response = (String) delegateExecution.getVariable(ProcessflowAbstractTask.FLOW_EXCEPTION);
+
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);
             delegateExecution.setVariable(Constants.PROCESS_FLOW_EXCEPTION, response);
+            LOGGER.info("Unknown, response: {}, response code: {} ", response, responseCode);
         }
     }
 }

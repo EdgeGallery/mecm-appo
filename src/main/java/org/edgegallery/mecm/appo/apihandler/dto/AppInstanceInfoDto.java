@@ -2,7 +2,6 @@ package org.edgegallery.mecm.appo.apihandler.dto;
 
 import static org.edgegallery.mecm.appo.utils.Constants.APP_INST_ID_REGX;
 import static org.edgegallery.mecm.appo.utils.Constants.APP_PKG_ID_REGX;
-import static org.edgegallery.mecm.appo.utils.Constants.TENENT_ID_REGEX;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
@@ -31,11 +30,6 @@ public final class AppInstanceInfoDto {
     @Pattern(regexp = APP_PKG_ID_REGX)
     @Size(max = 64)
     private String appPackageId;
-
-    @NotEmpty(message = "tenant is empty")
-    @Pattern(regexp = TENENT_ID_REGEX)
-    @Size(max = 64)
-    private String tenant;
 
     @NotEmpty(message = "app name is empty")
     @Size(max = 128)

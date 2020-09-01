@@ -16,32 +16,41 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.service.AppoRestClientService;
 import org.edgegallery.mecm.appo.utils.AppoRestClient;
 import org.edgegallery.mecm.appo.utils.Constants;
+import org.edgegallery.mecm.appo.utils.FileChecker;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
+import org.jose4j.json.internal.json_simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Apm extends ProcessflowAbstractTask {
 
+    public static final String FAILED_TO_UNZIP_CSAR = "failed to unzip the csar file";
+    static final int TOO_MANY = 1024;
+    static final int TOO_BIG = 104857600;
     private static final Logger LOGGER = LoggerFactory.getLogger(Apm.class);
-
+    private static final String FAILED_TO_CREATE_DIR = "failed to create local directory";
+    private static final String FAILED_TO_GET_PATH = "failed to get local directory path";
     private final DelegateExecution delegateExecution;
     private final String operation;
     private final String packagePath;
     private String baseUrl;
     private AppoRestClientService restClientService;
-
 
     /**
      * Constructor for APM.
@@ -57,6 +66,27 @@ public class Apm extends ProcessflowAbstractTask {
 
         this.packagePath = packagePath;
         this.operation = (String) delegateExecution.getVariable("operationType");
+    }
+
+    /**
+     * Creates directory to save config file.
+     *
+     * @param dirPath directory path to be created
+     * @return directory's canonical path
+     */
+    private static String createDir(String dirPath) {
+        File localFileDir = new File(dirPath);
+        if (!localFileDir.mkdir()) {
+            LOGGER.info(FAILED_TO_CREATE_DIR);
+            throw new AppoException(FAILED_TO_CREATE_DIR);
+        }
+
+        try {
+            return localFileDir.getCanonicalPath();
+        } catch (IOException e) {
+            LOGGER.info(FAILED_TO_GET_PATH);
+            throw new AppoException(FAILED_TO_GET_PATH);
+        }
     }
 
     /**
@@ -76,11 +106,6 @@ public class Apm extends ProcessflowAbstractTask {
 
         LOGGER.info("Download package from APM");
         try {
-
-            String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
-            AppoRestClient client = new AppoRestClient();
-            client.addHeader(Constants.ACCESS_TOKEN, accessToken);
-
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
             String appPkgId = (String) delegateExecution.getVariable(Constants.APP_PACKAGE_ID);
 
@@ -93,7 +118,7 @@ public class Apm extends ProcessflowAbstractTask {
 
             downloadPackage(downloadUrl, appPkgId, appInstanceId);
 
-            setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
 
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
@@ -101,18 +126,85 @@ public class Apm extends ProcessflowAbstractTask {
     }
 
     void downloadPackage(String url, String appPackageId, String appInstanceId) {
-        LOGGER.info(" {}", restClientService.getAppoRestClient());
-        try (InputStream inputStream = new URL(url).openStream();
-                FileOutputStream fileOs = new FileOutputStream(packagePath + appInstanceId + "/" + appPackageId)) {
-            IOUtils.copy(inputStream, fileOs);
-        } catch (MalformedURLException | FileNotFoundException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution,
-                    "File not found or malformed url", Constants.PROCESS_FLOW_ERROR);
-            throw new AppoException("File not found or malformed url");
+        LOGGER.info("Download application package {}", appPackageId);
+
+        String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
+
+        AppoRestClient client = restClientService.getAppoRestClient();
+        client.addHeader(Constants.ACCESS_TOKEN, accessToken);
+
+        try (CloseableHttpResponse response = client.sendRequest(Constants.GET, url)) {
+            if (response == null) {
+                LOGGER.info("Application package download failed...");
+                return;
+            }
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
+                String error = getErrorInfo(response, "Download application package failed");
+                setProcessflowErrorResponseAttributes(delegateExecution, error, String.valueOf(statusCode));
+            } else {
+                String appPackage = copyApplicationPackage(appInstanceId, appPackageId, response.getEntity());
+                Boolean isValid = validateApplicationPackage(appPackage);
+                if (isValid.equals(true)) {
+                    setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, String.valueOf(statusCode));
+                    return;
+                }
+                setProcessflowResponseAttributes(delegateExecution, "Invalid application package",
+                        Constants.PROCESS_FLOW_ERROR);
+            }
         } catch (IOException e) {
-            LOGGER.debug("Failed to download application package from APM");
-            setProcessflowExceptionResponseAttributes(delegateExecution, "io exception", Constants.PROCESS_FLOW_ERROR);
-            throw new AppoException("io exception");
+            setProcessflowExceptionResponseAttributes(delegateExecution,
+                    "Application package download failed, io exception", Constants.PROCESS_FLOW_ERROR);
+        } catch (ParseException | AppoException | IllegalArgumentException e) {
+            setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
         }
+    }
+
+    private String copyApplicationPackage(String appInstanceId, String appPackageId, HttpEntity entity) {
+
+        LOGGER.info("Copy application package {}", appPackageId);
+        if (entity == null) {
+            throw new IllegalArgumentException("Failed to copy application package " + appPackageId);
+        }
+        String localDirPath = createDir(packagePath + Constants.SLASH + appInstanceId);
+        String appPackagePath = localDirPath + Constants.SLASH + appPackageId + ".csar";
+        File appPackage = new File(appPackagePath);
+
+        try (InputStream inputStream = entity.getContent();
+                OutputStream outputStream = new FileOutputStream(appPackage);) {
+            IOUtils.copy(inputStream, outputStream);
+        } catch (IOException e) {
+            LOGGER.info("Failed to copy application package {}", appPackageId);
+            throw new AppoException("Failed to copy application package " + appPackageId);
+        }
+        return appPackagePath;
+    }
+
+    /**
+     * Validates application package.
+     *
+     * @param appPackage CSAR file path
+     * @return main service template content in string
+     */
+    public Boolean validateApplicationPackage(String appPackage) {
+
+        try (ZipFile zipFile = new ZipFile(appPackage)) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            int entriesCount = 0;
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                entriesCount++;
+                if (entriesCount > TOO_MANY || entry.getSize() > TOO_BIG) {
+                    LOGGER.info("Too many files to unzip or file size is too big");
+                    return Boolean.FALSE;
+                } else {
+                    FileChecker.check(new File(entry.getName()));
+                }
+            }
+        } catch (IOException | IllegalArgumentException e) {
+            LOGGER.error(FAILED_TO_UNZIP_CSAR);
+            throw new AppoException(FAILED_TO_UNZIP_CSAR);
+        }
+        return Boolean.TRUE;
     }
 }

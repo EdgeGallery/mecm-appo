@@ -24,8 +24,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.LinkedList;
 import java.util.List;
-import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceInfoDto;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
@@ -39,12 +39,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -79,9 +75,9 @@ public class AppInstanceInfoHandler {
     @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> getAppInstanceInfo(
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-            @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
+            @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
             @ApiParam(value = "application instance id") @PathVariable("appInstance_id")
-            @Pattern(regexp = APP_INST_ID_REGX) String appInstanceId) {
+            @Pattern(regexp = APP_INST_ID_REGX) @Size(max = 64) String appInstanceId) {
 
         logger.info("Retrieve application instance info: {}", appInstanceId);
 
@@ -95,7 +91,7 @@ public class AppInstanceInfoHandler {
     /**
      * Retrieves application instance information.
      *
-     * @param tenantId    tenant ID
+     * @param tenantId tenant ID
      * @return application instance information
      */
     @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
@@ -103,7 +99,7 @@ public class AppInstanceInfoHandler {
     @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> getAllAppInstanceInfo(
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-            @Pattern(regexp = TENENT_ID_REGEX) String tenantId) {
+            @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId) {
 
         logger.info("Retrieve application instance infos");
 
@@ -115,83 +111,5 @@ public class AppInstanceInfoHandler {
         }
 
         return new ResponseEntity<>(new AppoResponse(appInstanceInfosDto), HttpStatus.OK);
-    }
-
-    /**
-     * Creates application instance information.
-     *
-     * @param tenantId       tenant ID
-     * @param appInstInfoDto application instance info
-     * @return application instance information
-     */
-    @ApiOperation(value = "Creates application instance info", response = AppoResponse.class)
-    @PostMapping(path = "/tenants/{tenant_id}/app_instance_infos", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT')")
-    public ResponseEntity<AppoResponse> createAppInstanceInfo(
-            @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-            @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
-            @ApiParam(value = "application instance") @RequestBody AppInstanceInfoDto appInstInfoDto) {
-
-        logger.info("Create application instance info: {}", appInstInfoDto.getAppInstanceId());
-
-        ModelMapper mapper = new ModelMapper();
-        AppInstanceInfo appInstanceInfo = mapper.map(appInstInfoDto, AppInstanceInfo.class);
-
-        appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
-
-        AppInstanceInfoDto dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
-        return new ResponseEntity<>(new AppoResponse(dto), HttpStatus.OK);
-    }
-
-    /**
-     * Deletes application instance information.
-     *
-     * @param tenantId      tenant ID
-     * @param appInstanceId application instance ID
-     */
-    @ApiOperation(value = "Deletes application instance info", response = AppoResponse.class)
-    @DeleteMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT')")
-    public ResponseEntity<AppoResponse> deleteAppInstanceInfo(
-            @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-            @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
-            @ApiParam(value = "application instance id") @PathVariable("appInstance_id")
-            @Pattern(regexp = APP_INST_ID_REGX) String appInstanceId) {
-
-        logger.info("Delete application instance info: {}", appInstanceId);
-        appInstanceInfoService.deleteAppInstanceInfo(tenantId, appInstanceId);
-
-        return new ResponseEntity<>(new AppoResponse("deleted successfully"), HttpStatus.OK);
-    }
-
-    /**
-     * Updates application instance information.
-     *
-     * @param tenantId    tenant ID
-     * @param instInfo    application instance info
-     * @return application instance information
-     */
-    @ApiOperation(value = "Creates application instance info", response = AppoResponse.class)
-    @PutMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT')")
-    public ResponseEntity<AppoResponse> updateAppInstanceInfo(
-            @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-            @Pattern(regexp = TENENT_ID_REGEX) String tenantId,
-            @ApiParam(value = "application instance id") @PathVariable("appInstance_id")
-            @Pattern(regexp = APP_INST_ID_REGX) String appInstanceId,
-            @ApiParam(value = "application instance") @Valid @RequestBody AppInstanceInfoDto instInfo) {
-
-        logger.info("Update application instance info: {}", instInfo.getAppInstanceId());
-
-        ModelMapper mapper = new ModelMapper();
-        AppInstanceInfo appInstanceInfo = mapper.map(instInfo, AppInstanceInfo.class);
-        appInstanceInfo.setAppInstanceId(appInstanceId);
-
-        appInstanceInfo = appInstanceInfoService.updateAppInstanceInfo(tenantId, appInstanceInfo);
-        AppInstanceInfoDto dto = mapper.map(appInstanceInfo, AppInstanceInfoDto.class);
-
-        return new ResponseEntity<>(new AppoResponse(dto), HttpStatus.OK);
     }
 }
