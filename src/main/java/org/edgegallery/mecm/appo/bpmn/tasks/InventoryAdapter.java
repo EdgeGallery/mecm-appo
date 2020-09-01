@@ -39,9 +39,9 @@ public class InventoryAdapter implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
-        String inventoryEndPoint = inventoryService + ":" + inventoryServicePort;
+        String servicePort = inventoryService + ":" + inventoryServicePort;
 
-        Inventory inventory = new Inventory(delegateExecution, inventoryEndPoint, appoRestClientService);
+        Inventory inventory = new Inventory(delegateExecution, servicePort, appoRestClientService);
         inventory.execute();
     }
 }

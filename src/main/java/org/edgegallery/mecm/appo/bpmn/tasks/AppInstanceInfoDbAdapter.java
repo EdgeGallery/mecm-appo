@@ -18,17 +18,12 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AppInstanceInfoDbAdapter implements JavaDelegate {
-
-    private final Logger logger = LoggerFactory.getLogger(AppInstanceInfoDbAdapter.class);
 
     @Autowired
     private AppInstanceInfoService appInstanceInfoService;
@@ -37,10 +32,6 @@ public class AppInstanceInfoDbAdapter implements JavaDelegate {
     public void execute(DelegateExecution delegateExecution) {
 
         AppInstanceInfoDb appInstanceInfoDb = new AppInstanceInfoDb(delegateExecution, appInstanceInfoService);
-        try {
-            appInstanceInfoDb.execute();
-        } catch (AppoException e) {
-            logger.debug("Failed to perform operation on DB {}", e.getMessage());
-        }
+        appInstanceInfoDb.execute();
     }
 }

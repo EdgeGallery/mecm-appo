@@ -32,7 +32,6 @@ import lombok.Setter;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.HttpRequestRetryHandler;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -54,10 +53,21 @@ public class AppoBuildClient {
     public static final int WAIT_PERIOD = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(AppoBuildClient.class);
 
-    private AppoSslConfiguration appoSslConfiguration = null;
+    private Boolean isSslEnabled;
+    private String trustStorePath;
+    private String trustStorePasswd;
 
-    public AppoBuildClient(AppoSslConfiguration sslConfig) {
-        appoSslConfiguration = sslConfig;
+    /**
+     * Creates build client instance.
+     *
+     * @param sslEnabled flag to check whether ssl is enabled
+     * @param trustStore trust store path
+     * @param trustStorePassword trust store password
+     */
+    public AppoBuildClient(Boolean sslEnabled, String trustStore, String trustStorePassword) {
+        isSslEnabled = sslEnabled;
+        trustStorePath = trustStore;
+        trustStorePasswd = trustStorePassword;
     }
 
     private Boolean isRetryAllowed(IOException exception, int retries, int maxRetry) {
@@ -99,22 +109,19 @@ public class AppoBuildClient {
 
 
     /**
-     * Retrieves HTTP client.
+     * Retrieves closable HTTP client.
      *
-     * @param httpRequest http request
      * @return http client on success
      */
-    public CloseableHttpClient buildHttpClient(HttpRequestBase httpRequest) {
+    public CloseableHttpClient buildClient() {
         LOGGER.info("Build Http client...");
         CloseableHttpClient httpClient = null;
-        KeyStore ks = null;
+
         try {
-            if (httpRequest.getURI().toString().startsWith("https")) {
+            KeyStore ks = null;
+            if (isSslEnabled.equals(true)) {
                 SSLContext sslcxt = null;
-                if (appoSslConfiguration != null && appoSslConfiguration.getUseDefaultStore().equals("false")) {
-                    ks = getKeyStore(appoSslConfiguration.getTrustStorePath(),
-                            appoSslConfiguration.getTrustStorePasswd());
-                }
+                ks = getKeyStore(trustStorePath, trustStorePasswd);
 
                 sslcxt = SSLContexts.custom().loadTrustMaterial(ks, new TrustSelfSignedStrategy())
                         .setProtocol("TLSv1.2").build();
