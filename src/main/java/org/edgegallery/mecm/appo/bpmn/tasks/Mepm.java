@@ -220,7 +220,7 @@ public class Mepm extends ProcessflowAbstractTask {
                     responseStr = EntityUtils.toString(response.getEntity());
                     setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
                 } else {
-                    setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
+                    setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
                 }
                 LOGGER.info("Response {}, response code {}", responseStr, statusCode);
             }

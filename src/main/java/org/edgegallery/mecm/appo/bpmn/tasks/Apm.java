@@ -118,7 +118,7 @@ public class Apm extends ProcessflowAbstractTask {
 
             downloadPackage(downloadUrl, appPkgId, appInstanceId);
 
-            setProcessflowResponseAttributes(delegateExecution, "success", Constants.PROCESS_FLOW_SUCCESS);
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
 
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
@@ -146,7 +146,7 @@ public class Apm extends ProcessflowAbstractTask {
                 String appPackage = copyApplicationPackage(appInstanceId, appPackageId, response.getEntity());
                 Boolean isValid = validateApplicationPackage(appPackage);
                 if (isValid.equals(true)) {
-                    setProcessflowResponseAttributes(delegateExecution, "success", String.valueOf(statusCode));
+                    setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, String.valueOf(statusCode));
                     return;
                 }
                 setProcessflowResponseAttributes(delegateExecution, "Invalid application package",

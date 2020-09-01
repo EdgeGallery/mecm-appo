@@ -109,7 +109,7 @@ public class Inventory extends ProcessflowAbstractTask {
             }
 
             delegateExecution.setVariable(Constants.APPLCM_PORT, applcmPort);
-            setProcessflowResponseAttributes(delegateExecution, "success", Constants.PROCESS_FLOW_SUCCESS);
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException | IOException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution,
                     "Failed to fetch applcm configuration from inventory", Constants.PROCESS_FLOW_ERROR);
@@ -157,7 +157,7 @@ public class Inventory extends ProcessflowAbstractTask {
                 return;
             }
             delegateExecution.setVariable("applcm_ip", applcmIp);
-            setProcessflowResponseAttributes(delegateExecution, "success", Constants.PROCESS_FLOW_SUCCESS);
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException | IOException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution,
                     "Failed to fetch host configuration from inventory", Constants.PROCESS_FLOW_ERROR);
@@ -191,7 +191,7 @@ public class Inventory extends ProcessflowAbstractTask {
             } else {
                 String responseStr = EntityUtils.toString(response.getEntity());
                 jsonResponse = (JSONObject) new JSONParser().parse(responseStr);
-                setProcessflowResponseAttributes(delegateExecution, "success", String.valueOf(statusCode));
+                setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, String.valueOf(statusCode));
             }
 
         } catch (IOException | ParseException | org.apache.http.ParseException e) {
