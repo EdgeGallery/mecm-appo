@@ -10,6 +10,7 @@ RUN sed -i "s|umask 022|umask 027|g" /etc/profile
 
 # Create the home directory for the new app user.
 RUN mkdir -p /usr/app
+RUN mkdir -p /usr/app/bin
 
 # Set the home directory to our app user's home.
 ENV APP_HOME=/usr/app
@@ -29,13 +30,14 @@ RUN apk update &&\
 WORKDIR $APP_HOME
 
 # Copy the application & scripts
-ADD target/appo-0.0.1-SNAPSHOT.jar $APP_HOME/
-ADD configs/*.sh $APP_HOME/
+COPY target/appo-0.0.1-SNAPSHOT.jar $APP_HOME/bin
+COPY configs/*.sh $APP_HOME/bin
 
 RUN chmod 750 $APP_HOME &&\
-    chmod 550 $APP_HOME/*.sh &&\
-    chmod 550 $APP_HOME/appo-0.0.1-SNAPSHOT.jar &&\
-    chown -R $USER_NAME:$GROUP_NAME /var/log &&\
+    chmod -R 550 $APP_HOME/bin &&\
+    mkdir -p -m 750 $HOME/config &&\
+    mkdir -p -m 750 $HOME/log &&\
+    mkdir -p -m 700 $HOME/ssl &&\
     chown -R $USER_NAME:$GROUP_NAME $APP_HOME
 
 # Exposed port
@@ -45,4 +47,4 @@ EXPOSE 8091
 USER $USER_NAME
 
 # Execute script & application
-ENTRYPOINT ["sh", "start.sh"]
+ENTRYPOINT ["sh", "./bin/start.sh"]
