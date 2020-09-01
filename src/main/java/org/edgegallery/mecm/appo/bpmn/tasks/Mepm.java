@@ -42,7 +42,6 @@ public class Mepm extends ProcessflowAbstractTask {
     private final String packagePath;
     private String baseUrl;
     private AppoRestClientService restClientService;
-    private String errorStr = "Failed to send request";
 
     /**
      * Creates an MEPM instance.

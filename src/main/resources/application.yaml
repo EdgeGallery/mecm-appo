@@ -16,7 +16,7 @@
 
 ### Server port #########
 server:
-  port: 8283
+  port: 8091
   address: ${LISTEN_IP:0.0.0.0}
   contextPath: /home
   tomcat:
