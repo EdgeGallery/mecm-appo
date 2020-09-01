@@ -47,13 +47,13 @@ public class Apm extends ProcessflowAbstractTask {
      * Constructor for APM.
      *
      * @param delegateExecution delegate execution
-     * @param endPoint          apm end point
+     * @param servicePort       apm end point
      */
-    public Apm(DelegateExecution delegateExecution, String endPoint, String packagePath,
+    public Apm(DelegateExecution delegateExecution, String servicePort, String packagePath,
                AppoRestClientService appoRestClientService) {
         this.delegateExecution = delegateExecution;
         restClientService = appoRestClientService;
-        baseUrl = endPoint;
+        baseUrl = servicePort;
 
         this.packagePath = packagePath;
         this.operation = (String) delegateExecution.getVariable("operationType");
@@ -64,7 +64,7 @@ public class Apm extends ProcessflowAbstractTask {
      */
     public void execute() {
         if (operation.equals("download")) {
-            download(delegateExecution, baseUrl + Constants.APM_DOWNLOAD_URI);
+            download(delegateExecution);
         } else {
             LOGGER.info("Invalid APM action...{}", operation);
             setProcessflowExceptionResponseAttributes(delegateExecution, "Invalid APM action",
@@ -72,7 +72,7 @@ public class Apm extends ProcessflowAbstractTask {
         }
     }
 
-    private void download(DelegateExecution delegateExecution, String url) {
+    private void download(DelegateExecution delegateExecution) {
 
         LOGGER.info("Download package from APM");
         try {
@@ -87,7 +87,7 @@ public class Apm extends ProcessflowAbstractTask {
             UrlUtil urlUtil = new UrlUtil();
             urlUtil.addParams(Constants.TENANT_ID, tenantId);
             urlUtil.addParams(Constants.APP_PACKAGE_ID, appPkgId);
-            String downloadUrl = urlUtil.getUrl(url);
+            String downloadUrl = urlUtil.getUrl(baseUrl + Constants.APM_DOWNLOAD_URI);
 
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
 
@@ -106,12 +106,13 @@ public class Apm extends ProcessflowAbstractTask {
                 FileOutputStream fileOs = new FileOutputStream(packagePath + appInstanceId + "/" + appPackageId)) {
             IOUtils.copy(inputStream, fileOs);
         } catch (MalformedURLException | FileNotFoundException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
-            throw new AppoException(e.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution,
+                    "File not found or malformed url", Constants.PROCESS_FLOW_ERROR);
+            throw new AppoException("File not found or malformed url");
         } catch (IOException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
             LOGGER.debug("Failed to download application package from APM");
-            throw new AppoException(e.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution, "io exception", Constants.PROCESS_FLOW_ERROR);
+            throw new AppoException("io exception");
         }
     }
 }

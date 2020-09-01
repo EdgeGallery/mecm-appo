@@ -41,8 +41,8 @@ public class ApmAdapter implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
-        String apmEndPoint = apmService + ":" + apmServicePort;
-        Apm apm = new Apm(delegateExecution, apmEndPoint, packagePath, appoRestClientService);
+        String servicePort = apmService + ":" + apmServicePort;
+        Apm apm = new Apm(delegateExecution, servicePort, packagePath, appoRestClientService);
         apm.execute();
     }
 }

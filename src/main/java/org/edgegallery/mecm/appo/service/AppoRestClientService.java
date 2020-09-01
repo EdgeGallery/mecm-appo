@@ -19,7 +19,6 @@ package org.edgegallery.mecm.appo.service;
 import lombok.Getter;
 import lombok.Setter;
 import org.edgegallery.mecm.appo.utils.AppoRestClient;
-import org.edgegallery.mecm.appo.utils.AppoSslConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +45,6 @@ public class AppoRestClientService {
      * @return rest client.
      */
     public AppoRestClient getAppoRestClient() {
-        return new AppoRestClient(new AppoSslConfiguration(isSslEnabled, trustStorePath, trustStorePasswd,
-                useDefaultStore));
+        return new AppoRestClient(isSslEnabled.equals("true"), trustStorePath, trustStorePasswd);
     }
 }

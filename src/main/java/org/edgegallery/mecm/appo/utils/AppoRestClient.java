@@ -46,7 +46,8 @@ public class AppoRestClient {
 
     private Map<String, String> headerMap;
     private HttpEntity data = null;
-    private AppoBuildClient buildClient;
+    private AppoBuildClient clientBuilder;
+    private Boolean isSslEnable;
 
     /**
      * Creates rest client instance.
@@ -56,17 +57,18 @@ public class AppoRestClient {
 
         addHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
         addHeader("Accept", ContentType.APPLICATION_JSON.toString());
-        this.buildClient = new AppoBuildClient(null);
+        this.clientBuilder = new AppoBuildClient(false, null, null);
     }
 
     /**
      * Creates rest client instance.
      */
-    public AppoRestClient(AppoSslConfiguration appoSslConfiguration) {
+    public AppoRestClient(Boolean isSslEnabled, String trustStorePath, String trustStorePasswd) {
+        isSslEnable = isSslEnabled;
         headerMap = new HashMap<>();
         addHeader("Content-Type", ContentType.APPLICATION_JSON.toString());
         addHeader("Accept", ContentType.APPLICATION_JSON.toString());
-        buildClient = new AppoBuildClient(appoSslConfiguration);
+        clientBuilder = new AppoBuildClient(isSslEnabled, trustStorePath, trustStorePasswd);
     }
 
     /**
@@ -164,8 +166,7 @@ public class AppoRestClient {
         CloseableHttpResponse httpclient = null;
         try {
             URL url;
-            AppoSslConfiguration sslConfig = buildClient.getAppoSslConfiguration();
-            if (sslConfig != null && "true".equals(sslConfig.getIsSslEnabled())) {
+            if (isSslEnable.equals(true)) {
                 url = new URL("https://" + uri);
             } else {
                 url = new URL("http://" + uri);
@@ -186,7 +187,7 @@ public class AppoRestClient {
                     throw new AppoException("Method not allowed");
             }
         } catch (IOException | AppoException e) {
-            throw new AppoException("Failed to send request " + e.getMessage());
+            throw new AppoException("Failed to send request ");
         }
         return httpclient;
     }
@@ -198,7 +199,7 @@ public class AppoRestClient {
         for (Map.Entry<String, String> entry : headerMap.entrySet()) {
             httpGet.addHeader(entry.getKey(), entry.getValue());
         }
-        client = buildClient.buildHttpClient(httpGet);
+        client = clientBuilder.buildClient();
         return client.execute(httpGet);
     }
 
@@ -210,7 +211,7 @@ public class AppoRestClient {
             httpPost.addHeader(entry.getKey(), entry.getValue());
         }
         httpPost.setEntity(data);
-        client = buildClient.buildHttpClient(httpPost);
+        client = clientBuilder.buildClient();
 
         return client.execute(httpPost);
     }
@@ -223,7 +224,7 @@ public class AppoRestClient {
             httpDelete.addHeader(entry.getKey(), entry.getValue());
         }
 
-        client = buildClient.buildHttpClient(httpDelete);
+        client = clientBuilder.buildClient();
         return client.execute(httpDelete);
     }
 }

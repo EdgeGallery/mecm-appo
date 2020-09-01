@@ -31,7 +31,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
     public static final Logger LOGGER = LoggerFactory.getLogger(AppInstanceInfoDb.class);
 
     private AppInstanceInfoService appInstanceInfoService;
-    private DelegateExecution delegateExecution;
+    private DelegateExecution execution;
     private String operationType;
 
     /**
@@ -41,7 +41,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * @param appInstanceInfoService app instance info serivce
      */
     public AppInstanceInfoDb(DelegateExecution delegateExecution, AppInstanceInfoService appInstanceInfoService) {
-        this.delegateExecution = delegateExecution;
+        this.execution = delegateExecution;
         this.appInstanceInfoService = appInstanceInfoService;
         operationType = (String) delegateExecution.getVariable("operationType");
     }
@@ -52,20 +52,20 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
     public void execute() {
         switch (operationType) {
             case "insert":
-                insert(delegateExecution);
+                insert(execution);
                 break;
             case "update":
-                update(delegateExecution);
+                update(execution);
                 break;
             case "get":
-                get(delegateExecution);
+                get(execution);
                 break;
             case "delete":
-                delete(delegateExecution);
+                delete(execution);
                 break;
             default:
                 LOGGER.info("Invalid DB action...{}", operationType);
-                setProcessflowExceptionResponseAttributes(delegateExecution, "Invalid DB action",
+                setProcessflowExceptionResponseAttributes(execution, "Invalid DB action",
                         Constants.PROCESS_FLOW_ERROR);
         }
     }
@@ -91,11 +91,11 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo.setOperationalStatus("Creating");
             appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
             setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
-            LOGGER.info("App instance info record inserted ");
+            LOGGER.info("App instance info record added ");
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, "DB Insertion failed",
+            LOGGER.info("Failed to add app instance info record {}", e.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to add app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
-            throw new AppoException("Failed to insert record into DB" + e.getMessage());
         }
         return appInstanceInfo;
     }
@@ -120,9 +120,9 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             delegateExecution.setVariable("app_instance_info", dataValue);
             setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to get record from DB",
-                    "500");
-            throw new AppoException("Failed to get record from DB" + e.getMessage());
+            LOGGER.info("Failed to get app instance info record {}", e.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to get app instance info record",
+                    Constants.PROCESS_FLOW_ERROR);
         }
         return appInstanceInfo;
     }
@@ -159,9 +159,9 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfoService.updateAppInstanceInfo(tenantId, appInstanceInfo);
             setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, "DB get failed",
+            LOGGER.info("Failed to update app instance info record {}", e.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
-            throw new AppoException("Failed to update record in DB" + e.getMessage());
         }
         return appInstanceInfo;
     }
@@ -180,9 +180,9 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfoService.deleteAppInstanceInfo(tenantId, appInstanceId);
             setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, "DB get failed",
+            LOGGER.info("Failed to delete app instance info record {}", e.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to delete app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
-            throw new AppoException("Failed to delete record from DB" + e.getMessage());
         }
     }
 }
