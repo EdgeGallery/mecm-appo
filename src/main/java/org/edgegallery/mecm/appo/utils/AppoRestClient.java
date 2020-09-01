@@ -22,7 +22,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.HttpMethod;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -173,13 +172,13 @@ public class AppoRestClient {
             }
 
             switch (method) {
-                case HttpMethod.GET:
+                case Constants.GET:
                     httpclient = doGet(url);
                     break;
-                case HttpMethod.POST:
+                case Constants.POST:
                     httpclient = doPost(url);
                     break;
-                case HttpMethod.DELETE:
+                case Constants.DELETE:
                     httpclient = doDelete(url);
                     break;
                 default:

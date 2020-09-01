@@ -73,6 +73,7 @@ public abstract class ProcessflowAbstractTask {
         }
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
         delegateExecution.setVariable(FLOW_EXCEPTION, response);
+        delegateExecution.setVariable(ERROR_RESPONSE, response);
     }
 
     /**

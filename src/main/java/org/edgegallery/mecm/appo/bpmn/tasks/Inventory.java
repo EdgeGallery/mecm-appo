@@ -17,7 +17,6 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import java.io.IOException;
-import javax.ws.rs.HttpMethod;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -93,7 +92,7 @@ public class Inventory extends ProcessflowAbstractTask {
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
         String applcmUrl = urlUtil.getUrl(baseUrl + Constants.INVENTORY_APPLCM_URI);
 
-        try (CloseableHttpResponse response = client.sendRequest(HttpMethod.GET, applcmUrl)) {
+        try (CloseableHttpResponse response = client.sendRequest(Constants.GET, applcmUrl)) {
 
             JSONObject jsonResponse = getResponse(delegateExecution, response);
             if (jsonResponse == null) {
@@ -109,11 +108,11 @@ public class Inventory extends ProcessflowAbstractTask {
                 return;
             }
 
-            delegateExecution.setVariable("applcm_port", applcmPort);
-            setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
+            delegateExecution.setVariable(Constants.APPLCM_PORT, applcmPort);
+            setProcessflowResponseAttributes(delegateExecution, "success", Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException | IOException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, "Could not get applcm configuration",
-                    Constants.PROCESS_FLOW_ERROR);
+            setProcessflowExceptionResponseAttributes(delegateExecution,
+                    "Failed to fetch applcm configuration from inventory", Constants.PROCESS_FLOW_ERROR);
         }
     }
 
@@ -139,7 +138,7 @@ public class Inventory extends ProcessflowAbstractTask {
         urlUtil.addParams(Constants.MEC_HOST, mecHost);
         String mecUrl = urlUtil.getUrl(baseUrl + Constants.INVENTORY_MEC_HOST_URI);
 
-        try (CloseableHttpResponse response = client.sendRequest(HttpMethod.GET, mecUrl)) {
+        try (CloseableHttpResponse response = client.sendRequest(Constants.GET, mecUrl)) {
             if (response == null) {
                 LOGGER.info("doGet failed...");
                 return;
@@ -158,10 +157,10 @@ public class Inventory extends ProcessflowAbstractTask {
                 return;
             }
             delegateExecution.setVariable("applcm_ip", applcmIp);
-            setProcessflowResponseAttributes(delegateExecution, "OK", Constants.PROCESS_FLOW_SUCCESS);
+            setProcessflowResponseAttributes(delegateExecution, "success", Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException | IOException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, "Could not get MEC host configuration",
-                    Constants.PROCESS_FLOW_ERROR);
+            setProcessflowExceptionResponseAttributes(delegateExecution,
+                    "Failed to fetch host configuration from inventory", Constants.PROCESS_FLOW_ERROR);
         }
     }
 
@@ -192,7 +191,7 @@ public class Inventory extends ProcessflowAbstractTask {
             } else {
                 String responseStr = EntityUtils.toString(response.getEntity());
                 jsonResponse = (JSONObject) new JSONParser().parse(responseStr);
-                setProcessflowResponseAttributes(delegateExecution, "OK", String.valueOf(statusCode));
+                setProcessflowResponseAttributes(delegateExecution, "success", String.valueOf(statusCode));
             }
 
         } catch (IOException | ParseException | org.apache.http.ParseException e) {

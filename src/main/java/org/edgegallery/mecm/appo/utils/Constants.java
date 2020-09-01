@@ -70,6 +70,11 @@ public final class Constants {
     public static final int MAX_TENANTS = 10;
     public static final String MAX_LIMIT_REACHED_ERROR = "Max record limit exceeded";
 
+    public static final String SLASH = "/";
+    public static final String GET = "GET";
+    public static final String POST = "POST";
+    public static final String DELETE = "DELETE";
+
     private Constants() {
     }
 }
