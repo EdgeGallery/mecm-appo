@@ -117,24 +117,17 @@ public class AppoServiceImpl implements AppoService {
                 requestBodyParam);
         LOGGER.debug("Query application info response : {} ", response.getResponse());
 
-        if (response.getResponseCode() == HttpStatus.OK.value()) {
-            return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);
+        if (response.getResponseCode() < Constants.HTTP_STATUS_CODE_200
+                || response.getResponseCode() > Constants.HTTP_STATUS_CODE_299) {
+            return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<AppoResponse> getAllAppInstance(String accessToken, String tenantId) {
-        LOGGER.debug("Query all application info request received...");
-
-        Map<String, String> requestBodyParam = new HashMap<>();
-        requestBodyParam.put(Constants.TENANT_ID, tenantId);
-        LOGGER.debug("Get all application instance input params: {}", requestBodyParam);
-
-        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
-
-        return new ResponseEntity<>(new AppoResponse(HttpStatus.METHOD_NOT_ALLOWED), HttpStatus.METHOD_NOT_ALLOWED);
+        LOGGER.debug("Currently this api not supported...");
+        return null;
     }
 
     @Override
@@ -156,32 +149,22 @@ public class AppoServiceImpl implements AppoService {
     }
 
     @Override
-    public ResponseEntity<AppoResponse> queryKpi(String accessToken,
-                                                 String tenantId,
-                                                 String hostIp) {
+    public ResponseEntity<AppoResponse> queryKpi(String accessToken, String tenantId, String hostIp) {
         LOGGER.debug("Query KPI request received...");
 
-        Map<String, String> requestBodyParam = new HashMap<>();
-        requestBodyParam.put(Constants.TENANT_ID, tenantId);
-        requestBodyParam.put(Constants.MEC_HOST, hostIp);
-        LOGGER.debug("Request input: {}", requestBodyParam);
-
-        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
-
-        AppoProcessFlowResponse response = processflowService.executeProcessSync("queryKpi", requestBodyParam);
-        LOGGER.debug("Query response : {} ", response.getResponse());
-
-        if (response.getResponseCode() == HttpStatus.OK.value()) {
-            return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);
-        }
-
-        return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return platformInfoQuery("queryKpi", accessToken, tenantId, hostIp);
     }
 
     @Override
     public ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp) {
         LOGGER.debug("Query MEP capabilities request received...");
 
+        return platformInfoQuery("queryEdgeCapabilities", accessToken, tenantId, hostIp);
+    }
+
+    private ResponseEntity<AppoResponse> platformInfoQuery(String process, String accessToken, String tenantId,
+                                                           String hostIp) {
+
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.MEC_HOST, hostIp);
@@ -189,14 +172,12 @@ public class AppoServiceImpl implements AppoService {
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
-        AppoProcessFlowResponse response = processflowService.executeProcessSync("queryEdgeCapabilities",
-                requestBodyParam);
+        AppoProcessFlowResponse response = processflowService.executeProcessSync(process, requestBodyParam);
         LOGGER.debug("Query response : {} ", response.getResponse());
 
         if (response.getResponseCode() == HttpStatus.OK.value()) {
             return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);
         }
-
         return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

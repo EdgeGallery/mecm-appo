@@ -78,23 +78,10 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
 
         String processInstanceId = null;
         try {
-            Map<String, Object> wfInputParmas;
-            wfInputParmas = convertInputToObjectMap(requestInput);
 
-            String requestID = getRequestID(wfInputParmas);
-
-            RuntimeService runtimeService = getEngineServices().getRuntimeService();
-            ProcessInstance processInstance = runtimeService
-                    .startProcessInstanceByKey(processKey, requestID, wfInputParmas);
+            ProcessInstance processInstance = executeProcessDefinition(requestInput, processKey);
             processInstanceId = processInstance.getId();
-
-            String processInstanceState = "RUNNING";
-            if (processInstance.isEnded()) {
-                processInstanceState = "ENDED";
-            }
-
-            LOGGER.debug("processKey: {}  processInstanceId: {} Status: {} ", processKey,
-                    processInstanceId, processInstanceState);
+            LOGGER.debug("processInstanceId: {}", processInstanceId);
         } catch (Exception e) {
             AppoProcessFlowResponse appoProcessFlowResponse = new AppoProcessFlowResponse();
             appoProcessFlowResponse.setResponse("Error occurred while executing the process: " + e.getMessage());
@@ -111,22 +98,8 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
         String processInstanceId = null;
         AppoProcessFlowResponse appoProcessFlowResponse = null;
         try {
-            Map<String, Object> wfInputParmas;
-            wfInputParmas = convertInputToObjectMap(requestInput);
-
-            String requestID = getRequestID(wfInputParmas);
-
-            RuntimeService runtimeService = getEngineServices().getRuntimeService();
-            ProcessInstance processInstance = runtimeService
-                    .startProcessInstanceByKey(processKey, requestID, wfInputParmas);
+            ProcessInstance processInstance = executeProcessDefinition(requestInput, processKey);
             processInstanceId = processInstance.getId();
-
-            String processInstanceState = "RUNNING";
-            if (processInstance.isEnded()) {
-                processInstanceState = "ENDED";
-            }
-            LOGGER.debug("processName: {}  processInstanceId: {} Status: {} ", processKey, processInstanceId,
-                    processInstanceState);
 
             appoProcessFlowResponse = getProcessInstanceData(processInstance);
             if (appoProcessFlowResponse != null) {
@@ -134,13 +107,36 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
             }
         } catch (Exception e) {
             appoProcessFlowResponse = new AppoProcessFlowResponse();
-            String response = "Workflow execution failed due to error during execution : " + e.getMessage();
+            String response = "Process definition execution failed due to error during execution : " + e.getMessage();
             appoProcessFlowResponse.setResponse(response);
             appoProcessFlowResponse.setProcessInstanceID(processInstanceId);
             appoProcessFlowResponse.setResponseCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             throw new AppoProcessflowException(appoProcessFlowResponse.toString());
         }
         return appoProcessFlowResponse;
+    }
+
+    private ProcessInstance executeProcessDefinition(Map<String, String> requestInput, String processKey) {
+        String processInstanceId = null;
+
+        Map<String, Object> wfInputParmas;
+        wfInputParmas = convertInputToObjectMap(requestInput);
+
+        String requestID = getRequestID(wfInputParmas);
+
+        RuntimeService runtimeService = getEngineServices().getRuntimeService();
+        ProcessInstance processInstance = runtimeService
+                .startProcessInstanceByKey(processKey, requestID, wfInputParmas);
+        processInstanceId = processInstance.getId();
+
+        String processInstanceState = "RUNNING";
+        if (processInstance.isEnded()) {
+            processInstanceState = "ENDED";
+        }
+
+        LOGGER.debug("processKey: {}  processInstanceId: {} Status: {} ", processKey,
+                processInstanceId, processInstanceState);
+        return processInstance;
     }
 
     /**
