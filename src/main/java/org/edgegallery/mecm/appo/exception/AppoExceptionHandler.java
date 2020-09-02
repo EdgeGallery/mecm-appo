@@ -84,7 +84,8 @@ public class AppoExceptionHandler {
     public ResponseEntity<AppoExceptionResponse> handleConstraintViolationException(
             ConstraintViolationException ex) {
         AppoExceptionResponse response = new AppoExceptionResponse(LocalDateTime.now(),
-                "input validation failed", Collections.singletonList("URL parameter validation failed"));
+            "input validation failed", Collections.singletonList("URL parameter validation failed"));
+        LOGGER.info("Constraint violation error: {}", response);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -115,5 +116,19 @@ public class AppoExceptionHandler {
                 "No such element", Collections.singletonList(ex.getMessage()));
         LOGGER.info("No such element error: {}", response);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Returns error when runtime error happen.
+     *
+     * @param ex exception while processing request
+     * @return response entity with error code and message
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<AppoExceptionResponse> handleRuntimeException(RuntimeException ex) {
+        AppoExceptionResponse response = new AppoExceptionResponse(LocalDateTime.now(),
+                "Error while processing request", Collections.singletonList("Error while process request"));
+        LOGGER.info("Internal server error: {}", response);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
