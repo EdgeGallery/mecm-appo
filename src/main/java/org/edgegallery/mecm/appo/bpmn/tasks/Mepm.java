@@ -183,16 +183,16 @@ public class Mepm extends ProcessflowAbstractTask {
 
         int statusCode = sendRequest(appoRestClient, Constants.DELETE, url);
         if (!(statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299)) {
+            String appPackageId = null;
             try {
                 if (appInstanceInfo != null) {
-
+                    appPackageId = appInstanceInfo.getAppPackageId();
                     String appPackagePath = Constants.PACKAGES_PATH + appInstanceInfo.getAppInstanceId()
-                            + Constants.SLASH + appInstanceInfo.getAppPackageId()
-                            + Constants.APP_PKG_EXT;
+                            + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
                     Files.delete(Paths.get(appPackagePath));
                 }
             } catch (IOException e) {
-                LOGGER.error("Failed to delete application package {}", appInstanceInfo.getAppPackageId());
+                LOGGER.error("Failed to delete application package {}", appPackageId);
             }
         }
     }
