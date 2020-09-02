@@ -31,7 +31,7 @@ public class AppoExceptionHandlerTest {
 
     @Test
     public void testAppoException() {
-        appoException = new AppoException(AppoConstantsTest.Message);
+        appoException = new AppoException(AppoConstantsTest.MESSAGE);
         appoExceptionHandler.exception(appoException);
     }
 }

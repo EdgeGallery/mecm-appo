@@ -36,30 +36,30 @@ public class GetRequestInputsTest {
 
     @Test
     public void InputParametersCreateAppInstance() {
-        Mockito.when(execution.getVariable(AppoConstantsTest.Request_Action)).thenReturn("CreateAppInstance");
-        Mockito.when(execution.getVariable(AppoConstantsTest.Access_Token)).thenReturn(AppoConstantsTest.Access_Token);
-        Mockito.when(execution.getVariable(AppoConstantsTest.App_Package_Id))
-                .thenReturn(AppoConstantsTest.App_Package_Id);
-        Mockito.when(execution.getVariable(AppoConstantsTest.Mec_Host)).thenReturn(AppoConstantsTest.Mec_Host);
-        Mockito.when(execution.getVariable(AppoConstantsTest.App_Instance_Descripton))
-                .thenReturn(AppoConstantsTest.App_Instance_Descripton);
-        Mockito.when(execution.getVariable(AppoConstantsTest.App_Name)).thenReturn(AppoConstantsTest.App_Name);
-        Mockito.when(execution.getVariable(AppoConstantsTest.App_Instance_Id))
-                .thenReturn(AppoConstantsTest.App_Instance_Id);
+        Mockito.when(execution.getVariable(AppoConstantsTest.REQUEST_ACTION)).thenReturn("CreateAppInstance");
+        Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
+        Mockito.when(execution.getVariable(AppoConstantsTest.APP_PACKAGE_ID))
+                .thenReturn(AppoConstantsTest.APP_PACKAGE_ID);
+        Mockito.when(execution.getVariable(AppoConstantsTest.MEC_HOST)).thenReturn(AppoConstantsTest.MEC_HOST);
+        Mockito.when(execution.getVariable(AppoConstantsTest.APP_INSTANCE_DESCRIPTION))
+                .thenReturn(AppoConstantsTest.APP_INSTANCE_DESCRIPTION);
+        Mockito.when(execution.getVariable(AppoConstantsTest.APP_NAME)).thenReturn(AppoConstantsTest.APP_NAME);
+        Mockito.when(execution.getVariable(AppoConstantsTest.APP_INSTANCE_ID))
+                .thenReturn(AppoConstantsTest.APP_INSTANCE_ID);
         getRequestInputs.execute(execution);
     }
 
     @Test
     public void InputParametersQuery() {
-        Mockito.when(execution.getVariable(AppoConstantsTest.Request_Action)).thenReturn("QueryAppInstance");
-        Mockito.when(execution.getVariable(AppoConstantsTest.Access_Token)).thenReturn(AppoConstantsTest.Access_Token);
+        Mockito.when(execution.getVariable(AppoConstantsTest.REQUEST_ACTION)).thenReturn("QueryAppInstance");
+        Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
         getRequestInputs.execute(execution);
     }
 
     @Test
     public void InputParametersQueryKPI() {
-        Mockito.when(execution.getVariable(AppoConstantsTest.Request_Action)).thenReturn("QueryKPI");
-        Mockito.when(execution.getVariable(AppoConstantsTest.Access_Token)).thenReturn(AppoConstantsTest.Access_Token);
+        Mockito.when(execution.getVariable(AppoConstantsTest.REQUEST_ACTION)).thenReturn("QueryKPI");
+        Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
         getRequestInputs.execute(execution);
     }
 }

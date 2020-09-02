@@ -29,29 +29,29 @@ public class AppInstanceInfoTest {
 
     @Before
     public void setUp() {
-        appInstanceInfo.setAppDescriptor(AppoConstantsTest.App_Descriptor);
+        appInstanceInfo.setAppDescriptor(AppoConstantsTest.APP_DESCRIPTOR);
         appInstanceInfo.setAppdId(AppoConstantsTest.APP_ID);
-        appInstanceInfo.setAppInstanceId(AppoConstantsTest.App_Instance_Id);
-        appInstanceInfo.setAppName(AppoConstantsTest.App_Name);
-        appInstanceInfo.setApplcmHost(AppoConstantsTest.Applcm_LCM_HOST);
-        appInstanceInfo.setAppPackageId(AppoConstantsTest.App_Package_Id);
-        appInstanceInfo.setMecHost(AppoConstantsTest.Mec_Host);
-        appInstanceInfo.setTenant(AppoConstantsTest.Tenant);
-        appInstanceInfo.setOperationalStatus("operationalStatus");
-        appInstanceInfo.setOperationInfo("operationalInfo");
+        appInstanceInfo.setAppInstanceId(AppoConstantsTest.APP_INSTANCE_ID);
+        appInstanceInfo.setAppName(AppoConstantsTest.APP_NAME);
+        appInstanceInfo.setApplcmHost(AppoConstantsTest.APPLCM_LCM_HOST);
+        appInstanceInfo.setAppPackageId(AppoConstantsTest.APP_PACKAGE_ID);
+        appInstanceInfo.setMecHost(AppoConstantsTest.MEC_HOST);
+        appInstanceInfo.setTenant(AppoConstantsTest.TENANT);
+        appInstanceInfo.setOperationalStatus(AppoConstantsTest.OPERATIONAL_STATUS);
+        appInstanceInfo.setOperationInfo(AppoConstantsTest.OPERATIONAL_INFO);
     }
 
     @Test
     public void testAppInstanceInfoDto() {
-        Assert.assertEquals(AppoConstantsTest.App_Descriptor, appInstanceInfo.getAppDescriptor());
+        Assert.assertEquals(AppoConstantsTest.APP_DESCRIPTOR, appInstanceInfo.getAppDescriptor());
         Assert.assertEquals(AppoConstantsTest.APP_ID, appInstanceInfo.getAppdId());
-        Assert.assertEquals(AppoConstantsTest.App_Instance_Id, appInstanceInfo.getAppInstanceId());
-        Assert.assertEquals(AppoConstantsTest.App_Name, appInstanceInfo.getAppName());
-        Assert.assertEquals(AppoConstantsTest.Applcm_LCM_HOST, appInstanceInfo.getApplcmHost());
-        Assert.assertEquals(AppoConstantsTest.App_Package_Id, appInstanceInfo.getAppPackageId());
-        Assert.assertEquals(AppoConstantsTest.Mec_Host, appInstanceInfo.getMecHost());
-        Assert.assertEquals(AppoConstantsTest.Tenant, appInstanceInfo.getTenant());
-        Assert.assertEquals(AppoConstantsTest.Operational_Status, appInstanceInfo.getOperationalStatus());
-        Assert.assertEquals(AppoConstantsTest.Operational_Info, appInstanceInfo.getOperationInfo());
+        Assert.assertEquals(AppoConstantsTest.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
+        Assert.assertEquals(AppoConstantsTest.APP_NAME, appInstanceInfo.getAppName());
+        Assert.assertEquals(AppoConstantsTest.APPLCM_LCM_HOST, appInstanceInfo.getApplcmHost());
+        Assert.assertEquals(AppoConstantsTest.APP_PACKAGE_ID, appInstanceInfo.getAppPackageId());
+        Assert.assertEquals(AppoConstantsTest.MEC_HOST, appInstanceInfo.getMecHost());
+        Assert.assertEquals(AppoConstantsTest.TENANT, appInstanceInfo.getTenant());
+        Assert.assertEquals(AppoConstantsTest.OPERATIONAL_STATUS, appInstanceInfo.getOperationalStatus());
+        Assert.assertEquals(AppoConstantsTest.OPERATIONAL_INFO, appInstanceInfo.getOperationInfo());
     }
 }

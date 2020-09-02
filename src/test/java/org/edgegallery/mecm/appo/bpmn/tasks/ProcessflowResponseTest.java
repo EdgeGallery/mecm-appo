@@ -20,16 +20,16 @@ public class ProcessflowResponseTest {
 
     @Test
     public void testExecuteSuccess() throws Exception {
-        Mockito.when(execution.getVariable(AppoConstantsTest.Response_Type)).thenReturn("success");
-        Mockito.when(execution.getVariable(AppoConstantsTest.Response)).thenReturn(AppoConstantsTest.Applcm_Ip);
-        Mockito.when(execution.getVariable(AppoConstantsTest.Response_Code)).thenReturn(AppoConstantsTest.Applcm_Port);
+        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_TYPE)).thenReturn("success");
+        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE)).thenReturn(AppoConstantsTest.APPLCM_IP);
+        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_CODE)).thenReturn(AppoConstantsTest.APPLCM_PORT);
         processflowResponse.execute(execution);
     }
 
     @Test
     public void testExecuteFailure() throws Exception {
-        Mockito.when(execution.getVariable(AppoConstantsTest.Response_Type)).thenReturn("failure");
-        Mockito.when(execution.getVariable(AppoConstantsTest.Response_Code)).thenReturn(AppoConstantsTest.Applcm_Port);
+        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_TYPE)).thenReturn("failure");
+        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_CODE)).thenReturn(AppoConstantsTest.APPLCM_PORT);
         processflowResponse.execute(execution);
     }
 }

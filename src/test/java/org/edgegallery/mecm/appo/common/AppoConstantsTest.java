@@ -18,51 +18,54 @@ package org.edgegallery.mecm.appo.common;
 
 public class AppoConstantsTest {
 
-    public static final String Access_Token = "access_token";
+    public static final String ACCESS_TOKEN = "access_token";
 
-    public static final String App_Descriptor = "app_descriptor";
+    public static final String APP_DESCRIPTOR = "app_descriptor";
 
     public static final String APP_ID = "AppId";
 
-    public static final String App_Instance_Id = "app_instance_id";
+    public static final String APP_INSTANCE_ID = "app_instance_id";
 
-    public static final String App_Package_Id = "app_package_id";
+    public static final String APP_PACKAGE_ID = "app_package_id";
 
-    public static final String Action = "action";
+    public static final String ACTION = "action";
 
-    public static final String Applcm_Ip = "applcm_ip";
+    public static final String APPLCM_IP = "applcm_ip";
 
-    public static final String Applcm_LCM_HOST = "applcm_lcm_host";
+    public static final String APPLCM_LCM_HOST = "applcm_lcm_host";
 
-    public static final String Applcm_Port = "applcm_port";
+    public static final String APPLCM_PORT = "applcm_port";
 
-    public static final String App_Instance_Descripton = "app_instance_description";
+    public static final String APP_INSTANCE_DESCRIPTION = "app_instance_description";
 
-    public static final String App_Name = "app_name";
+    public static final String APP_NAME = "app_name";
 
-    public static final String Download = "download";
+    public static final String DOWNLOAD = "download";
 
     public static final String HOST_IP = "host_ip";
 
-    public static final String Mec_Host = "mec_host";
+    public static final String MEC_HOST = "mec_host";
 
-    public static final String Message = "message";
+    public static final String MESSAGE = "message";
 
-    public static final String Operation_Type = "operationType";
+    public static final String OPERATION_TYPE = "operationType";
 
-    public static final String Request_Action = "requestAction";
+    public static final String REQUEST_ACTION = "requestAction";
 
-    public static final String Response_Type = "responseType";
+    public static final String RESPONSE_TYPE = "responseType";
 
-    public static final String Response = "Response";
+    public static final String RESPONSE = "Response";
 
-    public static final String Response_Code = "ResponseCode";
+    public static final String RESPONSE_CODE = "ResponseCode";
 
-    public static final String Tenant = "tenant";
+    public static final String TENANT = "tenant";
 
-    public static final String Tenant_Id = "tenantId";
+    public static final String TENANT_ID = "tenantId";
 
-    public static final String Operational_Status = "operationalStatus";
+    public static final String OPERATIONAL_STATUS = "operationalStatus";
 
-    public static final String Operational_Info = "operationalInfo";
+    public static final String OPERATIONAL_INFO = "operationalInfo";
+
+    private AppoConstantsTest() {
+    }
 }
