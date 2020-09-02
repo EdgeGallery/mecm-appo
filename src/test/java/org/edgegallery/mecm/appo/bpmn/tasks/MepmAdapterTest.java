@@ -37,54 +37,42 @@ public class MepmAdapterTest {
     ExecutionImpl execution;
 
     @Test
-    public void testInstantiate() {
+    public void testInstantiate() throws Exception {
         Mockito.when(execution.getVariable(AppoConstantsTest.ACTION)).thenReturn("instantiate");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        assertThrows(Exception.class, () -> {
-            mepmAdapter.execute(execution);
-        });
+        mepmAdapter.execute(execution);
     }
 
     @Test
-    public void testQuery() {
+    public void testQuery() throws Exception {
         Mockito.when(execution.getVariable(AppoConstantsTest.ACTION)).thenReturn("query");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        assertThrows(Exception.class, () -> {
-            mepmAdapter.execute(execution);
-        });
+        mepmAdapter.execute(execution);
     }
 
     @Test
-    public void testTerminate() {
+    public void testTerminate() throws Exception {
         Mockito.when(execution.getVariable(AppoConstantsTest.ACTION)).thenReturn("terminate");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        assertThrows(Exception.class, () -> {
-            mepmAdapter.execute(execution);
-        });
+        mepmAdapter.execute(execution);
     }
 
     @Test
-    public void testQuerykpi() {
+    public void testQuerykpi() throws Exception {
         Mockito.when(execution.getVariable(AppoConstantsTest.ACTION)).thenReturn("querykpi");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
-        assertThrows(Exception.class, () -> {
-            mepmAdapter.execute(execution);
-        });
+        mepmAdapter.execute(execution);
     }
 
     @Test
-    public void testQueryEdgeCapabilities() {
+    public void testQueryEdgeCapabilities() throws Exception {
         Mockito.when(execution.getVariable("action")).thenReturn("queryEdgeCapabilities");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
-        assertThrows(Exception.class, () -> {
-            mepmAdapter.execute(execution);
-        });
+        mepmAdapter.execute(execution);
     }
 }
