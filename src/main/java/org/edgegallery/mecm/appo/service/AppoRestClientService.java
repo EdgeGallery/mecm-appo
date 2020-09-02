@@ -27,17 +27,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppoRestClientService {
 
-    @Value("${SSL_ENABLED:false}")
+    @Value("${ssl.enabled}")
     private String isSslEnabled;
 
-    @Value("${SSL_TRUST_STORE:}")
+    @Value("${ssl.trust-store}")
     private String trustStorePath;
 
-    @Value("${SSL_TRUST_PASSWORD:}")
+    @Value("${ssl.trust-store-password}")
     private String trustStorePasswd;
-
-    @Value("${USE_DEFAULT_TRUST_STORE:}")
-    private String useDefaultStore;
 
     /**
      * Retrieves rest client.

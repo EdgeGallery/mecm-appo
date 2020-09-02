@@ -73,6 +73,7 @@ public final class Constants {
     public static final int MAX_TENANTS = 10;
     public static final String MAX_LIMIT_REACHED_ERROR = "Max record limit exceeded";
 
+    public static final String PACKAGES_PATH = "/usr/app/packages";
     public static final String SLASH = "/";
     public static final String APP_PKG_EXT = ".csar";
     public static final String GET = "GET";

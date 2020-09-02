@@ -38,7 +38,6 @@ public class Mepm extends ProcessflowAbstractTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(Mepm.class);
     private final DelegateExecution execution;
     private final String action;
-    private final String packagePath;
     private String baseUrl;
     private AppoRestClientService restClientService;
 
@@ -46,11 +45,10 @@ public class Mepm extends ProcessflowAbstractTask {
      * Creates an MEPM instance.
      *
      * @param delegateExecution delegate execution
-     * @param path              package path
+     * @param appoRestClientService   restclient service
      */
-    public Mepm(DelegateExecution delegateExecution, String path, AppoRestClientService appoRestClientService) {
+    public Mepm(DelegateExecution delegateExecution, AppoRestClientService appoRestClientService) {
         execution = delegateExecution;
-        packagePath = path;
         restClientService = appoRestClientService;
         baseUrl = "{applcm_ip}:{applcm_port}";
         action = (String) delegateExecution.getVariable("action");
@@ -125,7 +123,7 @@ public class Mepm extends ProcessflowAbstractTask {
         String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
-        String appPackagePath = packagePath + appInstanceInfo.getAppInstanceId()
+        String appPackagePath = Constants.PACKAGES_PATH + appInstanceInfo.getAppInstanceId()
                 + Constants.SLASH
                 + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
 
@@ -188,7 +186,7 @@ public class Mepm extends ProcessflowAbstractTask {
             try {
                 if (appInstanceInfo != null) {
 
-                    String appPackagePath = packagePath + appInstanceInfo.getAppInstanceId()
+                    String appPackagePath = Constants.PACKAGES_PATH + appInstanceInfo.getAppInstanceId()
                             + Constants.SLASH + appInstanceInfo.getAppPackageId()
                             + Constants.APP_PKG_EXT;
                     Files.delete(Paths.get(appPackagePath));

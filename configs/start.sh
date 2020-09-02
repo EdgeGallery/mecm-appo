@@ -243,6 +243,42 @@ if [ ! "$valid_appodb_password" -eq "0" ] ; then
    exit 1
 fi
 
+if [ ! -z "$INVENTORY_ENDPOINT" ] ; then
+   validate_host_name "$INVENTORY_ENDPOINT"
+   valid_inventory_endpoint_name="$?"
+   if [ ! "$valid_inventory_endpoint_name" -eq "0" ] ; then
+      echo "invalid inventory service name"
+      exit 1
+   fi
+fi
+
+if [ ! -z "$INVENTORY_PORT" ] ; then
+   validate_port_num "$INVENTORY_PORT"
+   valid_INVENTORY_port="$?"
+   if [ ! "$valid_INVENTORY_port" -eq "0" ] ; then
+      echo "invalid INVENTORY port number"
+      exit 1
+   fi
+fi
+
+if [ ! -z "$APM_ENDPOINT" ] ; then
+   validate_host_name "$APM_ENDPOINT"
+   valid_apm_endpoint_name="$?"
+   if [ ! "$valid_apm_endpoint_name" -eq "0" ] ; then
+      echo "invalid apm service name"
+      exit 1
+   fi
+fi
+
+if [ ! -z "$APM_PORT" ] ; then
+   validate_port_num "$APM_PORT"
+   valid_APM_port="$?"
+   if [ ! "$valid_APM_port" -eq "0" ] ; then
+      echo "invalid APM port number"
+      exit 1
+   fi
+fi
+
 echo "Running APPO"
 umask 0027
 cd /usr/app || exit
