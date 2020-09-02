@@ -29,12 +29,11 @@ public class InventoryAdapter implements JavaDelegate {
     @Autowired
     private AppoRestClientService appoRestClientService;
 
-    @Value("${INVENTORY_ENDPOINT:mecm-inventory-service}")
+    @Value("${appo.endpoints.inventory.end-point}")
     private String inventoryService;
 
-    @Value("${INVENTORY_PORT:3201}")
+    @Value("${appo.endpoints.inventory.port}")
     private String inventoryServicePort;
-
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {

@@ -17,30 +17,33 @@
 ### Server port #########
 server:
   port: 8091
-  address: ${LISTEN_IP:0.0.0.0}
+  address: ${LISTEN_IP:}
   contextPath: /home
   tomcat:
     max-threads: 200
 
   ssl:
-    enabled: ${SSL_ENABLED:}
+    enabled: false
     protocol: TLS
     enabled-Protocols: [TLSv1.2]
     ciphers: [TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
               TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384]
 
     # Keystore
-    key-store: ${SSL_KEY_STORE_PATH:}
+    key-store: /usr/app/ssl/keystore.p12
     key-store-password: ${SSL_KEY_STORE_PASSWORD:}
-    key-store-type: ${SSL_KEY_STORE_TYPE:}
-    key-alias: ${SSL_KEY_ALIAS:}
+    key-store-type: ${SSL_KEY_STORE_TYPE:PKCS12}
+    key-alias: ${SSL_KEY_ALIAS:edgegallery}
+    trust-store: /usr/app/ssl/keystore.jks
+    trust-store-password: ${SSL_TRUST_PASSWORD:}
+
 spring:
   http:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
   datasource:
-    url: jdbc:postgresql://${APPO_DB_HOST:}:${APPO_DB_PORT:}/${APPO_DB:}
+    url: jdbc:postgresql://${APPO_DB_HOST:postgres}:${APPO_DB_PORT:5432}/${APPO_DB:appodb}
     username: ${APPO_DB_USER:}
     password: ${APPO_DB_PASSWORD:}
   jpa:
@@ -63,3 +66,10 @@ appo:
     maxpool-size: 50
     queue-capacity: 500
 
+  endpoints:
+    inventory:
+      end-point: ${INVENTORY_ENDPOINT:mecm-inventory-service}
+      port: ${INVENTORY_PORT:8093}
+    apm:
+      end-point: ${APM_ENDPOINT:mecm-apm-service}
+      port: ${APM_PORT:8092}

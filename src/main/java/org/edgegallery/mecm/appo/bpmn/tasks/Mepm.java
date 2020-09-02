@@ -38,7 +38,6 @@ public class Mepm extends ProcessflowAbstractTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(Mepm.class);
     private final DelegateExecution execution;
     private final String action;
-    private final String packagePath;
     private String baseUrl;
     private AppoRestClientService restClientService;
 
@@ -46,11 +45,10 @@ public class Mepm extends ProcessflowAbstractTask {
      * Creates an MEPM instance.
      *
      * @param delegateExecution delegate execution
-     * @param path              package path
+     * @param appoRestClientService   restclient service
      */
-    public Mepm(DelegateExecution delegateExecution, String path, AppoRestClientService appoRestClientService) {
+    public Mepm(DelegateExecution delegateExecution, AppoRestClientService appoRestClientService) {
         execution = delegateExecution;
-        packagePath = path;
         restClientService = appoRestClientService;
         baseUrl = "{applcm_ip}:{applcm_port}";
         action = (String) delegateExecution.getVariable("action");
@@ -83,131 +81,161 @@ public class Mepm extends ProcessflowAbstractTask {
         }
     }
 
+    private String resolveUrlPathParameters(String uri) {
+        LOGGER.info("Resolve url path parameters...");
+        UrlUtil urlUtil;
+        try {
+            urlUtil = new UrlUtil();
+
+            String applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
+            String applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
+            String tenant = (String) execution.getVariable(Constants.TENANT_ID);
+
+            urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
+            urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
+            urlUtil.addParams(Constants.TENANT_ID, tenant);
+
+            AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+            if (appInstanceInfo != null) {
+                urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
+            }
+        } catch (IllegalArgumentException e) {
+            throw new AppoException(e.getMessage());
+        }
+        return urlUtil.getUrl(uri);
+    }
+
     private void instantiate(DelegateExecution execution) {
         LOGGER.info("Send Instantiate request to applcm");
+        String url;
+        try {
+            url = resolveUrlPathParameters(baseUrl + Constants.APPLCM_INSTANTIATE_URI);
 
-        String applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
-        String applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
+        } catch (AppoException e) {
+            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+            return;
+        }
 
         AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
 
-        UrlUtil urlUtil = new UrlUtil();
-        urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
-        urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
-        urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
+        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
 
         String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-
-        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
-        appoRestClient.addFileEntity(packagePath + appInstanceInfo.getAppInstanceId()
-                + Constants.SLASH + appInstanceInfo.getAppPackageId());
+        String appPackagePath = Constants.PACKAGES_PATH + appInstanceInfo.getAppInstanceId()
+                + Constants.SLASH
+                + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
 
-        String instantiateUrl = urlUtil.getUrl(baseUrl + Constants.APPLCM_INSTANTIATE_URI);
+        appoRestClient.addFileEntity(appPackagePath);
 
-        sendRequest(appoRestClient, Constants.POST, instantiateUrl);
+        sendRequest(appoRestClient, Constants.POST, url);
     }
 
     private void query(DelegateExecution execution) {
         LOGGER.info("Query app instance ");
+        String url;
+        try {
+            url = resolveUrlPathParameters(baseUrl + Constants.APPLCM_INSTANTIATE_URI);
 
-        String applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
-        String applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
+        } catch (AppoException e) {
+            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+            LOGGER.info("Query application instance failed {}", e.getMessage());
+            return;
+        }
 
-        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable("app_instance_info");
-
-        UrlUtil urlUtil = new UrlUtil();
-        urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
-        urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
-        urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
+        String mecHost = null;
+        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+        if (appInstanceInfo != null) {
+            mecHost = appInstanceInfo.getMecHost();
+        }
 
         String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
         AppoRestClient appoRestClient = restClientService.getAppoRestClient();
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
-        appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
+        appoRestClient.addHeader(HOST_IP, mecHost);
 
-        String queryUrl = urlUtil.getUrl(baseUrl + Constants.APPLCM_INSTANTIATE_URI);
-
-        sendRequest(appoRestClient, Constants.GET, queryUrl);
+        sendRequest(appoRestClient, Constants.GET, url);
     }
 
     private void terminate(DelegateExecution execution) {
         LOGGER.info("Terminate application instance");
 
-        String applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
-        String applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
+        String url;
+        try {
+            url = resolveUrlPathParameters(baseUrl + Constants.APPLCM_INSTANTIATE_URI);
+        } catch (AppoException e) {
+            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+            return;
+        }
 
-        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable("app_instance_info");
+        String host = null;
+        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+        if (appInstanceInfo != null) {
+            host = appInstanceInfo.getMecHost();
+        }
 
-        UrlUtil urlUtil = new UrlUtil();
-        urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
-        urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
-        urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
-
-        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
         AppoRestClient appoRestClient = restClientService.getAppoRestClient();
+
+        appoRestClient.addHeader(HOST_IP, host);
+        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
-        appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
 
-        String terminateUrl = urlUtil.getUrl(baseUrl + Constants.APPLCM_INSTANTIATE_URI);
-
-        int statusCode = sendRequest(appoRestClient, Constants.DELETE, terminateUrl);
+        int statusCode = sendRequest(appoRestClient, Constants.DELETE, url);
         if (!(statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299)) {
+            String appPackageId = null;
             try {
-                Files.delete(Paths.get(packagePath + appInstanceInfo.getAppInstanceId()
-                        + Constants.SLASH + appInstanceInfo.getAppPackageId()));
+                if (appInstanceInfo != null) {
+                    appPackageId = appInstanceInfo.getAppPackageId();
+                    String appPackagePath = Constants.PACKAGES_PATH + appInstanceInfo.getAppInstanceId()
+                            + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
+                    Files.delete(Paths.get(appPackagePath));
+                }
             } catch (IOException e) {
-                LOGGER.error("Failed to delete application package" + appInstanceInfo.getAppPackageId());
+                LOGGER.error("Failed to delete application package {}", appPackageId);
             }
         }
     }
 
     private void querykpi(DelegateExecution execution) {
-        LOGGER.info("Send query request to applcm");
+        LOGGER.info("Send query kpi request to applcm");
 
-        String applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
-        String applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
-
-        UrlUtil urlUtil = new UrlUtil();
-        urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
-        urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
-
-        String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
-        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-
-        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
-        appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
-        appoRestClient.addHeader(HOST_IP, mecHost);
-
-        String kpiUrl = urlUtil.getUrl(baseUrl + Constants.APPLCM_QUERY_KPI_URI);
-        sendRequest(appoRestClient, Constants.GET, kpiUrl);
+        querykpiOrCapabilities(execution, baseUrl + Constants.APPLCM_QUERY_KPI_URI);
     }
 
     private void queryEdgeCapabilities(DelegateExecution execution) {
+        LOGGER.info("Send query capabilities request to applcm");
+
+        querykpiOrCapabilities(execution, baseUrl + Constants.APPLCM_QUERY_CAPABILITY_URI);
+    }
+
+    private void querykpiOrCapabilities(DelegateExecution execution, String uri) {
         LOGGER.info("Send query request to applcm");
 
-        String applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
-        String applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
+        String url;
+        try {
+            url = resolveUrlPathParameters(uri);
 
-        UrlUtil urlUtil = new UrlUtil();
-        urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
-        urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
-
-        String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
-        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+        } catch (AppoException e) {
+            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+            LOGGER.info("Query KPI failed {}", e.getMessage());
+            return;
+        }
 
         AppoRestClient appoRestClient = restClientService.getAppoRestClient();
-        appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
+
+        String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
         appoRestClient.addHeader(HOST_IP, mecHost);
+        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+        appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
 
-        String capabilityUrl = urlUtil.getUrl(baseUrl + Constants.APPLCM_QUERY_CAPABILITY_URI);
-
-        sendRequest(appoRestClient, Constants.GET, capabilityUrl);
+        sendRequest(appoRestClient, Constants.GET, url);
     }
 
     private int sendRequest(AppoRestClient restClient, String method, String uri) {
+
         int statusCode = 0;
+
         try (CloseableHttpResponse response = restClient.sendRequest(method, uri)) {
             statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {

@@ -29,13 +29,10 @@ public class MepmAdapter implements JavaDelegate {
     @Autowired
     private AppoRestClientService appoRestClientService;
 
-    @Value("${PACKAGE_PATH:}")
-    private String packagePath;
-
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
-        Mepm mepm = new Mepm(delegateExecution, packagePath, appoRestClientService);
+        Mepm mepm = new Mepm(delegateExecution, appoRestClientService);
         mepm.execute();
     }
 }

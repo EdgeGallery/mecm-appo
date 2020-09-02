@@ -48,7 +48,6 @@ public class Apm extends ProcessflowAbstractTask {
     private static final String FAILED_TO_GET_PATH = "failed to get local directory path";
     private final DelegateExecution delegateExecution;
     private final String operation;
-    private final String packagePath;
     private String baseUrl;
     private AppoRestClientService restClientService;
 
@@ -57,14 +56,13 @@ public class Apm extends ProcessflowAbstractTask {
      *
      * @param delegateExecution delegate execution
      * @param servicePort       apm end point
+     * @param appoRestClientService rest client service
      */
-    public Apm(DelegateExecution delegateExecution, String servicePort, String packagePath,
-               AppoRestClientService appoRestClientService) {
+    public Apm(DelegateExecution delegateExecution, String servicePort, AppoRestClientService appoRestClientService) {
         this.delegateExecution = delegateExecution;
         restClientService = appoRestClientService;
         baseUrl = servicePort;
 
-        this.packagePath = packagePath;
         this.operation = (String) delegateExecution.getVariable("operationType");
     }
 
@@ -166,8 +164,8 @@ public class Apm extends ProcessflowAbstractTask {
         if (entity == null) {
             throw new IllegalArgumentException("Failed to copy application package " + appPackageId);
         }
-        String localDirPath = createDir(packagePath + Constants.SLASH + appInstanceId);
-        String appPackagePath = localDirPath + Constants.SLASH + appPackageId + ".csar";
+        String localDirPath = createDir(Constants.PACKAGES_PATH + Constants.SLASH + appInstanceId);
+        String appPackagePath = localDirPath + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
         File appPackage = new File(appPackagePath);
 
         try (InputStream inputStream = entity.getContent();
