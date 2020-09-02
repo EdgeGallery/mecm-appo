@@ -161,7 +161,7 @@ public class AppoRestClient {
      * @return http response on success, error on failure
      */
     public CloseableHttpResponse sendRequest(String method, String uri) {
-        LOGGER.info("Send http request: method: {},  url: {}", method, uri);
+        LOGGER.info("Send http {} request", method);
         CloseableHttpResponse httpclient = null;
         try {
             URL url;
@@ -170,7 +170,7 @@ public class AppoRestClient {
             } else {
                 url = new URL("http://" + uri);
             }
-
+            LOGGER.info("Send http request: method: {},  url: {}", method, url);
             switch (method) {
                 case Constants.GET:
                     httpclient = doGet(url);
@@ -192,8 +192,9 @@ public class AppoRestClient {
     }
 
     private CloseableHttpResponse doGet(URL url) throws IOException {
-        CloseableHttpClient client = null;
+        LOGGER.info("doGet...");
 
+        CloseableHttpClient client = null;
         HttpGet httpGet = new HttpGet(url.toString());
         for (Map.Entry<String, String> entry : headerMap.entrySet()) {
             httpGet.addHeader(entry.getKey(), entry.getValue());
@@ -203,6 +204,7 @@ public class AppoRestClient {
     }
 
     private CloseableHttpResponse doPost(URL url) throws IOException {
+        LOGGER.info("doPost...");
         CloseableHttpClient client = null;
 
         HttpPost httpPost = new HttpPost(url.toString());
@@ -216,6 +218,7 @@ public class AppoRestClient {
     }
 
     private CloseableHttpResponse doDelete(URL url) throws IOException {
+        LOGGER.info("doDelete...");
         CloseableHttpClient client = null;
 
         HttpDelete httpDelete = new HttpDelete(url.toString());

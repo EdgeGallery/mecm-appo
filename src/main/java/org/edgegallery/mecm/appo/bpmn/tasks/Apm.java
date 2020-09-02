@@ -167,7 +167,7 @@ public class Apm extends ProcessflowAbstractTask {
             throw new IllegalArgumentException("Failed to copy application package " + appPackageId);
         }
         String localDirPath = createDir(packagePath + Constants.SLASH + appInstanceId);
-        String appPackagePath = localDirPath + Constants.SLASH + appPackageId + ".csar";
+        String appPackagePath = localDirPath + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
         File appPackage = new File(appPackagePath);
 
         try (InputStream inputStream = entity.getContent();
