@@ -70,20 +70,20 @@ validate_password() {
   fi
 
   count=0
-  if [[ "$password" =~ [A-Z] ]]; then
-    ((++count))
+  if ! echo "$password" | grep -qE '^[A-Z]$' ; then
+    count=$((count+1))
   fi
 
-  if [[ "$password" =~ [a-z] ]]; then
-    ((++count))
+  if ! echo "$password" | grep -qE '^[a-z]$' ; then
+    count=$((count+1))
   fi
 
-  if [[ "$password" =~ [0-9] ]]; then
-    ((++count))
+  if ! echo "$password" | grep -qE '^[0-9]$' ; then
+    count=$((count+1))
   fi
 
-  if [[ "$password" =~ [@#$%^'&'-+='('')'] ]]; then
-    ((++count))
+  if ! echo "$password" | grep -qE "^[@#$%^'&'-+='('')']$" ; then
+    count=$((count+1))
   fi
 
   if [ "${count}" -lt "2" ]; then
