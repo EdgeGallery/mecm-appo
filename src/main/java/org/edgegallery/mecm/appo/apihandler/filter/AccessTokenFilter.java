@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.apihandler.access;
+package org.edgegallery.mecm.appo.apihandler.filter;
 
 import java.io.IOException;
 import java.util.Map;
