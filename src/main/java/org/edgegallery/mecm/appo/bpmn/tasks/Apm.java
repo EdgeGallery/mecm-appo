@@ -49,20 +49,22 @@ public class Apm extends ProcessflowAbstractTask {
     private final DelegateExecution delegateExecution;
     private final String operation;
     private String baseUrl;
+    private String appPkgBasePath;
     private AppoRestClientService restClientService;
 
     /**
      * Constructor for APM.
      *
-     * @param delegateExecution delegate execution
-     * @param servicePort       apm end point
+     * @param delegateExecution     delegate execution
+     * @param servicePort           apm end point
      * @param appoRestClientService rest client service
      */
-    public Apm(DelegateExecution delegateExecution, String servicePort, AppoRestClientService appoRestClientService) {
+    public Apm(DelegateExecution delegateExecution, String appPkgsBasePath, String servicePort,
+               AppoRestClientService appoRestClientService) {
         this.delegateExecution = delegateExecution;
         restClientService = appoRestClientService;
         baseUrl = servicePort;
-
+        appPkgBasePath = appPkgsBasePath;
         this.operation = (String) delegateExecution.getVariable("operationType");
     }
 
@@ -164,7 +166,7 @@ public class Apm extends ProcessflowAbstractTask {
         if (entity == null) {
             throw new IllegalArgumentException("Failed to copy application package " + appPackageId);
         }
-        String localDirPath = createDir(Constants.PACKAGES_PATH + Constants.SLASH + appInstanceId);
+        String localDirPath = createDir(appPkgBasePath + appInstanceId);
         String appPackagePath = localDirPath + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
         File appPackage = new File(appPackagePath);
 

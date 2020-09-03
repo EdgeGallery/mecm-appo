@@ -39,17 +39,20 @@ public class Mepm extends ProcessflowAbstractTask {
     private final DelegateExecution execution;
     private final String action;
     private String baseUrl;
+    private String appPkgBasePath;
     private AppoRestClientService restClientService;
 
     /**
      * Creates an MEPM instance.
      *
-     * @param delegateExecution delegate execution
-     * @param appoRestClientService   restclient service
+     * @param delegateExecution     delegate execution
+     * @param appoRestClientService restclient service
      */
-    public Mepm(DelegateExecution delegateExecution, AppoRestClientService appoRestClientService) {
+    public Mepm(DelegateExecution delegateExecution, String appPkgsBasePath,
+                AppoRestClientService appoRestClientService) {
         execution = delegateExecution;
         restClientService = appoRestClientService;
+        appPkgBasePath = appPkgsBasePath;
         baseUrl = "{applcm_ip}:{applcm_port}";
         action = (String) delegateExecution.getVariable("action");
     }
@@ -123,9 +126,8 @@ public class Mepm extends ProcessflowAbstractTask {
         String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
         appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
         appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
-        String appPackagePath = Constants.PACKAGES_PATH + appInstanceInfo.getAppInstanceId()
-                + Constants.SLASH
-                + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
+        String appPackagePath = appPkgBasePath + appInstanceInfo.getAppInstanceId()
+                + Constants.SLASH + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
 
         appoRestClient.addFileEntity(appPackagePath);
 
@@ -187,7 +189,7 @@ public class Mepm extends ProcessflowAbstractTask {
             try {
                 if (appInstanceInfo != null) {
                     appPackageId = appInstanceInfo.getAppPackageId();
-                    String appPackagePath = Constants.PACKAGES_PATH + appInstanceInfo.getAppInstanceId()
+                    String appPackagePath = appPkgBasePath + appInstanceInfo.getAppInstanceId()
                             + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
                     Files.delete(Paths.get(appPackagePath));
                 }

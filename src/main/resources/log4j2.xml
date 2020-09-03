@@ -20,8 +20,8 @@
       <PatternLayout
         pattern="[%d{yyyy-MM-dd} %d{HH:mm:ss:SSS}] %-5p [%t] [%C %M %L]: %m%n"/>
     </Console>
-    <RollingFile fileName="${env:LOG_DIR:-/var/log/appo}/appo.log"
-      filePattern="${env:LOG_DIR:-/var/log/appo}/$${date:yyyy-MM}/appo-%d{yyyy-MM-dd}-%i.log"
+    <RollingFile fileName="${env:LOG_DIR:-/usr/app/log/appo}/appo.log"
+      filePattern="${env:LOG_DIR:-/usr/app/log/appo}/$${date:yyyy-MM}/appo-%d{yyyy-MM-dd}-%i.log"
       filePermissions="rw-------"
       name="RollingFileInfo">
       <DefaultRolloverStrategy max="50"/>

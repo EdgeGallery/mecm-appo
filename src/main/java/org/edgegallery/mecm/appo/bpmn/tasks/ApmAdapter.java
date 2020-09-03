@@ -35,11 +35,14 @@ public class ApmAdapter implements JavaDelegate {
     @Value("${appo.endpoints.apm.port}")
     private String apmServicePort;
 
+    @Value("${appo.appPackages.path}")
+    private String appPkgsBasePath;
+
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
         String servicePort = apmService + ":" + apmServicePort;
-        Apm apm = new Apm(delegateExecution, servicePort, appoRestClientService);
+        Apm apm = new Apm(delegateExecution, appPkgsBasePath, servicePort, appoRestClientService);
         apm.execute();
     }
 }
