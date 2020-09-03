@@ -20,6 +20,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.edgegallery.mecm.appo.service.AppoRestClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,10 +29,13 @@ public class MepmAdapter implements JavaDelegate {
     @Autowired
     private AppoRestClientService appoRestClientService;
 
+    @Value("${appo.appPackages.path}")
+    private String appPkgsBasePath;
+
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
-        Mepm mepm = new Mepm(delegateExecution, appoRestClientService);
+        Mepm mepm = new Mepm(delegateExecution, appPkgsBasePath, appoRestClientService);
         mepm.execute();
     }
 }
