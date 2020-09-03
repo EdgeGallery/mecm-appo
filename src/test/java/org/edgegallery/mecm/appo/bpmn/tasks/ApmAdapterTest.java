@@ -40,8 +40,6 @@ public class ApmAdapterTest {
     public void testExcuteApmAdapter() {
         Mockito.when(execution.getVariable(AppoConstantsTest.OPERATION_TYPE))
                 .thenReturn(AppoConstantsTest.DOWNLOAD);
-        assertThrows(Exception.class, () -> {
-            apmAdapter.execute(execution);
-        });
+        assertThrows(Exception.class, () -> apmAdapter.execute(execution));
     }
 }

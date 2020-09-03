@@ -14,15 +14,16 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>  
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
   <groupId>org.edgegallery.mecm</groupId>
   <artifactId>appo</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+
   <name>appo</name>
   <description>Application Orchestrator</description>
-  
+
   <properties>
     <camunda.springboot.version>3.4.0</camunda.springboot.version>
     <camunda.version>7.10.0</camunda.version>
@@ -40,15 +41,14 @@
         <artifactId>spring-boot-dependencies</artifactId>
         <version>${spring-boot.version}</version>
         <type>pom</type>
-        <scope>import</scope>               
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
-
   <dependencies>
     <dependency>
-      <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
       <groupId>org.camunda.bpm.springboot</groupId>
+      <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
       <version>${camunda.springboot.version}</version>
     </dependency>
     <dependency>
@@ -56,39 +56,39 @@
       <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>org.yaml</groupId>
       <artifactId>snakeyaml</artifactId>
       <version>1.26</version>
-    </dependency>   
+    </dependency>
     <dependency>
-      <artifactId>spring-boot-starter-test</artifactId>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
       <exclusions>
         <exclusion>
-          <artifactId>snakeyaml</artifactId>
           <groupId>org.yaml</groupId>
+          <artifactId>snakeyaml</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jdbc</artifactId>
     </dependency>
 
     <!--log4j2 -->
-    <dependency>      
+    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
       <version>2.13.2</version>
     </dependency>
-    <dependency>      
+    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
       <version>2.13.2</version>
     </dependency>
-    <dependency>     
+    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <version>2.13.2</version>
@@ -113,34 +113,34 @@
       <artifactId>spring-security-config</artifactId>
       <version>5.3.4.RELEASE</version>
     </dependency>
-    <dependency>      
-      <exclusions>
-        <exclusion>
-          <artifactId>jackson-mapper-asl</artifactId>
-          <groupId>org.codehaus.jackson</groupId>
-        </exclusion>
-		<exclusion>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-web</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework.security</groupId>
-          <artifactId>spring-security-config</artifactId>
-        </exclusion>        
-      </exclusions>
+    <dependency>
       <groupId>org.springframework.security.oauth.boot</groupId>
       <artifactId>spring-security-oauth2-autoconfigure</artifactId>
       <version>${spring-security-oauth2-autoconfigure.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.jackson</groupId>
+          <artifactId>jackson-mapper-asl</artifactId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-security-core</artifactId>
+          <groupId>org.springframework.security</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-security-web</artifactId>
+          <groupId>org.springframework.security</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-security-config</artifactId>
+          <groupId>org.springframework.security</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
-    <dependency>      
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
-    <dependency>      
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
@@ -169,24 +169,21 @@
     <!-- end of swagger ui -->
 
 
-
-
-
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
-	  <exclusions>
-	     <exclusion>
-	       <groupId>org.dom4j</groupId>
-	       <artifactId>dom4j</artifactId>
-	     </exclusion>
-	  </exclusions>      
+      <exclusions>
+        <exclusion>
+          <groupId>org.dom4j</groupId>
+          <artifactId>dom4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-	<dependency>
-	  <groupId>org.dom4j</groupId>
-	  <artifactId>dom4j</artifactId>
-	  <version>2.1.3</version>
-	</dependency>
+    <dependency>
+      <groupId>org.dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>2.1.3</version>
+    </dependency>
     <dependency>
       <groupId>org.modelmapper</groupId>
       <artifactId>modelmapper</artifactId>
@@ -218,20 +215,20 @@
       <artifactId>flyway-core</artifactId>
     </dependency>
     <dependency>
-      <artifactId>httpmime</artifactId>
       <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpmime</artifactId>
       <version>4.3.1</version>
     </dependency>
     <dependency>
-      <artifactId>jose4j</artifactId>
       <groupId>org.bitbucket.b_c</groupId>
+      <artifactId>jose4j</artifactId>
       <version>0.7.2</version>
     </dependency>
   </dependencies>
 
-<build>
+  <build>
     <plugins>
-      <plugin>        
+      <plugin>
         <configuration>
           <compilerArgument>-Xlint:all</compilerArgument>
           <showDeprecation>true</showDeprecation>
@@ -243,7 +240,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
       </plugin>
-      <plugin>        
+      <plugin>
         <executions>
           <execution>
             <goals>
@@ -255,7 +252,7 @@
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>2.1.2.RELEASE</version>
       </plugin>
-      <plugin>        
+      <plugin>
         <configuration>
           <configLocation>
             https://raw.githubusercontent.com/EdgeGallery/infra/master/configs/edgegallery_checks.xml
@@ -275,7 +272,7 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>3.1.1</version>
       </plugin>
-      <plugin>        
+      <plugin>
         <configuration>
           <failOnViolation>true</failOnViolation>
           <failurePriority>2</failurePriority>
@@ -293,7 +290,7 @@
         <artifactId>maven-pmd-plugin</artifactId>
         <version>3.13.0</version>
       </plugin>
-      <plugin>        
+      <plugin>
         <configuration>
           <failOnError>true</failOnError>
         </configuration>
@@ -314,28 +311,28 @@
   <reporting>
     <plugins>
       <plugin>
+        <configuration>
+          <compilerArgument>-Xlint:all</compilerArgument>
+          <showDeprecation>true</showDeprecation>
+          <showWarnings>true</showWarnings>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.1</version>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-          <showDeprecation>true</showDeprecation>
-          <showWarnings>true</showWarnings>
-          <compilerArgument>-Xlint:all</compilerArgument>
-        </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.1.1</version>
         <configuration>
-          <failOnViolation>true</failOnViolation>
-          <violationSeverity>warning</violationSeverity>
           <configLocation>
             https://raw.githubusercontent.com/EdgeGallery/infra/master/configs/edgegallery_checks.xml
           </configLocation>
+          <failOnViolation>true</failOnViolation>
+          <violationSeverity>warning</violationSeverity>
         </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.1.1</version>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

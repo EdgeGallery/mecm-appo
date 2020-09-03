@@ -35,7 +35,7 @@ public class GetRequestInputsTest {
     ExecutionImpl execution;
 
     @Test
-    public void InputParametersCreateAppInstance() {
+    public void inputParametersCreateAppInstance() {
         Mockito.when(execution.getVariable(AppoConstantsTest.REQUEST_ACTION)).thenReturn("CreateAppInstance");
         Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
         Mockito.when(execution.getVariable(AppoConstantsTest.APP_PACKAGE_ID))
@@ -50,14 +50,14 @@ public class GetRequestInputsTest {
     }
 
     @Test
-    public void InputParametersQuery() {
+    public void inputParametersQuery() {
         Mockito.when(execution.getVariable(AppoConstantsTest.REQUEST_ACTION)).thenReturn("QueryAppInstance");
         Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
         getRequestInputs.execute(execution);
     }
 
     @Test
-    public void InputParametersQueryKPI() {
+    public void inputParametersQueryKPI() {
         Mockito.when(execution.getVariable(AppoConstantsTest.REQUEST_ACTION)).thenReturn("QueryKPI");
         Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
         getRequestInputs.execute(execution);
