@@ -27,13 +27,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class AppoRestClientService {
 
-    @Value("${ssl.enabled}")
+    @Value("${server.ssl.enabled}")
     private String isSslEnabled;
 
-    @Value("${ssl.trust-store}")
+    @Value("${server.ssl.trust-store}")
     private String trustStorePath;
 
-    @Value("${ssl.trust-store-password}")
+    @Value("${server.ssl.trust-store-password}")
     private String trustStorePasswd;
 
     /**

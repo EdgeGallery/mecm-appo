@@ -51,12 +51,13 @@ public final class Constants {
     public static final String INVENTORY_APPLCM_URI = "/inventory/v1/tenants/{tenant_id}/applcms/{applcm_ip}";
 
     public static final String APPLCM_INSTANTIATE_URI =
-            "/lcmbroker/v1/tenants/{tenant_id}/app_instances/{app_instance_id}";
-    public static final String APPLCM_QUERY_URI = "/lcmbroker/v1/tenants/{tenant_id}/app_instances/{app_instance_id}";
+            "/lcmcontroller/v1/tenants/{tenant_id}/app_instances/{app_instance_id}";
+    public static final String APPLCM_QUERY_URI = "/lcmcontroller/v1/tenants/{tenant_id}/app_instances"
+            + "/{app_instance_id}";
     public static final String APPLCM_TERMINATE_URI =
-            "/lcmbroker/v1/tenants/{tenant_id}/app_instances/{app_instance_id}";
-    public static final String APPLCM_QUERY_KPI_URI = "/lcmbroker/v1/tenants/{tenant_id}/kpi";
-    public static final String APPLCM_QUERY_CAPABILITY_URI = "/lcmbroker/v1/tenants/{tenant_id}/mep_capabilities";
+            "/lcmcontroller/v1/tenants/{tenant_id}/app_instances/{app_instance_id}";
+    public static final String APPLCM_QUERY_KPI_URI = "/lcmcontroller/v1/tenants/{tenant_id}/kpi";
+    public static final String APPLCM_QUERY_CAPABILITY_URI = "/lcmcontroller/v1/tenants/{tenant_id}/mep_capabilities";
 
     public static final String PROCESS_FLOW_SUCCESS = "200";
     public static final String PROCESS_FLOW_ERROR = "500";
