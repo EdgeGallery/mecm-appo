@@ -306,29 +306,33 @@
         <version>3.0.4</version>
       </plugin>
       <!-- jacoco plugin for coverage report -->
-      <plugin>
-        <configuration>
-          <destFile>target/coverage-reports/jacoco-unit.exec</destFile>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-            <id>jacoco-initialize</id>
-          </execution>
-          <execution>
-            <goals>
-              <goal>report</goal>
-            </goals>
-            <id>jacoco-site</id>
-            <phase>test</phase>
-          </execution>
-        </executions>
-        <groupId>org.jacoco</groupId>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.7.7.201606060606</version>
-      </plugin>      
+		<plugin>
+		    <groupId>org.jacoco</groupId>
+		    <artifactId>jacoco-maven-plugin</artifactId>
+		    <version>0.8.1</version>
+		    <configuration>
+		        <skip>false</skip>
+		        <destFile>${basedir}/target/coverage-reports/jacoco.exec</destFile>
+		    </configuration>
+		    <executions>
+		        <execution>
+		            <goals>
+		                <goal>prepare-agent</goal>
+		            </goals>
+		        </execution>
+		        <execution>
+		            <configuration>
+		                <dataFile>${basedir}/target/coverage-reports/jacoco.exec</dataFile>
+		                <outputDirectory>${basedir}/target/coverage-reports</outputDirectory>
+		            </configuration>
+		            <id>report</id>
+		            <phase>test</phase>
+		            <goals>
+		                <goal>report</goal>
+		            </goals>
+		        </execution>
+		    </executions>
+		</plugin>   
     </plugins>
   </build>
   <reporting>
