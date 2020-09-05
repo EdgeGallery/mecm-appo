@@ -197,8 +197,6 @@ public class Apm extends ProcessflowAbstractTask {
                 if (entriesCount > TOO_MANY || entry.getSize() > TOO_BIG) {
                     LOGGER.info("Too many files to unzip or file size is too big");
                     return Boolean.FALSE;
-                } else {
-                    FileChecker.check(new File(entry.getName()));
                 }
             }
         } catch (IOException | IllegalArgumentException e) {

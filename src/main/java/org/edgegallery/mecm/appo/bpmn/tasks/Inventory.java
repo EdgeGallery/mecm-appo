@@ -21,6 +21,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
+import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.service.AppoRestClientService;
 import org.edgegallery.mecm.appo.utils.AppoRestClient;
 import org.edgegallery.mecm.appo.utils.Constants;
@@ -127,6 +128,10 @@ public class Inventory extends ProcessflowAbstractTask {
 
         String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
         String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
+        if (mecHost == null) {
+            AppInstanceInfo instanceinfo = (AppInstanceInfo) delegateExecution.getVariable(Constants.APP_INSTANCE_INFO);
+            mecHost = instanceinfo.getMecHost();
+        }
 
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
