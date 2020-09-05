@@ -254,6 +254,7 @@
                     <forkMode>always</forkMode>
                     <skip>${maven.test.skip}</skip>
                     <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
+					<argLine>-Xms1024m -Xmx2048m -XX:MaxPermSize=1024m</argLine>
                 </configuration>
             </plugin>
       <plugin>
