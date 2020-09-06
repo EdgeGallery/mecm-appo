@@ -35,11 +35,11 @@ COPY configs/*.sh $APP_HOME/bin
 
 RUN chmod 750 $APP_HOME &&\
     chmod -R 550 $APP_HOME/bin &&\
-    mkdir -p -m 750 $HOME/config &&\
-    mkdir -p -m 750 $HOME/log &&\
-    mkdir -p -m 700 $HOME/ssl &&\
-    mkdir -p -m 700 $HOME/.postgresql &&\
-    mkdir -p -m 750 $HOME/packages &&\
+    mkdir -p -m 750 $APP_HOME/config &&\
+    mkdir -p -m 750 $APP_HOME/log &&\
+    mkdir -p -m 700 $APP_HOME/ssl &&\
+    mkdir -p -m 700 $APP_HOME/.postgresql &&\
+    mkdir -p -m 750 $APP_HOME/packages &&\
     chown -R $USER_NAME:$GROUP_NAME $APP_HOME
 
 # Exposed port

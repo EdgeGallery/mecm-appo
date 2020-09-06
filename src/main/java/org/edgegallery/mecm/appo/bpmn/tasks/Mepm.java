@@ -87,11 +87,13 @@ public class Mepm extends ProcessflowAbstractTask {
     private String resolveUrlPathParameters(String uri) {
         LOGGER.info("Resolve url path parameters...");
         UrlUtil urlUtil;
+        String applcmIp;
+        String applcmPort;
         try {
             urlUtil = new UrlUtil();
 
-            String applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
-            String applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
+            applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
+            applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
             String tenant = (String) execution.getVariable(Constants.TENANT_ID);
 
             urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
@@ -105,14 +107,15 @@ public class Mepm extends ProcessflowAbstractTask {
         } catch (IllegalArgumentException e) {
             throw new AppoException(e.getMessage());
         }
-        return urlUtil.getUrl(uri);
+        String resolvedUri = urlUtil.getUrl(uri);
+        return applcmIp + ":" + applcmPort + resolvedUri;
     }
 
     private void instantiate(DelegateExecution execution) {
         LOGGER.info("Send Instantiate request to applcm");
         String url;
         try {
-            url = resolveUrlPathParameters(baseUrl + Constants.APPLCM_INSTANTIATE_URI);
+            url = resolveUrlPathParameters(Constants.APPLCM_INSTANTIATE_URI);
 
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);

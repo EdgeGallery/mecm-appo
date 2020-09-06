@@ -84,7 +84,7 @@ public class AppoServiceImpl implements AppoService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        if (!appInstanceInfo.getOperationalStatus().equals("Created")) {
+        if (appInstanceInfo.getOperationalStatus().equals("Instantiated")) {
             return new ResponseEntity<>(
                     new AppoResponse("Invalid state" + appInstanceInfo.getOperationalStatus()),
                     HttpStatus.BAD_REQUEST);

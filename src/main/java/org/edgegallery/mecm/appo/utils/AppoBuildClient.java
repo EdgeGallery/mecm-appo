@@ -126,7 +126,7 @@ public class AppoBuildClient {
                 sslcxt = SSLContexts.custom().loadTrustMaterial(ks, new TrustSelfSignedStrategy())
                         .setProtocol("TLSv1.2").build();
                 SSLConnectionSocketFactory sslFactory = new SSLConnectionSocketFactory(sslcxt,
-                    (s, sslSession) -> false);
+                    (s, sslSession) -> true);
 
                 httpClient = HttpClients.custom().setRetryHandler(retryMechanism(MAX_RETRY))
                         .setServiceUnavailableRetryStrategy(

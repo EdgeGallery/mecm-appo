@@ -114,10 +114,8 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
             appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
 
-            ObjectValue dataValue = Variables.objectValue(appInstanceInfo)
-                    .serializationDataFormat(Variables.SerializationDataFormats.JAVA)
-                    .create();
-            delegateExecution.setVariable("app_instance_info", dataValue);
+
+            delegateExecution.setVariable("app_instance_info", appInstanceInfo);
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
             LOGGER.info("Failed to get app instance info record {}", e.getMessage());
