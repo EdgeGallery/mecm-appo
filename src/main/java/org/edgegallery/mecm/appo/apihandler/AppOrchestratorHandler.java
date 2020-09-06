@@ -94,7 +94,8 @@ public class AppOrchestratorHandler {
      * @return status code 201, error code on failure
      */
     @ApiOperation(value = "Instantiate application instance", response = AppoResponse.class)
-    @PostMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}", produces = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
                 @ApiResponse(code = 500, message = "internal server error", response = String.class)
                 })
