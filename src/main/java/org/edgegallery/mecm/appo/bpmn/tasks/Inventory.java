@@ -47,8 +47,8 @@ public class Inventory extends ProcessflowAbstractTask {
     /**
      * Constructor for get inventory.
      *
-     * @param delegateExecution   delegate execution
-     * @param servicePort inventory end point
+     * @param delegateExecution delegate execution
+     * @param servicePort       inventory end point
      */
     public Inventory(DelegateExecution delegateExecution, boolean isSslEnabled, String servicePort,
                      RestTemplate restClientTemplate) {
@@ -101,6 +101,8 @@ public class Inventory extends ProcessflowAbstractTask {
             HttpHeaders headers = new HttpHeaders();
             headers.set("access_token", accessToken);
             HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            LOGGER.info("Get applcm configuration from Inventory: {}", applcmUrl);
             response = restTemplate.exchange(applcmUrl, HttpMethod.GET, entity, String.class);
 
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
@@ -111,7 +113,7 @@ public class Inventory extends ProcessflowAbstractTask {
                 return;
             }
         } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY + ex.getMessage());
+            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution,
                     Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
             return;
@@ -161,6 +163,7 @@ public class Inventory extends ProcessflowAbstractTask {
             headers.set("access_token", accessToken);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
+            LOGGER.info("Get MEC Host configuration from Inventory: {}", mecUrl);
             ResponseEntity<String> response = restTemplate.exchange(mecUrl, HttpMethod.GET, entity, String.class);
 
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
@@ -183,7 +186,7 @@ public class Inventory extends ProcessflowAbstractTask {
             setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
 
         } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY + ex.getMessage());
+            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
         } catch (IllegalArgumentException ex) {

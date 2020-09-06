@@ -110,11 +110,11 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
         try {
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
+
+            LOGGER.info("Get application instance info {}", appInstanceId);
+
             appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
 
-            /*ObjectValue dataValue = Variables.objectValue(appInstanceInfo)
-                    .serializationDataFormat(Variables.SerializationDataFormats.JAVA)
-                    .create();*/
             delegateExecution.setVariable("app_instance_info", appInstanceInfo);
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
@@ -140,6 +140,8 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
 
             appInstanceInfo = new AppInstanceInfo();
             appInstanceInfo.setAppInstanceId(appInstanceId);
+
+            LOGGER.info("Update application instance info {}", appInstanceId);
 
             String responseCode = (String) delegateExecution.getVariable(RESPONSE_CODE);
 
@@ -177,6 +179,8 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
         try {
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
+
+            LOGGER.info("Delete application instance info {}", appInstanceId);
 
             appInstanceInfoService.deleteAppInstanceInfo(tenantId, appInstanceId);
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
