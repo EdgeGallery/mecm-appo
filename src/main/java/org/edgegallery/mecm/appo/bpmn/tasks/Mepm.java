@@ -185,7 +185,7 @@ public class Mepm extends ProcessflowAbstractTask {
 
         String url;
         try {
-            url = resolveUrlPathParameters(Constants.APPLCM_INSTANTIATE_URI);
+            url = resolveUrlPathParameters(Constants.APPLCM_TERMINATE_URI);
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
             return;
@@ -199,7 +199,7 @@ public class Mepm extends ProcessflowAbstractTask {
             headers.set(Constants.ACCESS_TOKEN, accessToken);
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
-            response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
+            response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
                 LOGGER.error(Constants.APPLCM_RET_FAILURE, response);
