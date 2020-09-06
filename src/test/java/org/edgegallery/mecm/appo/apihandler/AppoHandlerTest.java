@@ -70,6 +70,15 @@ public class AppoHandlerTest {
         // Get application instance id
         String appInsatnceId = postResponse.substring(32, 68);
 
+        ResultActions getAllResult =
+                mvc.perform(MockMvcRequestBuilders.get("/appo/v1/tenants/" + TENANT_ID
+                        + "/app_instance_infos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON_VALUE));
+        getAllResult.andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
         ResultActions deleteResult =
                 mvc.perform(MockMvcRequestBuilders
                         .delete("/appo/v1/tenants/" + TENANT_ID + "/app_instances/" + appInsatnceId)
@@ -139,13 +148,5 @@ public class AppoHandlerTest {
                 .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                 .andReturn();
 
-        ResultActions getAllResult =
-                mvc.perform(MockMvcRequestBuilders.get("/appo/v1/tenants/" + TENANT_ID
-                        + "/app_instance_infos")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE));
-        getAllResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
     }
 }
