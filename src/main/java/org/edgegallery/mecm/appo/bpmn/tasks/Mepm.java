@@ -185,7 +185,7 @@ public class Mepm extends ProcessflowAbstractTask {
 
         String url;
         try {
-            url = resolveUrlPathParameters(baseUrl + Constants.APPLCM_INSTANTIATE_URI);
+            url = resolveUrlPathParameters(Constants.APPLCM_INSTANTIATE_URI);
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
             return;
@@ -232,19 +232,19 @@ public class Mepm extends ProcessflowAbstractTask {
 
     private void query(DelegateExecution execution) {
         LOGGER.info("Query app instance ");
-        sendQueryRequestToApplcm(execution, baseUrl + Constants.APPLCM_INSTANTIATE_URI);
+        sendQueryRequestToApplcm(execution, Constants.APPLCM_QUERY_URI);
     }
 
     private void querykpi(DelegateExecution execution) {
         LOGGER.info("Send query kpi request to applcm");
 
-        sendQueryRequestToApplcm(execution, baseUrl + Constants.APPLCM_QUERY_KPI_URI);
+        sendQueryRequestToApplcm(execution, Constants.APPLCM_QUERY_KPI_URI);
     }
 
     private void queryEdgeCapabilities(DelegateExecution execution) {
         LOGGER.info("Send query capabilities request to applcm");
 
-        sendQueryRequestToApplcm(execution, baseUrl + Constants.APPLCM_QUERY_CAPABILITY_URI);
+        sendQueryRequestToApplcm(execution, Constants.APPLCM_QUERY_CAPABILITY_URI);
     }
 
     private void sendQueryRequestToApplcm(DelegateExecution execution, String uri) {
