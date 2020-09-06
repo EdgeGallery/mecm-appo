@@ -1,0 +1,43 @@
+###spring config######
+server:
+  port: 8091
+  ssl:
+    enabled: false
+
+    # Keystore
+    key-store: /usr/app/ssl/keystore.p12
+    key-store-password: ${SSL_KEY_STORE_PASSWORD:TestPassword1!}
+    key-store-type: ${SSL_KEY_STORE_TYPE:PKCS12}
+    key-alias: ${SSL_KEY_ALIAS:edgegallery}
+    trust-store: /usr/app/ssl/keystore.jks
+    trust-store-password: ${SSL_TRUST_PASSWORD:TestPassword1!}
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  main:
+    allow-bean-definition-overriding: true
+
+appo:
+  async:
+    corepool-size: 50
+    maxpool-size: 50
+    queue-capacity: 500
+  endpoints:
+    inventory:
+      end-point: ${INVENTORY_ENDPOINT:1.1.1.1}
+      port: ${INVENTORY_PORT:8080}
+    apm:
+      end-point: ${APM_ENDPOINT:1.1.1.2}
+      port: ${APM_PORT:8081}
+  appPackages:
+    path: classpath:packages
+
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-value: test
