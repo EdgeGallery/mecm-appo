@@ -24,17 +24,17 @@ import org.mockito.InjectMocks;
 
 public class CreateParamTest {
 
-	@InjectMocks
-	CreateParam createParam = new CreateParam();
+    @InjectMocks
+    CreateParam createParam = new CreateParam();
 
-	@Before
-	public void setUp(){
-		createParam.setAppdId(AppoConstantsTest.APP_ID);
-	}
+    @Before
+    public void setUp() {
+        createParam.setAppdId(AppoConstantsTest.APP_ID);
+    }
 
-	@Test
-	public void testCreateParam() {
-		Assert.assertEquals(AppoConstantsTest.APP_ID,createParam.getAppdId());
-	}
+    @Test
+    public void testCreateParam() {
+        Assert.assertEquals(AppoConstantsTest.APP_ID, createParam.getAppdId());
+    }
 
 }

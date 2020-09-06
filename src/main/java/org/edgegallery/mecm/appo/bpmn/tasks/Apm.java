@@ -17,26 +17,26 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.commons.io.FileUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
-import org.edgegallery.mecm.appo.service.AppoRestClientService;
-import org.edgegallery.mecm.appo.utils.AppoRestClient;
 import org.edgegallery.mecm.appo.utils.Constants;
-import org.edgegallery.mecm.appo.utils.FileChecker;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
-import org.jose4j.json.internal.json_simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
 public class Apm extends ProcessflowAbstractTask {
 
@@ -46,23 +46,27 @@ public class Apm extends ProcessflowAbstractTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(Apm.class);
     private static final String FAILED_TO_CREATE_DIR = "failed to create local directory";
     private static final String FAILED_TO_GET_PATH = "failed to get local directory path";
-    private final DelegateExecution delegateExecution;
+    private final DelegateExecution execution;
     private final String operation;
     private String baseUrl;
     private String appPkgBasePath;
-    private AppoRestClientService restClientService;
+    private RestTemplate restTemplate;
+    private String protocol = "https://";
 
     /**
      * Constructor for APM.
      *
-     * @param delegateExecution     delegate execution
-     * @param servicePort           apm end point
-     * @param appoRestClientService rest client service
+     * @param delegateExecution  delegate execution
+     * @param servicePort        apm end point
+     * @param restClientTemplate rest client template
      */
-    public Apm(DelegateExecution delegateExecution, String appPkgsBasePath, String servicePort,
-               AppoRestClientService appoRestClientService) {
-        this.delegateExecution = delegateExecution;
-        restClientService = appoRestClientService;
+    public Apm(DelegateExecution delegateExecution, boolean isSslEnabled, String appPkgsBasePath, String servicePort,
+               RestTemplate restClientTemplate) {
+        execution = delegateExecution;
+        if (!isSslEnabled) {
+            protocol = "http://";
+        }
+        restTemplate = restClientTemplate;
         baseUrl = servicePort;
         appPkgBasePath = appPkgsBasePath;
         this.operation = (String) delegateExecution.getVariable("operationType");
@@ -94,10 +98,10 @@ public class Apm extends ProcessflowAbstractTask {
      */
     public void execute() {
         if (operation.equals("download")) {
-            download(delegateExecution);
+            download(execution);
         } else {
             LOGGER.info("Invalid APM action...{}", operation);
-            setProcessflowExceptionResponseAttributes(delegateExecution, "Invalid APM action",
+            setProcessflowExceptionResponseAttributes(execution, "Invalid APM action",
                     Constants.PROCESS_FLOW_ERROR);
         }
     }
@@ -112,7 +116,7 @@ public class Apm extends ProcessflowAbstractTask {
             UrlUtil urlUtil = new UrlUtil();
             urlUtil.addParams(Constants.TENANT_ID, tenantId);
             urlUtil.addParams(Constants.APP_PACKAGE_ID, appPkgId);
-            String downloadUrl = urlUtil.getUrl(baseUrl + Constants.APM_DOWNLOAD_URI);
+            String downloadUrl = protocol + urlUtil.getUrl(baseUrl + Constants.APM_DOWNLOAD_URI);
 
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
 
@@ -128,51 +132,67 @@ public class Apm extends ProcessflowAbstractTask {
     void downloadPackage(String url, String appPackageId, String appInstanceId) {
         LOGGER.info("Download application package {}", appPackageId);
 
-        String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
+        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient client = restClientService.getAppoRestClient();
-        client.addHeader(Constants.ACCESS_TOKEN, accessToken);
+        ResponseEntity<Resource> response;
+        Resource responseBody;
 
-        try (CloseableHttpResponse response = client.sendRequest(Constants.GET, url)) {
-            if (response == null) {
-                LOGGER.info("Application package download failed...");
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("access_token", accessToken);
+            org.springframework.http.HttpEntity<String> entity = new HttpEntity<>(headers);
+            response = restTemplate.exchange(url, HttpMethod.GET, entity, Resource.class);
+
+            responseBody = response.getBody();
+            if (!HttpStatus.OK.equals(response.getStatusCode()) || responseBody == null) {
+                LOGGER.error(Constants.CSAR_DOWNLOAD_FAILED, appPackageId);
+                setProcessflowErrorResponseAttributes(execution,
+                        "failed to download app package for package id" + appPackageId,
+                        Constants.PROCESS_FLOW_ERROR);
                 return;
             }
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
-                String error = getErrorInfo(response, "Download application package failed");
-                setProcessflowErrorResponseAttributes(delegateExecution, error, String.valueOf(statusCode));
-            } else {
-                String appPackage = copyApplicationPackage(appInstanceId, appPackageId, response.getEntity());
-                Boolean isValid = validateApplicationPackage(appPackage);
-                if (isValid.equals(true)) {
-                    setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, String.valueOf(statusCode));
-                    return;
-                }
-                setProcessflowResponseAttributes(delegateExecution, "Invalid application package",
-                        Constants.PROCESS_FLOW_ERROR);
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_APM);
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_APM, Constants.PROCESS_FLOW_ERROR);
+            return;
+        }
+
+        try {
+            InputStream ipStream = responseBody.getInputStream();
+
+            String appPackage = copyApplicationPackage(appInstanceId, appPackageId, ipStream);
+            Boolean isValid = validateApplicationPackage(appPackage);
+            if (isValid.equals(true)) {
+                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
             }
+        } catch (AppoException e) {
+            setProcessflowExceptionResponseAttributes(execution, "Invalid application package",
+                    Constants.PROCESS_FLOW_ERROR);
         } catch (IOException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution,
-                    "Application package download failed, io exception", Constants.PROCESS_FLOW_ERROR);
-        } catch (ParseException | AppoException | IllegalArgumentException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+            LOGGER.error(Constants.GET_INPUTSTREAM_FAILED, appPackageId);
+            setProcessflowExceptionResponseAttributes(execution,
+                    "failed to get input stream from app store response for package " + appPackageId,
+                    Constants.PROCESS_FLOW_ERROR);
         }
     }
 
-    private String copyApplicationPackage(String appInstanceId, String appPackageId, HttpEntity entity) {
+    private String copyApplicationPackage(String appInstanceId, String appPackageId,
+                                          InputStream resourceStream) {
 
         LOGGER.info("Copy application package {}", appPackageId);
-        if (entity == null) {
-            throw new IllegalArgumentException("Failed to copy application package " + appPackageId);
+        if (resourceStream == null) {
+            LOGGER.info(Constants.FAILED_TO_READ_INPUTSTREAM, appPackageId);
+            throw new AppoException("Failed to read input stream from app store for package id" + appPackageId);
         }
+
         String localDirPath = createDir(appPkgBasePath + appInstanceId);
         String appPackagePath = localDirPath + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
         File appPackage = new File(appPackagePath);
 
-        try (InputStream inputStream = entity.getContent();
-                OutputStream outputStream = new FileOutputStream(appPackage);) {
-            IOUtils.copy(inputStream, outputStream);
+        try {
+            FileUtils.copyInputStreamToFile(resourceStream, appPackage);
+            LOGGER.info("app package {} downloaded from APM successfully", appPackageId);
         } catch (IOException e) {
             LOGGER.info("Failed to copy application package {}", appPackageId);
             throw new AppoException("Failed to copy application package " + appPackageId);

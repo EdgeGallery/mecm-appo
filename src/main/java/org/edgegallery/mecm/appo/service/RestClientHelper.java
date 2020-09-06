@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.utils;
+package org.edgegallery.mecm.appo.service;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -47,28 +48,16 @@ import org.slf4j.LoggerFactory;
 
 @Getter
 @Setter
-public class AppoBuildClient {
+@AllArgsConstructor
+public class RestClientHelper {
 
     public static final int MAX_RETRY = 3;
     public static final int WAIT_PERIOD = 10;
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppoBuildClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestClientHelper.class);
 
-    private Boolean isSslEnabled;
+    private boolean isSslEnabled;
     private String trustStorePath;
     private String trustStorePasswd;
-
-    /**
-     * Creates build client instance.
-     *
-     * @param sslEnabled flag to check whether ssl is enabled
-     * @param trustStore trust store path
-     * @param trustStorePassword trust store password
-     */
-    public AppoBuildClient(Boolean sslEnabled, String trustStore, String trustStorePassword) {
-        isSslEnabled = sslEnabled;
-        trustStorePath = trustStore;
-        trustStorePasswd = trustStorePassword;
-    }
 
     private Boolean isRetryAllowed(IOException exception, int retries, int maxRetry) {
         if (retries >= maxRetry) {
@@ -96,7 +85,7 @@ public class AppoBuildClient {
     }
 
     private KeyStore getKeyStore(String keyStorePath, String password) {
-        KeyStore keystore = null;
+        KeyStore keystore;
         try (FileInputStream is = new FileInputStream(keyStorePath)) {
             keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             keystore.load(is, password.toCharArray());
@@ -107,26 +96,21 @@ public class AppoBuildClient {
         return keystore;
     }
 
-
     /**
-     * Retrieves closable HTTP client.
+     * Retrieve closeable http client.
      *
-     * @return http client on success
+     * @return http client
      */
-    public CloseableHttpClient buildClient() {
+    public CloseableHttpClient buildHttpClient() {
         LOGGER.info("Build Http client...");
-        CloseableHttpClient httpClient = null;
-
+        CloseableHttpClient httpClient;
         try {
-            KeyStore ks = null;
-            if (isSslEnabled.equals(true)) {
-                SSLContext sslcxt = null;
-                ks = getKeyStore(trustStorePath, trustStorePasswd);
-
-                sslcxt = SSLContexts.custom().loadTrustMaterial(ks, new TrustSelfSignedStrategy())
+            if (isSslEnabled) {
+                KeyStore ks = getKeyStore(trustStorePath, trustStorePasswd);
+                SSLContext sslctx = SSLContexts.custom().loadTrustMaterial(ks, new TrustSelfSignedStrategy())
                         .setProtocol("TLSv1.2").build();
-                SSLConnectionSocketFactory sslFactory = new SSLConnectionSocketFactory(sslcxt,
-                    (s, sslSession) -> true);
+                SSLConnectionSocketFactory sslFactory =
+                        new SSLConnectionSocketFactory(sslctx, (s, sslSession) -> true);
 
                 httpClient = HttpClients.custom().setRetryHandler(retryMechanism(MAX_RETRY))
                         .setServiceUnavailableRetryStrategy(

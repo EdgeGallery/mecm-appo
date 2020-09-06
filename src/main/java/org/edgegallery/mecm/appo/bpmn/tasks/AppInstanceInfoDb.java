@@ -17,8 +17,6 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.camunda.bpm.engine.variable.Variables;
-import org.camunda.bpm.engine.variable.value.ObjectValue;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
@@ -114,7 +112,9 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
             appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
 
-
+            /*ObjectValue dataValue = Variables.objectValue(appInstanceInfo)
+                    .serializationDataFormat(Variables.SerializationDataFormats.JAVA)
+                    .create();*/
             delegateExecution.setVariable("app_instance_info", appInstanceInfo);
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {

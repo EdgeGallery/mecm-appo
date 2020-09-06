@@ -16,43 +16,49 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
-import java.io.IOException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.util.EntityUtils;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
-import org.edgegallery.mecm.appo.service.AppoRestClientService;
-import org.edgegallery.mecm.appo.utils.AppoRestClient;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
-import org.jose4j.json.internal.json_simple.JSONObject;
-import org.jose4j.json.internal.json_simple.parser.JSONParser;
-import org.jose4j.json.internal.json_simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
 public class Inventory extends ProcessflowAbstractTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Inventory.class);
 
-    private final DelegateExecution delegateExecution;
+    private final DelegateExecution execution;
     private final String table;
-    AppoRestClientService restClientService;
+    RestTemplate restTemplate;
     private String baseUrl;
+    private String protocol = "https://";
 
     /**
      * Constructor for get inventory.
      *
-     * @param execution   delegate execution
+     * @param delegateExecution   delegate execution
      * @param servicePort inventory end point
      */
-    public Inventory(DelegateExecution execution, String servicePort,
-                     AppoRestClientService appoRestClientService) {
-        delegateExecution = execution;
-        restClientService = appoRestClientService;
+    public Inventory(DelegateExecution delegateExecution, boolean isSslEnabled, String servicePort,
+                     RestTemplate restClientTemplate) {
+        execution = delegateExecution;
+        if (!isSslEnabled) {
+            protocol = "http://";
+        }
+        restTemplate = restClientTemplate;
         baseUrl = servicePort;
-        table = (String) delegateExecution.getVariable("inventory");
+        table = (String) execution.getVariable("inventory");
     }
 
     /**
@@ -61,14 +67,14 @@ public class Inventory extends ProcessflowAbstractTask {
     public void execute() {
         switch (table) {
             case "mecHost":
-                getMecHost(delegateExecution);
+                getMecHost(execution);
                 break;
             case "applcm":
-                getApplcm(delegateExecution);
+                getApplcm(execution);
                 break;
             default:
                 LOGGER.info("Invalid inventory action...{}", table);
-                setProcessflowExceptionResponseAttributes(delegateExecution, "Invalid inventory",
+                setProcessflowExceptionResponseAttributes(execution, "Invalid inventory",
                         Constants.PROCESS_FLOW_ERROR);
         }
     }
@@ -85,124 +91,108 @@ public class Inventory extends ProcessflowAbstractTask {
         String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
 
-        AppoRestClient client = restClientService.getAppoRestClient();
-        client.addHeader(Constants.ACCESS_TOKEN, accessToken);
-
         UrlUtil urlUtil = new UrlUtil();
         urlUtil.addParams(Constants.TENANT_ID, tenantId);
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
-        String applcmUrl = urlUtil.getUrl(baseUrl + Constants.INVENTORY_APPLCM_URI);
+        String applcmUrl = protocol + urlUtil.getUrl(baseUrl + Constants.INVENTORY_APPLCM_URI);
 
-        try (CloseableHttpResponse response = client.sendRequest(Constants.GET, applcmUrl)) {
+        ResponseEntity<String> response;
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("access_token", accessToken);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            response = restTemplate.exchange(applcmUrl, HttpMethod.GET, entity, String.class);
 
-            JSONObject jsonResponse = getResponse(delegateExecution, response);
-            if (jsonResponse == null) {
-                LOGGER.info("response processing failed...");
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.error("Failed to get applcm: {} configuration from inventory ", applcmIp);
+                setProcessflowErrorResponseAttributes(delegateExecution,
+                        "failed to get applcm: {} configuration from inventory " + applcmIp,
+                        response.getStatusCode().toString());
                 return;
             }
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY + ex.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution,
+                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
+            return;
+        }
 
-            String applcmPort = jsonResponse.get("applcmPort").toString();
-            if (applcmPort == null || applcmPort.isEmpty()) {
+        try {
+            JsonObject jsonObject = new JsonParser().parse(response.getBody()).getAsJsonObject();
+            JsonElement applcmPort = jsonObject.get("applcmPort");
+            if (applcmPort == null) {
                 setProcessflowErrorResponseAttributes(delegateExecution,
                         "applcm port not found", Constants.PROCESS_FLOW_ERROR);
                 LOGGER.info("applcm port not found... in response");
                 return;
             }
-
-            delegateExecution.setVariable(Constants.APPLCM_PORT, applcmPort);
+            delegateExecution.setVariable(Constants.APPLCM_PORT, applcmPort.getAsString());
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-        } catch (AppoException | IOException e) {
+        } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(delegateExecution,
-                    "Failed to fetch applcm configuration from inventory", Constants.PROCESS_FLOW_ERROR);
+                    "Failed to process response", Constants.PROCESS_FLOW_ERROR);
         }
     }
 
     /**
      * Retrieves MEC host from inventory.
      *
-     * @param delegateExecution delegate execution
+     * @param execution delegate execution
      */
-    private void getMecHost(DelegateExecution delegateExecution) {
+    private void getMecHost(DelegateExecution execution) {
 
         LOGGER.info("Query MEC Host from inventory");
 
-        String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
-        String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
-        if (mecHost == null) {
-            AppInstanceInfo instanceinfo = (AppInstanceInfo) delegateExecution.getVariable(Constants.APP_INSTANCE_INFO);
-            mecHost = instanceinfo.getMecHost();
-        }
-
-        String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
-
-        AppoRestClient client = restClientService.getAppoRestClient();
-        client.addHeader(Constants.ACCESS_TOKEN, accessToken);
-
-        UrlUtil urlUtil = new UrlUtil();
-        urlUtil.addParams(Constants.TENANT_ID, tenantId);
-        urlUtil.addParams(Constants.MEC_HOST, mecHost);
-        String mecUrl = urlUtil.getUrl(baseUrl + Constants.INVENTORY_MEC_HOST_URI);
-
-        try (CloseableHttpResponse response = client.sendRequest(Constants.GET, mecUrl)) {
-            if (response == null) {
-                LOGGER.info("doGet failed...");
-                return;
-            }
-            JSONObject jsonResponse = getResponse(delegateExecution, response);
-            if (jsonResponse == null) {
-                LOGGER.info("doGet response processing failed...");
-                return;
-            }
-
-            String applcmIp = jsonResponse.get("applcmIp").toString();
-            if (applcmIp == null || applcmIp.isEmpty()) {
-                setProcessflowErrorResponseAttributes(delegateExecution,
-                        "applcm ip not found", Constants.PROCESS_FLOW_ERROR);
-                LOGGER.info("applcm ip not found... in response");
-                return;
-            }
-            delegateExecution.setVariable("applcm_ip", applcmIp);
-            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-        } catch (AppoException | IOException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution,
-                    "Failed to fetch host configuration from inventory", Constants.PROCESS_FLOW_ERROR);
-        }
-    }
-
-    /**
-     * Returns json object for the response.
-     *
-     * @param delegateExecution delegate execution
-     * @param response          response
-     * @return response as json object
-     */
-    private JSONObject getResponse(DelegateExecution delegateExecution,
-                                   CloseableHttpResponse response) {
-        int statusCode;
-        JSONObject jsonResponse = null;
-
-        if (response == null) {
-            LOGGER.info("Response is null...");
-            setProcessflowErrorResponseAttributes(delegateExecution, "Received null response",
-                    Constants.PROCESS_FLOW_ERROR);
-            return null;
-        }
-
         try {
-            statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
-                String error = getErrorInfo(response, "Inventory query failed");
-                setProcessflowErrorResponseAttributes(delegateExecution, error, String.valueOf(statusCode));
-            } else {
-                String responseStr = EntityUtils.toString(response.getEntity());
-                jsonResponse = (JSONObject) new JSONParser().parse(responseStr);
-                setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, String.valueOf(statusCode));
+            String tenant = (String) execution.getVariable(Constants.TENANT_ID);
+            String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
+            if (mecHost == null) {
+                AppInstanceInfo instanceinfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+                mecHost = instanceinfo.getMecHost();
             }
 
-        } catch (IOException | ParseException | org.apache.http.ParseException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution, "response processing failed",
-                    Constants.PROCESS_FLOW_ERROR);
+            UrlUtil urlUtil = new UrlUtil();
+            urlUtil.addParams(Constants.TENANT_ID, tenant);
+            urlUtil.addParams(Constants.MEC_HOST, mecHost);
+            String mecUrl = protocol + urlUtil.getUrl(baseUrl + Constants.INVENTORY_MEC_HOST_URI);
+
+            HttpHeaders headers = new HttpHeaders();
+            String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+            headers.set("access_token", accessToken);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(mecUrl, HttpMethod.GET, entity, String.class);
+
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.error("Failed to get mec host: {} configuration from inventory ", mecHost);
+                setProcessflowErrorResponseAttributes(execution,
+                        "failed to get mec host: {} configuration from inventory " + mecHost,
+                        response.getStatusCode().toString());
+                return;
+            }
+
+            JsonObject jsonObject = new JsonParser().parse(response.getBody()).getAsJsonObject();
+            JsonElement applcmIp = jsonObject.get("applcmIp");
+            if (applcmIp == null) {
+                setProcessflowErrorResponseAttributes(execution,
+                        "applcm IP not found", Constants.PROCESS_FLOW_ERROR);
+                LOGGER.info("applcm IP not found... in response");
+                return;
+            }
+            execution.setVariable(Constants.APPLCM_IP, applcmIp.getAsString());
+            setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY + ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error("url: {}", ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    "Failed to resolve url parameters", Constants.PROCESS_FLOW_ERROR);
+        } catch (AppoException e) {
+            setProcessflowExceptionResponseAttributes(execution,
+                    "Failed to process response", Constants.PROCESS_FLOW_ERROR);
         }
-        return jsonResponse;
     }
 }

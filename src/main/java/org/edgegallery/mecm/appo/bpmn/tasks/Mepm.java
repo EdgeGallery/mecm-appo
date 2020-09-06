@@ -16,21 +16,28 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.util.EntityUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
-import org.edgegallery.mecm.appo.service.AppoRestClientService;
-import org.edgegallery.mecm.appo.utils.AppoRestClient;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
-import org.jose4j.json.internal.json_simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
 public class Mepm extends ProcessflowAbstractTask {
 
@@ -40,18 +47,22 @@ public class Mepm extends ProcessflowAbstractTask {
     private final String action;
     private String baseUrl;
     private String appPkgBasePath;
-    private AppoRestClientService restClientService;
+    private RestTemplate restTemplate;
+    private String protocol = "https://";
 
     /**
      * Creates an MEPM instance.
      *
-     * @param delegateExecution     delegate execution
-     * @param appoRestClientService restclient service
+     * @param delegateExecution  delegate execution
+     * @param restClientTemplate restclient template
      */
-    public Mepm(DelegateExecution delegateExecution, String appPkgsBasePath,
-                AppoRestClientService appoRestClientService) {
+    public Mepm(DelegateExecution delegateExecution, boolean isSslEnabled, String appPkgsBasePath,
+                RestTemplate restClientTemplate) {
         execution = delegateExecution;
-        restClientService = appoRestClientService;
+        if (!isSslEnabled) {
+            protocol = "http://";
+        }
+        restTemplate = restClientTemplate;
         appPkgBasePath = appPkgsBasePath;
         baseUrl = "{applcm_ip}:{applcm_port}";
         action = (String) delegateExecution.getVariable("action");
@@ -108,59 +119,65 @@ public class Mepm extends ProcessflowAbstractTask {
             throw new AppoException(e.getMessage());
         }
         String resolvedUri = urlUtil.getUrl(uri);
-        return applcmIp + ":" + applcmPort + resolvedUri;
+        return protocol + applcmIp + ":" + applcmPort + resolvedUri;
     }
 
     private void instantiate(DelegateExecution execution) {
         LOGGER.info("Send Instantiate request to applcm");
-        String url;
+        String instantiateUrl;
         try {
-            url = resolveUrlPathParameters(Constants.APPLCM_INSTANTIATE_URI);
+            instantiateUrl = resolveUrlPathParameters(Constants.APPLCM_INSTANTIATE_URI);
 
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+            setProcessflowExceptionResponseAttributes(execution, "Failed to resolve url path parameters",
+                    Constants.PROCESS_FLOW_ERROR);
             return;
         }
 
         AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
-
-        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
-
-        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-        appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
-        appoRestClient.addHeader(HOST_IP, appInstanceInfo.getMecHost());
         String appPackagePath = appPkgBasePath + appInstanceInfo.getAppInstanceId()
                 + Constants.SLASH + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
 
-        appoRestClient.addFileEntity(appPackagePath);
-
-        sendRequest(appoRestClient, Constants.POST, url);
-    }
-
-    private void query(DelegateExecution execution) {
-        LOGGER.info("Query app instance ");
-        String url;
+        FileSystemResource appPkgRes;
         try {
-            url = resolveUrlPathParameters(baseUrl + Constants.APPLCM_INSTANTIATE_URI);
-
-        } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
-            LOGGER.info("Query application instance failed {}", e.getMessage());
+            appPkgRes = new FileSystemResource(new File(appPackagePath));
+        } catch (InvalidPathException e) {
+            setProcessflowExceptionResponseAttributes(execution,
+                    "Failed to find application package to instantiate", Constants.PROCESS_FLOW_ERROR);
             return;
         }
 
-        String mecHost = null;
-        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
-        if (appInstanceInfo != null) {
-            mecHost = appInstanceInfo.getMecHost();
-        }
+        // Preparing request parts.
+        LinkedMultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+        parts.add("file", appPkgRes);
+        parts.add(HOST_IP, appInstanceInfo.getMecHost());
+
+        // Preparing HTTP header
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
-        appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
-        appoRestClient.addHeader(HOST_IP, mecHost);
+        httpHeaders.set(Constants.ACCESS_TOKEN, accessToken);
 
-        sendRequest(appoRestClient, Constants.GET, url);
+        try {
+            // Creating HTTP entity with header and parts
+            HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, httpHeaders);
+
+            // Sending request
+            ResponseEntity<String> response = restTemplate.exchange(instantiateUrl, HttpMethod.POST,
+                    httpEntity, String.class);
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.error(Constants.APPLCM_RET_FAILURE, response);
+                setProcessflowErrorResponseAttributes(execution,
+                        Constants.APPLCM_RET_FAILURE, response.getStatusCode().toString());
+                return;
+            }
+            setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM + ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
+        }
     }
 
     private void terminate(DelegateExecution execution) {
@@ -174,47 +191,63 @@ public class Mepm extends ProcessflowAbstractTask {
             return;
         }
 
-        String host = null;
-        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
-        if (appInstanceInfo != null) {
-            host = appInstanceInfo.getMecHost();
-        }
+        ResponseEntity<String> response;
+        try {
+            HttpHeaders headers = new HttpHeaders();
 
-        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
+            String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+            headers.set(Constants.ACCESS_TOKEN, accessToken);
 
-        appoRestClient.addHeader(HOST_IP, host);
-        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-        appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
 
-        int statusCode = sendRequest(appoRestClient, Constants.DELETE, url);
-        if (!(statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299)) {
-            String appPackageId = null;
-            try {
-                if (appInstanceInfo != null) {
-                    appPackageId = appInstanceInfo.getAppPackageId();
-                    String appPackagePath = appPkgBasePath + appInstanceInfo.getAppInstanceId()
-                            + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
-                    Files.delete(Paths.get(appPackagePath));
-                }
-            } catch (IOException e) {
-                LOGGER.error("Failed to delete application package {}", appPackageId);
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.error(Constants.APPLCM_RET_FAILURE, response);
+                setProcessflowErrorResponseAttributes(execution,
+                        Constants.APPLCM_RET_FAILURE, response.getStatusCode().toString());
+                return;
             }
+
+            setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM + ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
+            return;
         }
+
+        String appPackageId = null;
+        try {
+            AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+            appPackageId = appInstanceInfo.getAppPackageId();
+
+            String appPackagePath = appPkgBasePath + appInstanceInfo.getAppInstanceId()
+                    + Constants.SLASH + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
+
+            Files.delete(Paths.get(appPackagePath));
+        } catch (IOException e) {
+            LOGGER.error("Failed to delete application package {}", appPackageId);
+        }
+    }
+
+    private void query(DelegateExecution execution) {
+        LOGGER.info("Query app instance ");
+        sendQueryRequestToApplcm(execution, baseUrl + Constants.APPLCM_INSTANTIATE_URI);
     }
 
     private void querykpi(DelegateExecution execution) {
         LOGGER.info("Send query kpi request to applcm");
 
-        querykpiOrCapabilities(execution, baseUrl + Constants.APPLCM_QUERY_KPI_URI);
+        sendQueryRequestToApplcm(execution, baseUrl + Constants.APPLCM_QUERY_KPI_URI);
     }
 
     private void queryEdgeCapabilities(DelegateExecution execution) {
         LOGGER.info("Send query capabilities request to applcm");
 
-        querykpiOrCapabilities(execution, baseUrl + Constants.APPLCM_QUERY_CAPABILITY_URI);
+        sendQueryRequestToApplcm(execution, baseUrl + Constants.APPLCM_QUERY_CAPABILITY_URI);
     }
 
-    private void querykpiOrCapabilities(DelegateExecution execution, String uri) {
+    private void sendQueryRequestToApplcm(DelegateExecution execution, String uri) {
         LOGGER.info("Send query request to applcm");
 
         String url;
@@ -227,45 +260,29 @@ public class Mepm extends ProcessflowAbstractTask {
             return;
         }
 
-        AppoRestClient appoRestClient = restClientService.getAppoRestClient();
+        ResponseEntity<String> response;
+        try {
+            HttpHeaders headers = new HttpHeaders();
 
-        String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
-        appoRestClient.addHeader(HOST_IP, mecHost);
-        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-        appoRestClient.addHeader(Constants.ACCESS_TOKEN, accessToken);
+            String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+            headers.set(Constants.ACCESS_TOKEN, accessToken);
 
-        sendRequest(appoRestClient, Constants.GET, url);
-    }
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
-    private int sendRequest(AppoRestClient restClient, String method, String uri) {
-
-        int statusCode = 0;
-
-        try (CloseableHttpResponse response = restClient.sendRequest(method, uri)) {
-            statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
-                LOGGER.info("Request failed, error code {}", statusCode);
-                String error = restClient.getErrorInfo(response, "Request failed, status code {}" + statusCode);
-                setProcessflowErrorResponseAttributes(execution, error, String.valueOf(statusCode));
-            } else {
-                String responseStr = null;
-                if (response.getEntity() != null) {
-                    responseStr = EntityUtils.toString(response.getEntity());
-                    setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
-                } else {
-                    setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-                }
-                LOGGER.info("Response {}, response code {}", responseStr, statusCode);
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.error(Constants.APPLCM_RET_FAILURE, response);
+                setProcessflowErrorResponseAttributes(execution,
+                        Constants.APPLCM_RET_FAILURE, response.getStatusCode().toString());
+                return;
             }
-        } catch (IOException e) {
-            LOGGER.info("Request failed due to io exception");
 
-            setProcessflowExceptionResponseAttributes(execution, "Request failed due to io exception",
-                    Constants.PROCESS_FLOW_ERROR);
-        } catch (ParseException | AppoException e) {
-            LOGGER.info("{}", e.getMessage());
-            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+            String responseStr = response.getBody();
+            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM + ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
         }
-        return statusCode;
     }
 }

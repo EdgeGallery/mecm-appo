@@ -18,16 +18,13 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.edgegallery.mecm.appo.service.AppoRestClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class InventoryAdapter implements JavaDelegate {
-
-    @Autowired
-    private AppoRestClientService appoRestClientService;
 
     @Value("${appo.endpoints.inventory.end-point}")
     private String inventoryService;
@@ -35,12 +32,19 @@ public class InventoryAdapter implements JavaDelegate {
     @Value("${appo.endpoints.inventory.port}")
     private String inventoryServicePort;
 
+    @Value("${server.ssl.enabled:false}")
+    private String isSslEnabled;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
         String servicePort = inventoryService + ":" + inventoryServicePort;
 
-        Inventory inventory = new Inventory(delegateExecution, servicePort, appoRestClientService);
+        Inventory inventory = new Inventory(delegateExecution, Boolean.parseBoolean(isSslEnabled), servicePort,
+                restTemplate);
         inventory.execute();
     }
 }

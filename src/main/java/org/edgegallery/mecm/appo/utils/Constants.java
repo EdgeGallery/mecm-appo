@@ -80,6 +80,17 @@ public final class Constants {
     public static final String POST = "POST";
     public static final String DELETE = "DELETE";
 
+    public static final String CSAR_DOWNLOAD_FAILED = "failed to download app package for package {}";
+    public static final String FAILED_TO_READ_INPUTSTREAM = "failed to read input stream from app store for package {}";
+    public static final String FAILED_TO_CONNECT_APM = "failed to connect to APM";
+    public static final String GET_INPUTSTREAM_FAILED = "failed to get input stream from app store response for "
+            + "package {}";
+
+    public static final String FAILED_TO_CONNECT_INVENTORY = "failed to connect to inventory {}";
+    public static final String FAILED_TO_CONNECT_APPLCM = "failed to connect to applcm {}";
+    public static final String REPO_INFO_NULL = "edge nexus repository information is null for host {}";
+    public static final String APPLCM_RET_FAILURE = "Received failure response from Applcm {}";
+
     private Constants() {
     }
 }

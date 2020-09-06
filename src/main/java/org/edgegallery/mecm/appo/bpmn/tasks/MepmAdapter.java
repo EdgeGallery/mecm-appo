@@ -18,16 +18,19 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.edgegallery.mecm.appo.service.AppoRestClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class MepmAdapter implements JavaDelegate {
 
     @Autowired
-    private AppoRestClientService appoRestClientService;
+    private RestTemplate restTemplate;
+
+    @Value("${server.ssl.enabled:false}")
+    private String isSslEnabled;
 
     @Value("${appo.appPackages.path}")
     private String appPkgsBasePath;
@@ -35,7 +38,7 @@ public class MepmAdapter implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
-        Mepm mepm = new Mepm(delegateExecution, appPkgsBasePath, appoRestClientService);
+        Mepm mepm = new Mepm(delegateExecution, Boolean.parseBoolean(isSslEnabled), appPkgsBasePath, restTemplate);
         mepm.execute();
     }
 }

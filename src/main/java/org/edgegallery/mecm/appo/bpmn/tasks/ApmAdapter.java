@@ -18,16 +18,13 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import org.edgegallery.mecm.appo.service.AppoRestClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @Component
 public class ApmAdapter implements JavaDelegate {
-
-    @Autowired
-    private AppoRestClientService appoRestClientService;
 
     @Value("${appo.endpoints.apm.end-point}")
     private String apmService;
@@ -38,11 +35,18 @@ public class ApmAdapter implements JavaDelegate {
     @Value("${appo.appPackages.path}")
     private String appPkgsBasePath;
 
+    @Value("${server.ssl.enabled:false}")
+    private String isSslEnabled;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
 
         String servicePort = apmService + ":" + apmServicePort;
-        Apm apm = new Apm(delegateExecution, appPkgsBasePath, servicePort, appoRestClientService);
+        Apm apm = new Apm(delegateExecution, Boolean.parseBoolean(isSslEnabled), appPkgsBasePath, servicePort,
+                restTemplate);
         apm.execute();
     }
 }

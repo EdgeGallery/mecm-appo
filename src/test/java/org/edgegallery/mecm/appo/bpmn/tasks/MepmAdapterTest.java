@@ -16,8 +16,6 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.junit.Test;
