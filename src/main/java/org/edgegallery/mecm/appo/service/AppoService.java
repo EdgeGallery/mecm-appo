@@ -42,16 +42,6 @@ public interface AppoService {
     ResponseEntity<AppoResponse> getAppInstance(String accessToken, String tenantId, String appInstanceId);
 
     /**
-     * Retrieves all application instance information.
-     *
-     * @param accessToken access token
-     * @param tenantId    tenant ID
-     * @return all application instances & status code 200 on success, error code on failure
-     */
-
-    ResponseEntity<AppoResponse> getAllAppInstance(String accessToken, String tenantId);
-
-    /**
      * Terminates an application instance.
      *
      * @param accessToken   access token

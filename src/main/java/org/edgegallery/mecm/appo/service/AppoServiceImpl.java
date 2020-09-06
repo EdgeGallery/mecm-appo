@@ -125,12 +125,6 @@ public class AppoServiceImpl implements AppoService {
     }
 
     @Override
-    public ResponseEntity<AppoResponse> getAllAppInstance(String accessToken, String tenantId) {
-        LOGGER.debug("Currently this api not supported...");
-        return null;
-    }
-
-    @Override
     public ResponseEntity<AppoResponse> terminateAppInstance(String accessToken,
                                                              String tenantId,
                                                              String appInstanceId) {

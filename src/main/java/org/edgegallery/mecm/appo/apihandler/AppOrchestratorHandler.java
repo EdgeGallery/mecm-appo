@@ -136,25 +136,6 @@ public class AppOrchestratorHandler {
     }
 
     /**
-     * Retrieves all application instance information.
-     *
-     * @param tenantId tenant ID
-     * @return all application instances & status code 200 on success, error code on failure
-     */
-    @ApiOperation(value = "Retrieves application instance information", response = AppoResponse.class)
-    @GetMapping(path = "/tenants/{tenant_id}/app_instances", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT')")
-    public ResponseEntity<AppoResponse> getAllAppInstance(@ApiParam(value = "access token")
-                                                          @RequestHeader("access_token") String accessToken,
-                                                          @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-                                                          @Pattern(regexp = TENENT_ID_REGEX)
-                                                          @Size(max = 64) String tenantId) {
-        logger.debug("Query all application info request received...");
-
-        return appoService.getAllAppInstance(accessToken, tenantId);
-    }
-
-    /**
      * Terminates an application instance.
      *
      * @param tenantId      tenant ID
