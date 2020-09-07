@@ -92,6 +92,8 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             throw new AppoException(RECORD_NOT_FOUND + appInstanceId);
         }
 
+        appInstanceInfoRepository.deleteById(appInstanceId);
+
         List<AppInstanceInfo> record = appInstanceInfoRepository.findByTenantId(tenantId);
         if (record.isEmpty()) {
             LOGGER.info("Delete tenant {}", tenantId);
