@@ -104,10 +104,12 @@ public class Mepm extends ProcessflowAbstractTask {
             applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
             applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
             String tenant = (String) execution.getVariable(Constants.TENANT_ID);
+            String hostIp = (String) execution.getVariable(Constants.MEC_HOST);
 
             urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
             urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
             urlUtil.addParams(Constants.TENANT_ID, tenant);
+            urlUtil.addParams(Constants.MEC_HOST, hostIp);
 
             AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
             if (appInstanceInfo != null) {

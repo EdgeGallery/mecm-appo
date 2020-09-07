@@ -56,8 +56,9 @@ public final class Constants {
             + "/{app_instance_id}";
     public static final String APPLCM_TERMINATE_URI =
             "/lcmcontroller/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/terminate";
-    public static final String APPLCM_QUERY_KPI_URI = "/lcmcontroller/v1/tenants/{tenant_id}/kpi";
-    public static final String APPLCM_QUERY_CAPABILITY_URI = "/lcmcontroller/v1/tenants/{tenant_id}/mep_capabilities";
+    public static final String APPLCM_QUERY_KPI_URI = "/lcmcontroller/v1/tenants/{tenant_id}/hosts/{mec_host}/kpi";
+    public static final String APPLCM_QUERY_CAPABILITY_URI = "/lcmcontroller/v1/tenants/{tenant_id}/hosts/{mec_host"
+            + "}/mep_capabilities";
 
     public static final String PROCESS_FLOW_SUCCESS = "200";
     public static final String PROCESS_FLOW_ERROR = "500";
