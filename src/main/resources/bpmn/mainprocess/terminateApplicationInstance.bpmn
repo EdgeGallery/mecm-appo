@@ -7,8 +7,7 @@
     <bpmn:serviceTask id="ServiceTask_0nhqz05" name="Get input parameters" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.GetRequestInputs">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="requestAction">TerminateAppInstance
-</camunda:inputParameter>
+          <camunda:inputParameter name="requestAction">TerminateAppInstance</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0yp1qgj</bpmn:incoming>
@@ -158,10 +157,11 @@
       <bpmn:outgoing>SequenceFlow_1jtja72</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_1jtja72" sourceRef="ServiceTask_1t888vh" targetRef="EndEvent_0iqmm2s" />
-    <bpmn:serviceTask id="ServiceTask_0mtb9wc" name="Update record AppInstanceInfo DB" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.AppInstanceInfoDbAdapter">
+    <bpmn:serviceTask id="ServiceTask_0mtb9wc" name="Delete record AppInstanceInfo DB" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.AppInstanceInfoDbAdapter">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="operationType">update</camunda:inputParameter>
+          <camunda:inputParameter name="operationType">delete
+</camunda:inputParameter>
           <camunda:inputParameter name="operational_status">terminated</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
