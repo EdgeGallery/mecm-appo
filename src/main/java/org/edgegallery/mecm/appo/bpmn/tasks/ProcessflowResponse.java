@@ -40,13 +40,15 @@ public class ProcessflowResponse implements JavaDelegate {
 
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP, response);
-            LOGGER.info("Set success, response: {}, response code: {} ", response, responseCode);
+            LOGGER.info("Return process flow response, response: {}, response code: {} ", response,
+                    responseCode);
         } else if (responseType.equals("failure")) {
             String response = (String) delegateExecution.getVariable(ProcessflowAbstractTask.ERROR_RESPONSE);
 
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);
             delegateExecution.setVariable(Constants.PROCESS_FLOW_ERR_RESP, response);
-            LOGGER.info("Set failure, response: {}, response code: {} ", response, responseCode);
+            LOGGER.info("Return process flow error response, response: {}, response code: {} ", response,
+                    responseCode);
         } else {
             String response = (String) delegateExecution.getVariable(ProcessflowAbstractTask.FLOW_EXCEPTION);
 

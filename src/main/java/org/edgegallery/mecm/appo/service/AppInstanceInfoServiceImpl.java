@@ -1,6 +1,7 @@
 package org.edgegallery.mecm.appo.service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.edgegallery.mecm.appo.exception.AppoException;
@@ -36,7 +37,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         AppInstanceInfo info = appInstanceInfoRepository.findByTenantIdAndAppInstanceId(tenantId, appInstanceId);
         if (info == null) {
             LOGGER.debug("application instance info not found {}", appInstanceId);
-            throw new AppoException(RECORD_NOT_FOUND + appInstanceId);
+            throw new NoSuchElementException(RECORD_NOT_FOUND + appInstanceId);
         }
         return info;
     }
@@ -89,8 +90,10 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         AppInstanceInfo info = appInstanceInfoRepository.findByTenantIdAndAppInstanceId(tenantId, appInstanceId);
         if (info == null) {
             LOGGER.debug("Record does not exist, application instance {}", appInstanceId);
-            throw new AppoException(RECORD_NOT_FOUND + appInstanceId);
+            throw new NoSuchElementException(RECORD_NOT_FOUND + appInstanceId);
         }
+
+        appInstanceInfoRepository.deleteById(appInstanceId);
 
         List<AppInstanceInfo> record = appInstanceInfoRepository.findByTenantId(tenantId);
         if (record.isEmpty()) {
@@ -110,7 +113,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         AppInstanceInfo info = appInstanceInfoRepository.findByTenantIdAndAppInstanceId(tenantId, appInstanceId);
         if (info == null) {
             LOGGER.debug("Record does not exist, application instance {}", appInstanceId);
-            throw new AppoException(RECORD_NOT_FOUND + appInstanceId);
+            throw new NoSuchElementException(RECORD_NOT_FOUND + appInstanceId);
         }
 
         if (appInstanceInfo.getAppPackageId() != null) {

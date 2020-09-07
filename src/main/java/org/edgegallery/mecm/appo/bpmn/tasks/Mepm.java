@@ -45,7 +45,6 @@ public class Mepm extends ProcessflowAbstractTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(Mepm.class);
     private final DelegateExecution execution;
     private final String action;
-    private String baseUrl;
     private String appPkgBasePath;
     private RestTemplate restTemplate;
     private String protocol = "https://";
@@ -64,7 +63,6 @@ public class Mepm extends ProcessflowAbstractTask {
         }
         restTemplate = restClientTemplate;
         appPkgBasePath = appPkgsBasePath;
-        baseUrl = "{applcm_ip}:{applcm_port}";
         action = (String) delegateExecution.getVariable("action");
     }
 
@@ -163,6 +161,9 @@ public class Mepm extends ProcessflowAbstractTask {
             // Creating HTTP entity with header and parts
             HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, httpHeaders);
 
+            LOGGER.info("Instantiate application package, host: {}, package: {}, url:{}", appInstanceInfo.getMecHost(),
+                    appInstanceInfo.getAppPackageId(),
+                    instantiateUrl);
             // Sending request
             ResponseEntity<String> response = restTemplate.exchange(instantiateUrl, HttpMethod.POST,
                     httpEntity, String.class);
@@ -174,7 +175,7 @@ public class Mepm extends ProcessflowAbstractTask {
             }
             setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
         } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM + ex.getMessage());
+            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
         }
@@ -199,6 +200,8 @@ public class Mepm extends ProcessflowAbstractTask {
             headers.set(Constants.ACCESS_TOKEN, accessToken);
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            LOGGER.info("Terminate application package, url:{}", url);
             response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
@@ -210,7 +213,7 @@ public class Mepm extends ProcessflowAbstractTask {
 
             setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
         } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM + ex.getMessage());
+            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
             return;
@@ -268,6 +271,8 @@ public class Mepm extends ProcessflowAbstractTask {
             headers.set(Constants.ACCESS_TOKEN, accessToken);
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            LOGGER.info("Query... url:{}", url);
             response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
@@ -280,7 +285,7 @@ public class Mepm extends ProcessflowAbstractTask {
             String responseStr = response.getBody();
             setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
         } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM + ex.getMessage());
+            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
         }

@@ -1,12 +1,8 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
-import java.io.IOException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.util.EntityUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.jose4j.json.internal.json_simple.JSONObject;
-import org.jose4j.json.internal.json_simple.parser.JSONParser;
-import org.jose4j.json.internal.json_simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ProcessflowAbstractTask {
 
@@ -14,18 +10,8 @@ public abstract class ProcessflowAbstractTask {
     public static final String RESPONSE_CODE = "ResponseCode";
     public static final String ERROR_RESPONSE = "ErrResponse";
     public static final String FLOW_EXCEPTION = "ProcessflowException";
-
-    /**
-     * Retrieves protocol.
-     *
-     * @return protocol
-     */
-    public String getProtocol(String isSslEnabled) {
-        if (isSslEnabled.equals("true")) {
-            return "https://";
-        }
-        return "http://";
-    }
+    public static final String ILLEGAL_ARGUMENT = "Illegal Argument...";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProcessflowAbstractTask.class);
 
     /**
      * Sets process flow response attributes to delegate execution.
@@ -37,8 +23,10 @@ public abstract class ProcessflowAbstractTask {
     public void setProcessflowResponseAttributes(DelegateExecution delegateExecution,
                                                  String response, String responseCode) {
         if (responseCode == null) {
+            LOGGER.info(ILLEGAL_ARGUMENT);
             throw new IllegalArgumentException();
         }
+        LOGGER.info("Set process flow response, response: {} response code: {}", response, responseCode);
         delegateExecution.setVariable(RESPONSE, response);
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
     }
@@ -53,8 +41,10 @@ public abstract class ProcessflowAbstractTask {
     public void setProcessflowErrorResponseAttributes(DelegateExecution delegateExecution,
                                                       String response, String responseCode) {
         if (responseCode == null) {
+            LOGGER.info(ILLEGAL_ARGUMENT);
             throw new IllegalArgumentException();
         }
+        LOGGER.info("Set process flow error response, response: {} response code: {}", response, responseCode);
         delegateExecution.setVariable(ERROR_RESPONSE, response);
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
     }
@@ -69,33 +59,12 @@ public abstract class ProcessflowAbstractTask {
     public void setProcessflowExceptionResponseAttributes(DelegateExecution delegateExecution,
                                                           String response, String responseCode) {
         if (responseCode == null) {
+            LOGGER.info(ILLEGAL_ARGUMENT);
             throw new IllegalArgumentException();
         }
+        LOGGER.info("Set process flow exception response, response: {} response code: {}", response, responseCode);
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
         delegateExecution.setVariable(FLOW_EXCEPTION, response);
         delegateExecution.setVariable(ERROR_RESPONSE, response);
-    }
-
-    /**
-     * Retrieves error information from response.
-     *
-     * @param response http response
-     * @param error    error string
-     * @return error info
-     * @throws IOException    io exception
-     * @throws ParseException parse exception
-     */
-    public String getErrorInfo(CloseableHttpResponse response, String error)
-            throws IOException, ParseException {
-        if (response.getEntity() == null) {
-            return error;
-        }
-        String responseStr = EntityUtils.toString(response.getEntity());
-        JSONObject jsonResponse = (JSONObject) new JSONParser().parse(responseStr);
-        if (jsonResponse.get("error") != null) {
-            return jsonResponse.get("error").toString();
-        } else {
-            return error;
-        }
     }
 }
