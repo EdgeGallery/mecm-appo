@@ -104,15 +104,15 @@ public class AppoHandlerTest {
                 .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                 .andReturn();
 
-        // Post for invalid appInstance id.
+        // Post for invalid scenario.
         ResultActions postInstantiateResult =
                 mvc.perform(MockMvcRequestBuilders
                         .post("/appo/v1/tenants/" + TENANT_ID + "/app_instances/" + INVALID_APP_INSTANCE_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.TEXT_PLAIN_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
                         .header("access_token", "SampleToken"));
         postInstantiateResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andReturn();
 
         // Query Kpi
@@ -139,14 +139,25 @@ public class AppoHandlerTest {
                 .andExpect(MockMvcResultMatchers.status().is5xxServerError())
                 .andReturn();
 
+        // Get for invalid scenario when record does not exist.
         ResultActions getAppResult =
                 mvc.perform(MockMvcRequestBuilders.get("/appo/v1/tenants/" + TENANT_ID
                         + "/app_instance_infos/" + INVALID_APP_INSTANCE_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         getAppResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andReturn();
 
+        // Get for invalid app instance id.
+        ResultActions getResult =
+                mvc.perform(MockMvcRequestBuilders.get("/appo/v1/tenants/" + TENANT_ID
+                        + "/app_instances/" +INVALID_APP_INSTANCE_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .header("access_token", "SampleToken"));
+        getResult.andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                .andReturn();
     }
 }
