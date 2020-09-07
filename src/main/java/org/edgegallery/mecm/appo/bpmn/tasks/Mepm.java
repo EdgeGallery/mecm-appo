@@ -109,7 +109,10 @@ public class Mepm extends ProcessflowAbstractTask {
             urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
             urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
             urlUtil.addParams(Constants.TENANT_ID, tenant);
-            urlUtil.addParams(Constants.MEC_HOST, hostIp);
+
+            if (hostIp != null) {
+                urlUtil.addParams(Constants.MEC_HOST, hostIp);
+            }
 
             AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
             if (appInstanceInfo != null) {
