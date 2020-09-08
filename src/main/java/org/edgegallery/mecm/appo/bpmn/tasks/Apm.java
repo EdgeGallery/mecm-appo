@@ -35,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -153,14 +154,6 @@ public class Apm extends ProcessflowAbstractTask {
                         Constants.PROCESS_FLOW_ERROR);
                 return;
             }
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_APM);
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_APM, Constants.PROCESS_FLOW_ERROR);
-            return;
-        }
-
-        try {
             InputStream ipStream = responseBody.getInputStream();
 
             String appPackage = copyApplicationPackage(appInstanceId, appPackageId, ipStream);
@@ -168,6 +161,14 @@ public class Apm extends ProcessflowAbstractTask {
             if (isValid.equals(true)) {
                 setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
             }
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_APM);
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_APM, Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException ex) {
+            LOGGER.error(Constants.APM_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    ex.getStatusCode().toString());
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, "Invalid application package",
                     Constants.PROCESS_FLOW_ERROR);

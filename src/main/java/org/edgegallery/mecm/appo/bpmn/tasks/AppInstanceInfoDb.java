@@ -145,6 +145,11 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
 
             String responseCode = (String) delegateExecution.getVariable(RESPONSE_CODE);
 
+            String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
+            if (applcmIp != null) {
+                appInstanceInfo.setApplcmHost(applcmIp);
+            }
+
             String operationalStatus = (String) delegateExecution.getVariable("operational_status");
             appInstanceInfo.setOperationalStatus(operationalStatus);
 

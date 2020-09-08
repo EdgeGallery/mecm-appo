@@ -31,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -82,57 +83,58 @@ public class Inventory extends ProcessflowAbstractTask {
     /**
      * Retrieves applcm record from inventory.
      *
-     * @param delegateExecution delegate execution
+     * @param execution delegate execution
      */
-    private void getApplcm(DelegateExecution delegateExecution) {
+    private void getApplcm(DelegateExecution execution) {
         LOGGER.info("Query applcm from inventory");
 
-        String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
-        String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
-        String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
+        String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
+        String applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
+        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
 
         UrlUtil urlUtil = new UrlUtil();
         urlUtil.addParams(Constants.TENANT_ID, tenantId);
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
-        String applcmUrl = protocol + urlUtil.getUrl(baseUrl + Constants.INVENTORY_APPLCM_URI);
 
-        ResponseEntity<String> response;
         try {
+            String applcmUrl = protocol + urlUtil.getUrl(baseUrl + Constants.INVENTORY_APPLCM_URI);
             HttpHeaders headers = new HttpHeaders();
             headers.set("access_token", accessToken);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
             LOGGER.info("Get applcm configuration from Inventory: {}", applcmUrl);
-            response = restTemplate.exchange(applcmUrl, HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(applcmUrl, HttpMethod.GET, entity, String.class);
 
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
                 LOGGER.error("Failed to get applcm: {} configuration from inventory ", applcmIp);
-                setProcessflowErrorResponseAttributes(delegateExecution,
+                setProcessflowErrorResponseAttributes(execution,
                         "failed to get applcm: {} configuration from inventory " + applcmIp,
                         response.getStatusCode().toString());
                 return;
             }
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(delegateExecution,
-                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
-            return;
-        }
 
-        try {
             JsonObject jsonObject = new JsonParser().parse(response.getBody()).getAsJsonObject();
             JsonElement applcmPort = jsonObject.get("applcmPort");
             if (applcmPort == null) {
-                setProcessflowErrorResponseAttributes(delegateExecution,
+                setProcessflowErrorResponseAttributes(execution,
                         "applcm port not found", Constants.PROCESS_FLOW_ERROR);
                 LOGGER.info("applcm port not found... in response");
                 return;
             }
-            delegateExecution.setVariable(Constants.APPLCM_PORT, applcmPort.getAsString());
-            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-        } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(delegateExecution,
-                    "Failed to process response", Constants.PROCESS_FLOW_ERROR);
+            execution.setVariable(Constants.APPLCM_PORT, applcmPort.getAsString());
+            setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException ex) {
+            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    Constants.PROCESS_FLOW_ERROR);
+        } catch (AppoException | IllegalArgumentException e) {
+            setProcessflowExceptionResponseAttributes(execution,
+                    "Internal error", Constants.PROCESS_FLOW_ERROR);
         }
     }
 
@@ -194,8 +196,7 @@ public class Inventory extends ProcessflowAbstractTask {
             setProcessflowExceptionResponseAttributes(execution,
                     "Failed to resolve url parameters", Constants.PROCESS_FLOW_ERROR);
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution,
-                    "Failed to process response", Constants.PROCESS_FLOW_ERROR);
+            setProcessflowExceptionResponseAttributes(execution,"Internal error", Constants.PROCESS_FLOW_ERROR);
         }
     }
 }
