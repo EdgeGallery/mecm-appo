@@ -7,8 +7,7 @@
     <bpmn:serviceTask id="ServiceTask_0nhqz05" name="Get input parameters" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.GetRequestInputs">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="requestAction">InstantiateAppInstance
-</camunda:inputParameter>
+          <camunda:inputParameter name="requestAction">InstantiateAppInstance</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0yp1qgj</bpmn:incoming>
@@ -173,7 +172,7 @@
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="operationType">update</camunda:inputParameter>
-          <camunda:inputParameter name="operational_status">Instantion failed</camunda:inputParameter>
+          <camunda:inputParameter name="operational_status">Instantiation failed</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1a9cfbo</bpmn:incoming>
