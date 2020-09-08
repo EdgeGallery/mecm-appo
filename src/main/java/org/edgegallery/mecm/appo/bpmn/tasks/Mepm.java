@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
@@ -36,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -75,7 +77,7 @@ public class Mepm extends ProcessflowAbstractTask {
                 instantiate(execution);
                 break;
             case "query":
-                query(execution);
+                queryAppInstance(execution);
                 break;
             case "terminate":
                 terminate(execution);
@@ -104,12 +106,12 @@ public class Mepm extends ProcessflowAbstractTask {
             applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
             applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
             String tenant = (String) execution.getVariable(Constants.TENANT_ID);
-            String hostIp = (String) execution.getVariable(Constants.MEC_HOST);
 
             urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
             urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
             urlUtil.addParams(Constants.TENANT_ID, tenant);
 
+            String hostIp = (String) execution.getVariable(Constants.MEC_HOST);
             if (hostIp != null) {
                 urlUtil.addParams(Constants.MEC_HOST, hostIp);
             }
@@ -172,22 +174,39 @@ public class Mepm extends ProcessflowAbstractTask {
             // Sending request
             ResponseEntity<String> response = restTemplate.exchange(instantiateUrl, HttpMethod.POST,
                     httpEntity, String.class);
-            if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.error(Constants.APPLCM_RET_FAILURE, response);
+            if (HttpStatus.OK.equals(response.getStatusCode())) {
+                setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
+
+                //Delete application package
+                String deletePackage = appPkgBasePath + appInstanceInfo.getAppInstanceId()
+                        + Constants.SLASH + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
+                Files.delete(Paths.get(deletePackage));
+            } else {
+                LOGGER.error(Constants.APPLCM_RETURN_FAILURE, response);
                 setProcessflowErrorResponseAttributes(execution,
-                        Constants.APPLCM_RET_FAILURE, response.getStatusCode().toString());
-                return;
+                        Constants.APPLCM_RETURN_FAILURE, response.getStatusCode().toString());
             }
-            setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
+        } catch (IOException ex) {
+            LOGGER.error("Failed to delete application package {}", appInstanceInfo.getAppPackageId());
+        } catch (HttpServerErrorException ex) {
+            LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    Constants.PROCESS_FLOW_ERROR);
         }
     }
 
     private void terminate(DelegateExecution execution) {
         LOGGER.info("Terminate application instance");
+
+        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+        if (appInstanceInfo != null && !"Instantiated".equals(appInstanceInfo.getOperationalStatus())) {
+            setProcessflowResponseAttributes(execution, "", Constants.PROCESS_FLOW_SUCCESS);
+            return;
+        }
 
         String url;
         try {
@@ -209,37 +228,48 @@ public class Mepm extends ProcessflowAbstractTask {
             LOGGER.info("Terminate application package, url:{}", url);
             response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
-            if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.error(Constants.APPLCM_RET_FAILURE, response);
-                setProcessflowErrorResponseAttributes(execution,
-                        Constants.APPLCM_RET_FAILURE, response.getStatusCode().toString());
+            if (HttpStatus.OK.equals(response.getStatusCode())) {
+                setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
                 return;
             }
-
-            setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
+            LOGGER.error(Constants.APPLCM_RETURN_FAILURE, response);
+            setProcessflowErrorResponseAttributes(execution,
+                    Constants.APPLCM_RETURN_FAILURE, response.getStatusCode().toString());
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
-            return;
+        } catch (HttpServerErrorException ex) {
+            LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    Constants.PROCESS_FLOW_ERROR);
         }
 
-        String appPackageId = null;
         try {
-            AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
-            appPackageId = appInstanceInfo.getAppPackageId();
-
-            String appPackagePath = appPkgBasePath + appInstanceInfo.getAppInstanceId()
-                    + Constants.SLASH + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
-
-            Files.delete(Paths.get(appPackagePath));
+            if (appInstanceInfo != null) {
+                //Delete application package
+                String deletePackage = appPkgBasePath + appInstanceInfo.getAppInstanceId()
+                        + Constants.SLASH + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
+                Path path = Paths.get(deletePackage);
+                if (Files.exists(path)) {
+                    Files.delete(path);
+                }
+            }
         } catch (IOException e) {
-            LOGGER.error("Failed to delete application package {}", appPackageId);
+            LOGGER.error("Failed to delete application package {}", appInstanceInfo.getAppPackageId());
         }
     }
 
-    private void query(DelegateExecution execution) {
+    private void queryAppInstance(DelegateExecution execution) {
         LOGGER.info("Query app instance ");
+
+        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+        if (appInstanceInfo != null && !"Instantiated".equals(appInstanceInfo.getOperationalStatus())) {
+            setProcessflowErrorResponseAttributes(execution,
+                    "Application instance operational status is: " + appInstanceInfo.getOperationalStatus(),
+                    Constants.PROCESS_FLOW_SUCCESS);
+            return;
+        }
         sendQueryRequestToApplcm(execution, Constants.APPLCM_QUERY_URI);
     }
 
@@ -281,9 +311,9 @@ public class Mepm extends ProcessflowAbstractTask {
             response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.error(Constants.APPLCM_RET_FAILURE, response);
+                LOGGER.error(Constants.APPLCM_RETURN_FAILURE, response);
                 setProcessflowErrorResponseAttributes(execution,
-                        Constants.APPLCM_RET_FAILURE, response.getStatusCode().toString());
+                        Constants.APPLCM_RETURN_FAILURE, response.getStatusCode().toString());
                 return;
             }
 
@@ -293,6 +323,10 @@ public class Mepm extends ProcessflowAbstractTask {
             LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException ex) {
+            LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    Constants.PROCESS_FLOW_ERROR);
         }
     }
 }

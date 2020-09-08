@@ -18,6 +18,7 @@ package org.edgegallery.mecm.appo.service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.edgegallery.mecm.appo.apihandler.CreateParam;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
@@ -76,18 +77,13 @@ public class AppoServiceImpl implements AppoService {
                                                                String appInstanceId) {
         LOGGER.debug("Application instantiation request received...");
 
-        AppInstanceInfo appInstanceInfo = null;
-
-        appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
-        if (appInstanceInfo == null) {
-            return new ResponseEntity<>(new AppoResponse("application instance does not exist"),
-                    HttpStatus.BAD_REQUEST);
-        }
-
-        if (appInstanceInfo.getOperationalStatus().equals("Instantiated")) {
+        AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
+        String operationalStatus = appInstanceInfo.getOperationalStatus();
+        if ("Instantiated".equals(operationalStatus) || "Creating".equals(operationalStatus)) {
             return new ResponseEntity<>(
-                    new AppoResponse("Invalid state" + appInstanceInfo.getOperationalStatus()),
-                    HttpStatus.BAD_REQUEST);
+                    new AppoResponse(
+                            "Application instance operational status is : " + appInstanceInfo.getOperationalStatus()),
+                    HttpStatus.PRECONDITION_FAILED);
         }
 
         Map<String, String> requestBodyParam = new HashMap<>();
@@ -105,6 +101,13 @@ public class AppoServiceImpl implements AppoService {
     @Override
     public ResponseEntity<AppoResponse> getAppInstance(String accessToken, String tenantId, String appInstanceId) {
         LOGGER.debug("Query application info request received...");
+
+        AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
+        String operationalStatus = appInstanceInfo.getOperationalStatus();
+        if (!"Instantiated".equals(operationalStatus)) {
+            return new ResponseEntity<>(new AppoResponse("Application instance operational status is : "
+                    + appInstanceInfo.getOperationalStatus()), HttpStatus.PRECONDITION_FAILED);
+        }
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
@@ -125,10 +128,15 @@ public class AppoServiceImpl implements AppoService {
     }
 
     @Override
-    public ResponseEntity<AppoResponse> terminateAppInstance(String accessToken,
-                                                             String tenantId,
+    public ResponseEntity<AppoResponse> terminateAppInstance(String accessToken, String tenantId,
                                                              String appInstanceId) {
         LOGGER.debug("Terminate application info request received...");
+
+        AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
+        if (appInstanceInfo == null) {
+            LOGGER.debug(Constants.APP_INSTANCE_NOT_FOUND);
+            throw new NoSuchElementException(Constants.APP_INSTANCE_NOT_FOUND + appInstanceId);
+        }
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
@@ -172,6 +180,8 @@ public class AppoServiceImpl implements AppoService {
         if (response.getResponseCode() == HttpStatus.OK.value()) {
             return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return new ResponseEntity<>(new AppoResponse(response.getResponse()),
+                HttpStatus.valueOf(response.getResponseCode()));
     }
 }

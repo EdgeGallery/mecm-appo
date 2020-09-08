@@ -86,7 +86,7 @@ public class AppoHandlerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("access_token", "SampleToken"));
         deleteResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andReturn();
     }
 
@@ -101,7 +101,7 @@ public class AppoHandlerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("access_token", "SampleToken"));
         getInstanceResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andReturn();
 
         // Post for invalid scenario.
@@ -157,7 +157,7 @@ public class AppoHandlerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .header("access_token", "SampleToken"));
         getResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andReturn();
     }
 }

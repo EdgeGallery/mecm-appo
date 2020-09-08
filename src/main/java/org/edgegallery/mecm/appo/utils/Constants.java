@@ -28,11 +28,8 @@ public final class Constants {
     public static final String TENENT_ID_REGEX = "[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}";
     public static final String APP_NAME_REGEX = "^[a-zA-Z0-9]*$|^[a-zA-Z0-9][a-zA-Z0-9_\\-]*[a-zA-Z0-9]$";
     public static final String RECORD_NOT_FOUND = "Record not found";
-    public static final String EMPTY_STRING = "";
-    public static final String APP_INSTANCE_NOT_FOUND = "App instance not found";
-    public static final String OPER_STATUS_INVALID_STATE = "Invalid state";
+    public static final String APP_INSTANCE_NOT_FOUND = "Application instance id does not exist ";
 
-    public static final String REQUEST_ID = "request_id";
     public static final String TENANT_ID = "tenant_id";
     public static final String APP_PACKAGE_ID = "app_package_id";
     public static final String APP_NAME = "app_name";
@@ -77,9 +74,6 @@ public final class Constants {
 
     public static final String SLASH = "/";
     public static final String APP_PKG_EXT = ".csar";
-    public static final String GET = "GET";
-    public static final String POST = "POST";
-    public static final String DELETE = "DELETE";
 
     public static final String CSAR_DOWNLOAD_FAILED = "failed to download app package for package {}";
     public static final String FAILED_TO_READ_INPUTSTREAM = "failed to read input stream from app store for package {}";
@@ -89,8 +83,9 @@ public final class Constants {
 
     public static final String FAILED_TO_CONNECT_INVENTORY = "failed to connect to inventory {}";
     public static final String FAILED_TO_CONNECT_APPLCM = "failed to connect to applcm {}";
-    public static final String REPO_INFO_NULL = "edge nexus repository information is null for host {}";
-    public static final String APPLCM_RET_FAILURE = "Received failure response from Applcm {}";
+    public static final String APPLCM_RETURN_FAILURE = "applcm return failure {}";
+    public static final String INVENTORY_RETURN_FAILURE = "inventory return failure {}";
+    public static final String APM_RETURN_FAILURE = "apm return failure {}";
 
     private Constants() {
     }
