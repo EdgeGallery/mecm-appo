@@ -43,8 +43,9 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   datasource:
-    url: jdbc:postgresql://${APPO_DB_HOST:postgres}:${APPO_DB_PORT:5432}/${APPO_DB:appodb}?sslmode=verify-ca&amp;sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory
-    username: ${APPO_DB_USER:}
+    url: jdbc:postgresql://${APPO_DB_HOST:mecm-postgres}:${APPO_DB_PORT:5432}/${APPO_DB:appodb}?sslmode=verify-ca&amp;
+    sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory
+    username: ${APPO_DB_USER:appo}
     password: ${APPO_DB_PASSWORD:}
   jpa:
     show-sql: true
@@ -58,7 +59,7 @@ security:
   oauth2:
     resource:
       jwt:
-        key-uri: ${AUTH_SERVER_ADDRESS:http://user-mgmt-svc:8067}/oauth/token_key
+        key-uri: ${AUTH_SERVER_ADDRESS:https://user-mgmt-svc:8067}/oauth/token_key
 
 appo:
   async:
@@ -68,10 +69,10 @@ appo:
 
   endpoints:
     inventory:
-      end-point: ${INVENTORY_ENDPOINT:mecm-inventory-service}
+      end-point: ${INVENTORY_ENDPOINT:mecm-inventory}
       port: ${INVENTORY_PORT:8093}
     apm:
-      end-point: ${APM_ENDPOINT:mecm-apm-service}
+      end-point: ${APM_ENDPOINT:mecm-apm}
       port: ${APM_PORT:8092}
 
   appPackages:
