@@ -24,12 +24,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceInfoDto;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,11 +107,14 @@ public class AppInstanceInfoHandler {
 
         List<AppInstanceInfoDto> appInstanceInfosDto = new LinkedList<>();
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
-        for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
-            ModelMapper mapper = new ModelMapper();
-            appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
-        }
+        if (appInstanceInfos != null && !appInstanceInfos.isEmpty()) {
+            for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
+                ModelMapper mapper = new ModelMapper();
+                appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
+            }
 
-        return new ResponseEntity<>(new AppoResponse(appInstanceInfosDto), HttpStatus.OK);
+            return new ResponseEntity<>(new AppoResponse(appInstanceInfosDto), HttpStatus.OK);
+        }
+        throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);
     }
 }

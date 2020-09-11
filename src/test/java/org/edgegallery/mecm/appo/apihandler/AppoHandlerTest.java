@@ -76,7 +76,7 @@ public class AppoHandlerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         getAllResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
                 .andReturn();
 
         ResultActions deleteResult =
