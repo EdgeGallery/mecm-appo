@@ -30,7 +30,7 @@ public class AppInstanceInfoTest {
     @Before
     public void setUp() {
         appInstanceInfo.setAppDescriptor(AppoConstantsTest.APP_DESCRIPTOR);
-        appInstanceInfo.setAppdId(AppoConstantsTest.APP_ID);
+        appInstanceInfo.setAppId(AppoConstantsTest.APP_ID);
         appInstanceInfo.setAppInstanceId(AppoConstantsTest.APP_INSTANCE_ID);
         appInstanceInfo.setAppName(AppoConstantsTest.APP_NAME);
         appInstanceInfo.setApplcmHost(AppoConstantsTest.APPLCM_LCM_HOST);
@@ -44,7 +44,7 @@ public class AppInstanceInfoTest {
     @Test
     public void testAppInstanceInfoDto() {
         Assert.assertEquals(AppoConstantsTest.APP_DESCRIPTOR, appInstanceInfo.getAppDescriptor());
-        Assert.assertEquals(AppoConstantsTest.APP_ID, appInstanceInfo.getAppdId());
+        Assert.assertEquals(AppoConstantsTest.APP_ID, appInstanceInfo.getAppId());
         Assert.assertEquals(AppoConstantsTest.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
         Assert.assertEquals(AppoConstantsTest.APP_NAME, appInstanceInfo.getAppName());
         Assert.assertEquals(AppoConstantsTest.APPLCM_LCM_HOST, appInstanceInfo.getApplcmHost());

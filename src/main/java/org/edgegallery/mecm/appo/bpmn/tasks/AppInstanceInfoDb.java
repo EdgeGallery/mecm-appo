@@ -84,7 +84,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo.setMecHost((String) delegateExecution.getVariable(Constants.MEC_HOST));
             appInstanceInfo.setAppPackageId((String) delegateExecution.getVariable(Constants.APP_PACKAGE_ID));
             appInstanceInfo.setAppName((String) delegateExecution.getVariable(Constants.APP_NAME));
-            appInstanceInfo.setAppdId((String) delegateExecution.getVariable(Constants.APPD_ID));
+            appInstanceInfo.setAppId((String) delegateExecution.getVariable(Constants.APP_ID));
             appInstanceInfo.setAppDescriptor((String) delegateExecution.getVariable(Constants.APP_DESCR));
             appInstanceInfo.setOperationalStatus("Creating");
             appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);

@@ -49,8 +49,8 @@ public final class AppInstanceInfo {
     @Column(name = "app_name")
     private String appName;
 
-    @Column(name = "appd_id")
-    private String appdId;
+    @Column(name = "app_id")
+    private String appId;
 
     @Column(name = "app_descriptor")
     private String appDescriptor;

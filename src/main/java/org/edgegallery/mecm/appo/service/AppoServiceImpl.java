@@ -53,7 +53,7 @@ public class AppoServiceImpl implements AppoService {
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.APP_PACKAGE_ID, createParam.getAppPackageId());
-        requestBodyParam.put(Constants.APPD_ID, createParam.getAppdId());
+        requestBodyParam.put(Constants.APP_ID, createParam.getAppId());
         requestBodyParam.put(Constants.APP_NAME, createParam.getAppName());
         requestBodyParam.put(Constants.APP_DESCR, createParam.getAppInstanceDescription());
         requestBodyParam.put(Constants.MEC_HOST, createParam.getMecHost());

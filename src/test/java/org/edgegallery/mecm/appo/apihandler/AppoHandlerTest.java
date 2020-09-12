@@ -57,7 +57,7 @@ public class AppoHandlerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(
                                 "{ \"appPackageId\": \"f20358433cf8eb4719a62a49ed118c9b\", \"appName\": \"face_recognition\", "
-                                        + "\"appdId\": \"f50358433cf8eb4719a62a49ed118c9b\", "
+                                        + "\"appId\": \"f50358433cf8eb4719a62a49ed118c9b\", "
                                         + "\"appInstanceDescription\": \"face_recognition\", "
                                         + "\"mecHost\": \"172.17.0.10\" }")
                         .header("access_token", "SampleToken"));

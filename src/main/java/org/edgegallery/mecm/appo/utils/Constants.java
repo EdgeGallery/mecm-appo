@@ -36,7 +36,7 @@ public final class Constants {
     public static final String APP_DESCR = "app_instance_description";
     public static final String MEC_HOST = "mec_host";
     public static final String APP_INSTANCE_ID = "app_instance_id";
-    public static final String APPD_ID = "appd_id";
+    public static final String APP_ID = "app_id";
     public static final String ACCESS_TOKEN = "access_token";
     public static final String MEC_HOST_IP = "host_ip";
     public static final String APPLCM_IP = "applcm_ip";
