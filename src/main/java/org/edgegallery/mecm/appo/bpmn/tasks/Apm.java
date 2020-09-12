@@ -141,7 +141,7 @@ public class Apm extends ProcessflowAbstractTask {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("access_token", accessToken);
-            org.springframework.http.HttpEntity<String> entity = new HttpEntity<>(headers);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
 
             LOGGER.info("Download application package from APM: {}", url);
             response = restTemplate.exchange(url, HttpMethod.GET, entity, Resource.class);
