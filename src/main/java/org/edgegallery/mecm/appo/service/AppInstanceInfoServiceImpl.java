@@ -124,8 +124,8 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             info.setAppName(appInstanceInfo.getAppName());
         }
 
-        if (appInstanceInfo.getAppdId() != null) {
-            info.setAppdId(appInstanceInfo.getAppdId());
+        if (appInstanceInfo.getAppId() != null) {
+            info.setAppId(appInstanceInfo.getAppId());
         }
 
         if (appInstanceInfo.getAppDescriptor() != null) {

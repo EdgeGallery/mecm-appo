@@ -50,7 +50,7 @@ public class InputParameters {
         String appPkgId = (String) delegateExecution.getVariable(Constants.APP_PACKAGE_ID);
         String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
         String appDescr = (String) delegateExecution.getVariable(Constants.APP_DESCR);
-        String appdId = (String) delegateExecution.getVariable(Constants.APPD_ID);
+        String appId = (String) delegateExecution.getVariable(Constants.APP_ID);
         String appName = (String) delegateExecution.getVariable(Constants.APP_NAME);
         String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
 
@@ -59,13 +59,13 @@ public class InputParameters {
         delegateExecution.setVariable(Constants.APP_PACKAGE_ID, appPkgId);
         delegateExecution.setVariable(Constants.MEC_HOST, mecHost);
         delegateExecution.setVariable(Constants.APP_DESCR, appDescr);
-        delegateExecution.setVariable(Constants.APPD_ID, appdId);
+        delegateExecution.setVariable(Constants.APP_ID, appId);
         delegateExecution.setVariable(Constants.APP_NAME, appName);
         delegateExecution.setVariable(Constants.APP_INSTANCE_ID, appInstanceId);
 
-        LOGGER.info("tenant_id: {},app_package_id: {},mec_host: {},app_instance_description: {},appd_id: {},"
+        LOGGER.info("tenant_id: {},app_package_id: {},mec_host: {},app_instance_description: {},app_id: {},"
                         + "app_name: {},app_instance_id: {}", tenantId, appPkgId, mecHost, appDescr,
-                appdId, appName, appInstanceId);
+                appId, appName, appInstanceId);
     }
 
     /**

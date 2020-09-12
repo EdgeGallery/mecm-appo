@@ -35,9 +35,9 @@ public final class AppInstanceInfoDto {
     @Size(max = 128)
     private String appName;
 
-    @NotEmpty(message = "appd ID is empty")
+    @NotEmpty(message = "app ID is empty")
     @Size(max = 64)
-    private String appdId;
+    private String appId;
 
     @NotEmpty(message = "app descriptor is empty")
     @Size(max = 256)

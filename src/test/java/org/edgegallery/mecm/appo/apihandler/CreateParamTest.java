@@ -29,12 +29,12 @@ public class CreateParamTest {
 
     @Before
     public void setUp() {
-        createParam.setAppdId(AppoConstantsTest.APP_ID);
+        createParam.setAppId(AppoConstantsTest.APP_ID);
     }
 
     @Test
     public void testCreateParam() {
-        Assert.assertEquals(AppoConstantsTest.APP_ID, createParam.getAppdId());
+        Assert.assertEquals(AppoConstantsTest.APP_ID, createParam.getAppId());
     }
 
 }
