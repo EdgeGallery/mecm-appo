@@ -61,7 +61,7 @@ public class AppOrchestratorApplication {
     @Value("${appo.async.queue-capacity}")
     private int queueCapacity;
 
-    @Value("${server.ssl.enabled:false}")
+    @Value("${server.ssl.enabled:}")
     private String isSslEnabled;
 
     @Value("${server.ssl.trust-store:}")
