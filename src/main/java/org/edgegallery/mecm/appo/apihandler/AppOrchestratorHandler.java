@@ -28,6 +28,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.service.AppoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +106,8 @@ public class AppOrchestratorHandler {
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
             @ApiParam(value = "application instance id")
-            @PathVariable("app_instance_id") @Size(max = 64) String appInstanceId) {
+            @PathVariable("app_instance_id") @Pattern(regexp = Constants.APP_INST_ID_REGX)
+            @Size(max = 64) String appInstanceId) {
         logger.debug("Application instantiation request received...");
 
         return appoService.instantiateAppInstance(accessToken, tenantId, appInstanceId);
@@ -125,10 +127,11 @@ public class AppOrchestratorHandler {
     public ResponseEntity<AppoResponse> getAppInstance(@ApiParam(value = "access token")
                                                        @RequestHeader("access_token") String accessToken,
                                                        @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-                                                       @Pattern(regexp = TENENT_ID_REGEX)
+                                                       @Pattern(regexp = Constants.TENENT_ID_REGEX)
                                                        @Size(max = 64) String tenantId,
                                                        @ApiParam(value = "application instance id")
                                                        @PathVariable("app_instance_id")
+                                                       @Pattern(regexp = Constants.APP_INST_ID_REGX)
                                                        @Size(max = 64) String appInstanceId) {
         logger.debug("Query application info request received...");
 
@@ -152,9 +155,10 @@ public class AppOrchestratorHandler {
     public ResponseEntity<AppoResponse> terminateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-            @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+            @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
             @ApiParam(value = "application instance id")
-            @PathVariable("app_instance_id") @Size(max = 64) String appInstanceId) {
+            @PathVariable("app_instance_id") @Pattern(regexp = Constants.APP_INST_ID_REGX)
+            @Size(max = 64) String appInstanceId) {
         logger.debug("Terminate application info request received...");
 
         return appoService.terminateAppInstance(accessToken, tenantId, appInstanceId);
@@ -173,9 +177,11 @@ public class AppOrchestratorHandler {
     public ResponseEntity<AppoResponse> queryKpi(@ApiParam(value = "access token")
                                                  @RequestHeader("access_token") String accessToken,
                                                  @PathVariable("tenant_id")
-                                                 @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+                                                 @Pattern(regexp = Constants.TENENT_ID_REGEX)
+                                                 @Size(max = 64) String tenantId,
                                                  @ApiParam(value = "edge host ip")
-                                                 @PathVariable("host_ip") @Size(max = 15) String hostIp) {
+                                                 @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
+                                                 @Size(max = 15) String hostIp) {
         logger.debug("Query KPI request received...");
 
         return appoService.queryKpi(accessToken, tenantId, hostIp);
@@ -196,10 +202,11 @@ public class AppOrchestratorHandler {
                                                                   @RequestHeader("access_token") String accessToken,
                                                                   @ApiParam(value = "tenant id")
                                                                   @PathVariable("tenant_id")
-                                                                  @Pattern(regexp = TENENT_ID_REGEX)
+                                                                  @Pattern(regexp = Constants.TENENT_ID_REGEX)
                                                                   @Size(max = 64) String tenantId,
                                                                   @ApiParam(value = "edge host ip")
                                                                   @PathVariable("host_ip")
+                                                                  @Pattern(regexp = Constants.HOST_IP_REGX)
                                                                   @Size(max = 15) String hostIp) {
         logger.debug("Query MEP capabilities request received...");
 

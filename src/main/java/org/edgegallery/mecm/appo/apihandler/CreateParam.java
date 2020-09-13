@@ -52,12 +52,12 @@ public final class CreateParam {
     @Pattern(regexp = APP_NAME_REGEX)
     private String appName;
 
-    @NotEmpty(message = "Application instance descriptor ID is mandatory")
+    @NotEmpty(message = "Application instance ID is mandatory")
     @Size(max = 64)
     @Pattern(regexp = APPD_ID_REGEX)
     private String appId;
 
-    @NotEmpty(message = "Application instance descriptor is mandatory")
+    @NotEmpty(message = "Application instance description is mandatory")
     @Size(max = 256)
     private String appInstanceDescription;
 
