@@ -31,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -128,7 +129,7 @@ public class Inventory extends ProcessflowAbstractTask {
             LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException ex) {
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
             setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
                     Constants.PROCESS_FLOW_ERROR);
@@ -191,12 +192,16 @@ public class Inventory extends ProcessflowAbstractTask {
             LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
+            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    Constants.PROCESS_FLOW_ERROR);
         } catch (IllegalArgumentException ex) {
             LOGGER.error("url: {}", ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     "Failed to resolve url parameters", Constants.PROCESS_FLOW_ERROR);
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution,"Internal error", Constants.PROCESS_FLOW_ERROR);
+            setProcessflowExceptionResponseAttributes(execution, "Internal error", Constants.PROCESS_FLOW_ERROR);
         }
     }
 }

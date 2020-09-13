@@ -35,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -149,10 +150,7 @@ public class Apm extends ProcessflowAbstractTask {
             responseBody = response.getBody();
             if (!HttpStatus.OK.equals(response.getStatusCode()) || responseBody == null) {
                 LOGGER.error(Constants.CSAR_DOWNLOAD_FAILED, appPackageId);
-                setProcessflowErrorResponseAttributes(execution,
-                        "failed to download app package for package id" + appPackageId,
-                        Constants.PROCESS_FLOW_ERROR);
-                return;
+                throw new AppoException("Application package download failed");
             }
             InputStream ipStream = responseBody.getInputStream();
 
@@ -163,20 +161,16 @@ public class Apm extends ProcessflowAbstractTask {
             }
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT_APM);
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_APM, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException ex) {
+            throw new AppoException(Constants.FAILED_TO_CONNECT_APM);
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.APM_RETURN_FAILURE, ex.getResponseBodyAsString());
-            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                    ex.getStatusCode().toString());
+            throw new AppoException("Application package download failed: " + ex.getResponseBodyAsString());
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution, "Invalid application package",
-                    Constants.PROCESS_FLOW_ERROR);
+            LOGGER.error("Downloaded package is not valid");
+            throw new AppoException("Downloaded package is not valid");
         } catch (IOException e) {
             LOGGER.error(Constants.GET_INPUTSTREAM_FAILED, appPackageId);
-            setProcessflowExceptionResponseAttributes(execution,
-                    "failed to get input stream from app store response for package " + appPackageId,
-                    Constants.PROCESS_FLOW_ERROR);
+            throw new AppoException("failed to get input stream from app store response for package " + appPackageId);
         }
     }
 
