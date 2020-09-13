@@ -37,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -192,7 +193,7 @@ public class Mepm extends ProcessflowAbstractTask {
                     Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
         } catch (IOException ex) {
             LOGGER.error("Failed to delete application package {}", appInstanceInfo.getAppPackageId());
-        } catch (HttpServerErrorException ex) {
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
             setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
                     Constants.PROCESS_FLOW_ERROR);
@@ -239,7 +240,7 @@ public class Mepm extends ProcessflowAbstractTask {
             LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException ex) {
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
             setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
                     Constants.PROCESS_FLOW_ERROR);
@@ -323,7 +324,7 @@ public class Mepm extends ProcessflowAbstractTask {
             LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException ex) {
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
             setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
                     Constants.PROCESS_FLOW_ERROR);
