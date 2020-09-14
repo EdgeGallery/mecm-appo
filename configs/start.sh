@@ -144,6 +144,16 @@ validate_var_not_empty() {
   return 0
 }
 
+validate_url()
+{
+ url="$1"
+ if ! echo "$url" | grep -qE '(https?|http)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]' ; then
+   echo "invalid url"
+   return 1
+ fi
+ return 0
+}
+
 # ssl parameters validation
 validate_file_exists "/usr/app/ssl/keystore.p12"
 valid_ssl_key_store_path="$?"
@@ -269,6 +279,15 @@ if [ ! -z "$APM_PORT" ]; then
   if [ ! "$valid_APM_port" -eq "0" ]; then
     echo "invalid APM port number"
     exit 1
+  fi
+fi
+
+if [ ! -z "$AUTH_SERVER_ADDRESS" ] ; then
+  validate_url "$AUTH_SERVER_ADDRESS"
+  valid_auth_server_host_name="$?"
+  if [ ! "$valid_auth_server_host_name" -eq "0" ] ; then
+    echo "invalid auth server host name"
+     exit 1
   fi
 fi
 
