@@ -22,12 +22,13 @@ import org.springframework.validation.annotation.Validated;
 public final class AppInstanceInfoDto {
 
     @NotEmpty(message = "app instance ID is empty")
-    @Pattern(regexp = APP_INST_ID_REGX)
+    @Pattern(regexp = APP_INST_ID_REGX, message = "app instance ID is invalid. It must be valid uuid.")
     @Size(max = 64)
     private String appInstanceId;
 
     @NotEmpty(message = "app package ID is empty")
-    @Pattern(regexp = APP_PKG_ID_REGX)
+    @Pattern(regexp = APP_PKG_ID_REGX, message = "app package ID is invalid. It must be lowercase letters or digits "
+            + "with length of 32 characters.")
     @Size(max = 64)
     private String appPackageId;
 
