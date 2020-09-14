@@ -32,7 +32,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 @Component
 public class JsonRequestSizeLimitFilter extends OncePerRequestFilter {
 
-    private static final long MAX_JSON_POST_SIZE = 10485760; // 10MB
+    private static final long MAX_JSON_POST_SIZE = 2 * 1024 * 1024L; // 2MB
 
     @Autowired
     @Qualifier("handlerExceptionResolver")
