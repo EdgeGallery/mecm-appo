@@ -12,4 +12,4 @@ Appo is a Java program written based on jdk1.8 and maven. To compile, you only n
 #### Build image
 The Appo project provides a dockerfile file for mirroring. You can use the following commands when making a mirror
 
-docker build -t mecm-appo:latest -f docker/Dockerfile. 
+docker build -t edgegallery/mecm-appo:latest -f docker/Dockerfile .
