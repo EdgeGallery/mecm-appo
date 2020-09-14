@@ -22,6 +22,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerTokenServicesConfiguration;
 import org.springframework.context.annotation.Import;
@@ -40,10 +42,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AccessTokenFilter extends OncePerRequestFilter {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccessTokenFilter.class);
+    private static final String INVALID_TOKEN_MESSAGE = "Invalid access token";
+
     @Autowired
     TokenStore jwtTokenStore;
-
-    private String invalidToken = "Invalid access token";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -51,20 +54,23 @@ public class AccessTokenFilter extends OncePerRequestFilter {
 
         String accessTokenStr = request.getHeader("access_token");
         if (StringUtils.isEmpty(accessTokenStr)) {
+            LOGGER.error("Access token is empty.");
             response.sendError(HttpStatus.UNAUTHORIZED.value(), "Access token is empty");
             return;
         }
 
         OAuth2AccessToken accessToken = jwtTokenStore.readAccessToken(accessTokenStr);
         if (accessToken == null || accessToken.isExpired()) {
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), invalidToken);
+            LOGGER.error("Access token has expired.");
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), INVALID_TOKEN_MESSAGE);
             return;
         }
 
         Map<String, Object> additionalInfoMap = accessToken.getAdditionalInformation();
         OAuth2Authentication auth = jwtTokenStore.readAuthentication(accessToken);
         if (additionalInfoMap == null || auth == null) {
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), invalidToken);
+            LOGGER.error("Access token is invalid.");
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), INVALID_TOKEN_MESSAGE);
             return;
         }
 
