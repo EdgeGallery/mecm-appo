@@ -70,19 +70,19 @@ validate_password() {
   fi
 
   count=0
-  if ! echo "$password" | grep -qE '^[A-Z]$' ; then
+  if echo "$password" | grep -qE '[A-Z]' ; then
     count=$((count+1))
   fi
 
-  if ! echo "$password" | grep -qE '^[a-z]$' ; then
+  if echo "$password" | grep -qE '[a-z]' ; then
     count=$((count+1))
   fi
 
-  if ! echo "$password" | grep -qE '^[0-9]$' ; then
+  if echo "$password" | grep -qE '[0-9]' ; then
     count=$((count+1))
   fi
 
-  if ! echo "$password" | grep -qE "^[@#$%^'&'-+='('')']$" ; then
+  if echo "$password" | grep -qE "[@#$%^'&'-+='('')']" ; then
     count=$((count+1))
   fi
 
@@ -149,6 +149,22 @@ validate_url()
  url="$1"
  if ! echo "$url" | grep -qE '(https?|http)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]' ; then
    echo "invalid url"
+   return 1
+ fi
+ return 0
+}
+
+# Validates if ip is valid
+validate_ip()
+{
+ ip_var="$1"
+    # checks if variable is unset
+ if [ -z "$ip_var" ] ; then
+    echo "ip is not set"
+    return 1
+ fi
+
+ if ! echo "$ip_var" | grep -qE '^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.)' ; then
    return 1
  fi
  return 0
@@ -289,6 +305,22 @@ if [ ! -z "$AUTH_SERVER_ADDRESS" ] ; then
     echo "invalid auth server host name"
      exit 1
   fi
+fi
+
+if [ ! -z "$LOG_DIR" ] ; then
+  validate_dir_exists "$LOG_DIR"
+  valid_log_dir="$?"
+  if [ ! "$valid_log_dir" -eq "0" ] ; then
+    echo "log directory does not exist"
+    exit 1
+  fi
+fi
+
+validate_ip "$LISTEN_IP"
+valid_listen_ip="$?"
+if [ ! "$valid_listen_ip" -eq "0" ]; then
+  echo "invalid ip address for listen ip"
+  exit 1
 fi
 
 echo "Running APPO"
