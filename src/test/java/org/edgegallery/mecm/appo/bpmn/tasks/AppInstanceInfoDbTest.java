@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
-import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +27,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppInstanceInfoDbTest {
@@ -41,9 +39,6 @@ public class AppInstanceInfoDbTest {
 
     @Mock
     ExecutionImpl execution;
-
-    @Autowired
-    AppInstanceInfo info;
 
     @Test
     public void testInsert() {
