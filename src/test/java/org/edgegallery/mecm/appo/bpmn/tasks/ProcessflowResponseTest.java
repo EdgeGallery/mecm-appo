@@ -1,5 +1,7 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.junit.Test;
@@ -23,13 +25,13 @@ public class ProcessflowResponseTest {
         Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_TYPE)).thenReturn("success");
         Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_CODE)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        processflowResponse.execute(execution);
+        assertDoesNotThrow(() -> processflowResponse.execute(execution));
     }
 
     @Test
     public void testExecuteFailure() throws Exception {
         Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_TYPE)).thenReturn("failure");
         Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_CODE)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        processflowResponse.execute(execution);
+        assertDoesNotThrow(() -> processflowResponse.execute(execution));
     }
 }

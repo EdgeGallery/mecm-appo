@@ -16,6 +16,8 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -31,6 +33,6 @@ public class DeComposeApplicationPackageTest {
 
     @Test
     public void testExcuteDeComposeApplicationPackage() throws Exception {
-        deComposeApplicationPackage.execute(execution);
+        assertDoesNotThrow(() -> deComposeApplicationPackage.execute(execution));
     }
 }
