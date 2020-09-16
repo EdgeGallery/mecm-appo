@@ -16,6 +16,8 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoServiceImpl;
@@ -42,7 +44,7 @@ public class AppInstanceInfoDbTest {
     public void testInsert() {
         Mockito.when(execution.getVariable(AppoConstantsTest.OPERATION_TYPE)).thenReturn("insert");
         appoExceptionHandler = new AppInstanceInfoDb(execution, appInstanceInfoServiceImpl);
-        appoExceptionHandler.execute();
+        assertDoesNotThrow(() -> appoExceptionHandler.execute());
     }
 
     @Test
@@ -50,20 +52,20 @@ public class AppInstanceInfoDbTest {
         Mockito.when(execution.getVariable(AppoConstantsTest.OPERATION_TYPE)).thenReturn("update");
         appoExceptionHandler = new AppInstanceInfoDb(execution, appInstanceInfoServiceImpl);
         Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_CODE)).thenReturn("200");
-        appoExceptionHandler.execute();
+        assertDoesNotThrow(appoExceptionHandler::execute);
     }
 
     @Test
     public void testGet() {
         Mockito.when(execution.getVariable(AppoConstantsTest.OPERATION_TYPE)).thenReturn("get");
         appoExceptionHandler = new AppInstanceInfoDb(execution, appInstanceInfoServiceImpl);
-        appoExceptionHandler.execute();
+        assertDoesNotThrow(appoExceptionHandler::execute);
     }
 
     @Test
     public void testDelete() {
         Mockito.when(execution.getVariable(AppoConstantsTest.OPERATION_TYPE)).thenReturn("delete");
         appoExceptionHandler = new AppInstanceInfoDb(execution, appInstanceInfoServiceImpl);
-        appoExceptionHandler.execute();
+        assertDoesNotThrow(appoExceptionHandler::execute);
     }
 }

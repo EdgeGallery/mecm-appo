@@ -16,8 +16,6 @@
 
 package org.edgegallery.mecm.appo.apihandler;
 
-import static org.edgegallery.mecm.appo.utils.Constants.TENENT_ID_REGEX;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -73,13 +71,13 @@ public class AppOrchestratorHandler {
     @ApiOperation(value = "Creates application instance", response = AppoResponse.class)
     @PostMapping(path = "/tenants/{tenant_id}/app_instances", produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
-                @ApiResponse(code = 500, message = "internal server error", response = String.class)
-                })
+            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    })
     @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> createAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-            @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+            @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
             @ApiParam(value = "create application instance")
             @Valid @RequestBody CreateParam createParam) {
         logger.debug("Application create request received...");
@@ -98,13 +96,13 @@ public class AppOrchestratorHandler {
     @PostMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
-                @ApiResponse(code = 500, message = "internal server error", response = String.class)
-                })
+            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    })
     @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> instantiateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-            @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+            @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
             @ApiParam(value = "application instance id")
             @PathVariable("app_instance_id") @Pattern(regexp = Constants.APP_INST_ID_REGX)
             @Size(max = 64) String appInstanceId) {
@@ -149,8 +147,8 @@ public class AppOrchestratorHandler {
     @DeleteMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
-                @ApiResponse(code = 500, message = "internal server error", response = AppoResponse.class)
-                })
+            @ApiResponse(code = 500, message = "internal server error", response = AppoResponse.class)
+    })
     @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> terminateAppInstance(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,

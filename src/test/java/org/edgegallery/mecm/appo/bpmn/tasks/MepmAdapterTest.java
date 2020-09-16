@@ -16,6 +16,8 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.junit.Test;
@@ -39,7 +41,7 @@ public class MepmAdapterTest {
         Mockito.when(execution.getVariable(AppoConstantsTest.ACTION)).thenReturn("instantiate");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        mepmAdapter.execute(execution);
+        assertDoesNotThrow(() -> mepmAdapter.execute(execution));
     }
 
     @Test
@@ -47,7 +49,7 @@ public class MepmAdapterTest {
         Mockito.when(execution.getVariable(AppoConstantsTest.ACTION)).thenReturn("query");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        mepmAdapter.execute(execution);
+        assertDoesNotThrow(() -> mepmAdapter.execute(execution));
     }
 
     @Test
@@ -55,7 +57,7 @@ public class MepmAdapterTest {
         Mockito.when(execution.getVariable(AppoConstantsTest.ACTION)).thenReturn("terminate");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        mepmAdapter.execute(execution);
+        assertDoesNotThrow(() -> mepmAdapter.execute(execution));
     }
 
     @Test
@@ -63,7 +65,7 @@ public class MepmAdapterTest {
         Mockito.when(execution.getVariable(AppoConstantsTest.ACTION)).thenReturn("querykpi");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        mepmAdapter.execute(execution);
+        assertDoesNotThrow(() -> mepmAdapter.execute(execution));
     }
 
     @Test
@@ -71,6 +73,6 @@ public class MepmAdapterTest {
         Mockito.when(execution.getVariable("action")).thenReturn("queryEdgeCapabilities");
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_IP)).thenReturn(AppoConstantsTest.APPLCM_IP);
         Mockito.when(execution.getVariable(AppoConstantsTest.APPLCM_PORT)).thenReturn(AppoConstantsTest.APPLCM_PORT);
-        mepmAdapter.execute(execution);
+        assertDoesNotThrow(() -> mepmAdapter.execute(execution));
     }
 }

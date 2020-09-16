@@ -16,6 +16,8 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.junit.Test;
@@ -46,20 +48,20 @@ public class GetRequestInputsTest {
         Mockito.when(execution.getVariable(AppoConstantsTest.APP_NAME)).thenReturn(AppoConstantsTest.APP_NAME);
         Mockito.when(execution.getVariable(AppoConstantsTest.APP_INSTANCE_ID))
                 .thenReturn(AppoConstantsTest.APP_INSTANCE_ID);
-        getRequestInputs.execute(execution);
+        assertDoesNotThrow(() -> getRequestInputs.execute(execution));
     }
 
     @Test
     public void inputParametersQuery() {
         Mockito.when(execution.getVariable(AppoConstantsTest.REQUEST_ACTION)).thenReturn("QueryAppInstance");
         Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
-        getRequestInputs.execute(execution);
+        assertDoesNotThrow(() -> getRequestInputs.execute(execution));
     }
 
     @Test
     public void inputParametersQueryKPI() {
         Mockito.when(execution.getVariable(AppoConstantsTest.REQUEST_ACTION)).thenReturn("QueryKPI");
         Mockito.when(execution.getVariable(AppoConstantsTest.ACCESS_TOKEN)).thenReturn(AppoConstantsTest.ACCESS_TOKEN);
-        getRequestInputs.execute(execution);
+        assertDoesNotThrow(() -> getRequestInputs.execute(execution));
     }
 }

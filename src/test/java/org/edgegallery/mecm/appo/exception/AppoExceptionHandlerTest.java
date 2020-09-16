@@ -16,6 +16,8 @@
 
 package org.edgegallery.mecm.appo.exception;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.NoSuchElementException;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.junit.Test;
@@ -24,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -61,31 +64,39 @@ public class AppoExceptionHandlerTest {
     @Test
     public void testAppoException() {
         appoException = new AppoException(AppoConstantsTest.MESSAGE);
-        appoExceptionHandler.exception(appoException);
+        ResponseEntity<String> appoString = appoExceptionHandler.exception(appoException);
+        assertNotNull(appoString);
     }
 
     @Test
     public void testAppoProcessException() {
         appoProcessflowException = new AppoProcessflowException(AppoConstantsTest.MESSAGE);
-        appoExceptionHandler.exception(appoProcessflowException);
+        ResponseEntity<String> appoProcessString = appoExceptionHandler.exception(appoProcessflowException);
+        assertNotNull(appoProcessString);
     }
 
     @Test
     public void testMethodArgumentException() {
         bindingResult.addError(var1);
         methodArgumentNotValidException = new MethodArgumentNotValidException(parameter, bindingResult);
-        appoExceptionHandler.handleMethodArgumentNotValid(methodArgumentNotValidException);
+        ResponseEntity<AppoExceptionResponse> appoResponse =
+                appoExceptionHandler.handleMethodArgumentNotValid(methodArgumentNotValidException);
+        assertNotNull(appoResponse);
     }
 
     @Test
     public void testIllegalArgumentException() {
         illegalArgumentException = new IllegalArgumentException();
-        appoExceptionHandler.handleIllegalArgException(illegalArgumentException);
+        ResponseEntity<AppoExceptionResponse> appoHandlerResponse = appoExceptionHandler
+                .handleIllegalArgException(illegalArgumentException);
+        assertNotNull(appoHandlerResponse);
     }
 
     @Test
     public void testNoSuchElementException() {
         noSuchElementException = new NoSuchElementException();
-        appoExceptionHandler.handleNoSuchElementException(noSuchElementException);
+        ResponseEntity<AppoExceptionResponse> appoElementResponse =
+                appoExceptionHandler.handleNoSuchElementException(noSuchElementException);
+        assertNotNull(appoElementResponse);
     }
 }
