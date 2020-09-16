@@ -98,7 +98,7 @@ public class Inventory extends ProcessflowAbstractTask {
         urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
 
         try {
-            String applcmUrl = protocol + urlUtil.getUrl(baseUrl + Constants.INVENTORY_APPLCM_URI);
+            String applcmUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPLCM_URI);
             HttpHeaders headers = new HttpHeaders();
             headers.set("access_token", accessToken);
             HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -159,7 +159,7 @@ public class Inventory extends ProcessflowAbstractTask {
             UrlUtil urlUtil = new UrlUtil();
             urlUtil.addParams(Constants.TENANT_ID, tenant);
             urlUtil.addParams(Constants.MEC_HOST, mecHost);
-            String mecUrl = protocol + urlUtil.getUrl(baseUrl + Constants.INVENTORY_MEC_HOST_URI);
+            String mecUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_MEC_HOST_URI);
 
             HttpHeaders headers = new HttpHeaders();
             String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);

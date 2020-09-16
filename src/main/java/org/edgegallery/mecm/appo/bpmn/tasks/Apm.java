@@ -118,7 +118,7 @@ public class Apm extends ProcessflowAbstractTask {
             UrlUtil urlUtil = new UrlUtil();
             urlUtil.addParams(Constants.TENANT_ID, tenantId);
             urlUtil.addParams(Constants.APP_PACKAGE_ID, appPkgId);
-            String downloadUrl = protocol + urlUtil.getUrl(baseUrl + Constants.APM_DOWNLOAD_URI);
+            String downloadUrl = protocol + baseUrl + urlUtil.getUrl(Constants.APM_DOWNLOAD_URI);
 
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
 
@@ -186,6 +186,7 @@ public class Apm extends ProcessflowAbstractTask {
         String localDirPath = createDir(appPkgBasePath + appInstanceId);
         String appPackagePath = localDirPath + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
         File appPackage = new File(appPackagePath);
+        System.out.println("Created path is" + appPackage);
 
         try {
             FileUtils.copyInputStreamToFile(resourceStream, appPackage);
