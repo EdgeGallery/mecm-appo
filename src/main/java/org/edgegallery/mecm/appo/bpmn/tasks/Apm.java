@@ -186,7 +186,6 @@ public class Apm extends ProcessflowAbstractTask {
         String localDirPath = createDir(appPkgBasePath + appInstanceId);
         String appPackagePath = localDirPath + Constants.SLASH + appPackageId + Constants.APP_PKG_EXT;
         File appPackage = new File(appPackagePath);
-        System.out.println("Created path is" + appPackage);
 
         try {
             FileUtils.copyInputStreamToFile(resourceStream, appPackage);
