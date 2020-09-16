@@ -28,13 +28,13 @@ appo:
     queue-capacity: 500
   endpoints:
     inventory:
-      end-point: ${INVENTORY_ENDPOINT:1.1.1.1}
-      port: ${INVENTORY_PORT:8080}
+      end-point: ${INVENTORY_ENDPOINT:10.9.9.1}
+      port: ${INVENTORY_PORT:11111}
     apm:
-      end-point: ${APM_ENDPOINT:1.1.1.2}
-      port: ${APM_PORT:8081}
+      end-point: ${APM_ENDPOINT:10.9.9.2}
+      port: ${APM_PORT:11112}
   appPackages:
-    path: classpath:packages
+    path: src/test/resources/packages/
 
 security:
   oauth2:
