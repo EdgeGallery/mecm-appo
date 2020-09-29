@@ -120,11 +120,8 @@ public class AppoServiceImpl implements AppoService {
                 requestBodyParam);
         LOGGER.debug("Query application info response : {} ", response.getResponse());
 
-        if (response.getResponseCode() < Constants.HTTP_STATUS_CODE_200
-                || response.getResponseCode() > Constants.HTTP_STATUS_CODE_299) {
-            return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);
+        return new ResponseEntity<>(new AppoResponse(response.getResponse()),
+                HttpStatus.valueOf(response.getResponseCode()));
     }
 
     @Override
