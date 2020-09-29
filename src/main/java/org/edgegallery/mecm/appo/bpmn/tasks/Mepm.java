@@ -327,7 +327,7 @@ public class Mepm extends ProcessflowAbstractTask {
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
             setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                    Constants.PROCESS_FLOW_ERROR);
+                    String.valueOf(ex.getStatusCode().value()));
         }
     }
 }
