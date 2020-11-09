@@ -3,10 +3,13 @@ package org.edgegallery.mecm.appo.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import javax.transaction.Transactional;
 import org.edgegallery.mecm.appo.exception.AppoException;
+import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.model.AppoTenant;
+import org.edgegallery.mecm.appo.repository.AppInstanceDependencyRepository;
 import org.edgegallery.mecm.appo.repository.AppInstanceInfoRepository;
 import org.edgegallery.mecm.appo.repository.AppoTenantRepository;
 import org.edgegallery.mecm.appo.utils.Constants;
@@ -22,11 +25,14 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
     private static final String RECORD_NOT_FOUND = "Record does not exist, app instance id: ";
     private AppInstanceInfoRepository appInstanceInfoRepository;
     private AppoTenantRepository appoTenantRepository;
+    private AppInstanceDependencyRepository appInstanceDependencyRepository;
 
     @Autowired
     public AppInstanceInfoServiceImpl(AppInstanceInfoRepository appInstanceInfoRepository,
+                                      AppInstanceDependencyRepository appInstanceDependencyRepository,
                                       AppoTenantRepository appoTenantRepository) {
         this.appInstanceInfoRepository = appInstanceInfoRepository;
+        this.appInstanceDependencyRepository = appInstanceDependencyRepository;
         this.appoTenantRepository = appoTenantRepository;
     }
 
@@ -47,6 +53,13 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         LOGGER.debug("Retrieving application instances of tenant {}", tenantId);
 
         return appInstanceInfoRepository.findByTenantId(tenantId);
+    }
+
+    @Override
+    public List<AppInstanceInfo> getAppInstanceInfoByMecHost(String tenantId, String mecHost) {
+        LOGGER.debug("Retrieving application instances of tenant {}, mec host {}", tenantId, mecHost);
+
+        return appInstanceInfoRepository.findByTenantIdAndMecHost(tenantId, mecHost);
     }
 
     @Override
@@ -84,6 +97,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
     }
 
     @Override
+    @Transactional
     public void deleteAppInstanceInfo(String tenantId, String appInstanceId) {
         LOGGER.debug("Delete application instance {}... from DB", appInstanceId);
 
@@ -94,6 +108,10 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         }
 
         appInstanceInfoRepository.deleteById(appInstanceId);
+        List<AppInstanceDependency> dependencies = appInstanceDependencyRepository.getByAppInstanceId(tenantId, appInstanceId);
+        if (dependencies.size() > 0) {
+            appInstanceDependencyRepository.deleteAll(dependencies);
+        }
 
         List<AppInstanceInfo> record = appInstanceInfoRepository.findByTenantId(tenantId);
         if (record.isEmpty()) {
@@ -149,5 +167,19 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         }
         LOGGER.debug("Update application instance {}", info);
         return appInstanceInfoRepository.save(info);
+    }
+
+    @Override
+    public void createAppInstanceDependencies(String tenantId, List<AppInstanceDependency> appInstanceDependencies) {
+        appInstanceDependencies.forEach(item -> {
+            item.setTenant(tenantId);
+            item.setId(UUID.randomUUID().toString());
+        });
+        appInstanceDependencyRepository.saveAll(appInstanceDependencies);
+    }
+
+    @Override
+    public List<AppInstanceDependency> getDependenciesByDependencyAppInstanceId(String tenantId, String dependencyAppInstanceId) {
+        return appInstanceDependencyRepository.getByDependencyAppInstanceId(tenantId, dependencyAppInstanceId);
     }
 }

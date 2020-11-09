@@ -18,18 +18,33 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.nio.file.InvalidPathException;
 
 @Component
 public class DeComposeApplicationPackage implements JavaDelegate {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeComposeApplicationPackage.class);
 
+    @Autowired
+    private AppInstanceInfoService appInstanceInfoService;
+
+    @Value("${appo.appPackages.path}")
+    private String appPkgBasesPath;
+
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
-        LOGGER.info("Decompose application package...");
-
+        DeComposeAppPkgTask deComposeAppPkgTask = new DeComposeAppPkgTask(delegateExecution, appPkgBasesPath, appInstanceInfoService);
+        deComposeAppPkgTask.execute();
     }
 }
