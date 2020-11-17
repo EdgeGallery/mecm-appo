@@ -43,6 +43,8 @@ import org.springframework.web.client.RestTemplate;
 public class Apm extends ProcessflowAbstractTask {
 
     public static final String FAILED_TO_UNZIP_CSAR = "failed to unzip the csar file";
+    public static final String FAILED_TO_LOAD_YAML = "failed to load the yaml file";
+
     static final int TOO_MANY = 1024;
     static final int TOO_BIG = 104857600;
     private static final Logger LOGGER = LoggerFactory.getLogger(Apm.class);

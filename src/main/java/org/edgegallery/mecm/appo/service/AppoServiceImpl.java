@@ -16,11 +16,11 @@
 
 package org.edgegallery.mecm.appo.service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
+
 import org.edgegallery.mecm.appo.apihandler.CreateParam;
+import org.edgegallery.mecm.appo.exception.AppoException;
+import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.Constants;
@@ -133,6 +133,13 @@ public class AppoServiceImpl implements AppoService {
         if (appInstanceInfo == null) {
             LOGGER.debug(Constants.APP_INSTANCE_NOT_FOUND);
             throw new NoSuchElementException(Constants.APP_INSTANCE_NOT_FOUND + appInstanceId);
+        }
+
+        // TODO: check dependency
+        List<AppInstanceDependency> dependencies = appInstanceInfoService.getDependenciesByDependencyAppInstanceId(tenantId, appInstanceId);
+        if (dependencies.size() > 0) {
+            LOGGER.error("application instance depended by others");
+            throw new AppoException("application instance depended by others");
         }
 
         Map<String, String> requestBodyParam = new HashMap<>();
