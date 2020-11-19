@@ -16,20 +16,27 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
+import org.jose4j.json.internal.json_simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -73,6 +80,9 @@ public class Inventory extends ProcessflowAbstractTask {
                 break;
             case "applcm":
                 getApplcm(execution);
+                break;
+            case "application":
+                application(execution);
                 break;
             default:
                 LOGGER.info("Invalid inventory action...{}", table);
@@ -186,6 +196,19 @@ public class Inventory extends ProcessflowAbstractTask {
                 return;
             }
             execution.setVariable(Constants.APPLCM_IP, applcmIp.getAsString());
+
+            JsonArray hwCapabilities = jsonObject.getAsJsonArray("hwcapabilities");
+            List<String> hwTypeList = new LinkedList<>();
+            if (hwCapabilities != null) {
+                for (int i = 0; i < hwCapabilities.size(); i++) {
+                    JsonObject hostCapability = (JsonObject) hwCapabilities.get(i);
+                    JsonElement hwType = hostCapability.get("hwType");
+                    hwTypeList.add(hwType.getAsString());
+                }
+                String capabilities = hwTypeList.stream().map(Object::toString)
+                        .collect(Collectors.joining(","));
+                execution.setVariable("hw_capabilities_list", capabilities);
+            }
             setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
 
         } catch (ResourceAccessException ex) {
@@ -202,6 +225,287 @@ public class Inventory extends ProcessflowAbstractTask {
                     "Failed to resolve url parameters", Constants.PROCESS_FLOW_ERROR);
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, "Internal error", Constants.PROCESS_FLOW_ERROR);
+        }
+    }
+
+
+    /**
+     * Perform CURD operation on application inventory.
+     *
+     * @param execution delegate execution
+     */
+    private void application(DelegateExecution execution) {
+        LOGGER.info("application inventory");
+        String operType = (String) execution.getVariable("operType");
+        switch (operType) {
+            case "ADD":
+                addApplication(execution);
+                break;
+            case "UPDATE":
+                updateApplication(execution);
+                break;
+            case "GET":
+                getApplication(execution);
+                break;
+            case "DELETE":
+                deleteApplication(execution);
+                break;
+            default:
+                LOGGER.info("Invalid inventory operation type...{}", table);
+                setProcessflowExceptionResponseAttributes(execution, "Invalid inventory operation type",
+                        Constants.PROCESS_FLOW_ERROR);
+        }
+    }
+
+    /**
+     * Adds new MEC application to inventory.
+     *
+     * @param execution delegate execution
+     */
+    private void addApplication(DelegateExecution execution) {
+
+        LOGGER.info("Add new MEC application to inventory");
+        String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
+        String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
+        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+
+        UrlUtil urlUtil = new UrlUtil();
+        urlUtil.addParams(Constants.TENANT_ID, tenantId);
+        urlUtil.addParams(Constants.MEC_HOST, mecHost);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("access_token", accessToken);
+
+            String appInstId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
+            String appName = (String) execution.getVariable(Constants.APP_NAME);
+            String appPkgId = (String) execution.getVariable(Constants.APP_PACKAGE_ID);
+
+            JSONObject applicationData = new JSONObject();
+            applicationData.put("appInstanceId", appInstId);
+            applicationData.put("appName", appName);
+            applicationData.put("packageId", appPkgId);
+            String hwCapabilities = (String) execution.getVariable(Constants.HW_CAPABILITIES);
+            if (hwCapabilities != null && !hwCapabilities.isEmpty()) {
+                List<String> capList = Arrays.asList(hwCapabilities.split(",", -1));
+                applicationData.put("capabilities", capList);
+            }
+            String status = (String) execution.getVariable("status");
+            applicationData.put("status", status);
+
+            HttpEntity<String> entity = new HttpEntity<>(applicationData.toString(), headers);
+
+            String appUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPLICATIONS_URI);
+            LOGGER.info("Add application Inventory: {}", appUrl);
+            ResponseEntity<String> response = restTemplate.exchange(appUrl, HttpMethod.POST, entity, String.class);
+
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.error("Failed to add application inventory record {}", applicationData.toString());
+                setProcessflowErrorResponseAttributes(execution,
+                        "Failed to add application inventory record " + appInstId,
+                        response.getStatusCode().toString());
+                return;
+            }
+
+            setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
+            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    Constants.PROCESS_FLOW_ERROR);
+        } catch (AppoException | IllegalArgumentException e) {
+            setProcessflowExceptionResponseAttributes(execution,
+                    "Internal error", Constants.PROCESS_FLOW_ERROR);
+        }
+    }
+
+    /**
+     * Updates MEC application to inventory.
+     *
+     * @param execution delegate execution
+     */
+    private void updateApplication(DelegateExecution execution) {
+
+        LOGGER.info("Updates MEC application to inventory");
+        String applicationjson = getApplication(execution);
+
+        JsonObject jsonObject = new JsonParser().parse(applicationjson).getAsJsonObject();
+        JsonElement status = jsonObject.get("status");
+        if (status == null) {
+            setProcessflowErrorResponseAttributes(execution,
+                    "status not found", Constants.PROCESS_FLOW_ERROR);
+            LOGGER.info("status not found... in response");
+            return;
+        }
+        String updatestatus = (String) execution.getVariable("status");
+        jsonObject.addProperty("status", updatestatus);
+
+        String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
+        String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
+        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+
+        if (mecHost == null) {
+            AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+            if (appInstanceInfo != null) {
+                mecHost = appInstanceInfo.getMecHost();
+            }
+        }
+        String appInstId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
+
+        UrlUtil urlUtil = new UrlUtil();
+        urlUtil.addParams(Constants.TENANT_ID, tenantId);
+        urlUtil.addParams(Constants.MEC_HOST, mecHost);
+        urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstId);
+
+        try {
+            String appUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPLICATION_URI);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("access_token", accessToken);
+            HttpEntity<String> entity = new HttpEntity<>(jsonObject.toString(), headers);
+
+            LOGGER.info("Get application from Inventory: {}", appUrl);
+            ResponseEntity<String> response = restTemplate.exchange(appUrl, HttpMethod.PUT, entity, String.class);
+
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.error("Failed to get application: {} from inventory ", appInstId);
+                setProcessflowErrorResponseAttributes(execution,
+                        "Failed to get application from inventory " + appInstId,
+                        response.getStatusCode().toString());
+                return;
+            }
+            LOGGER.info("Modified application record: {}", applicationjson);
+            String responseStr = response.getBody();
+            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
+
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
+            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    Constants.PROCESS_FLOW_ERROR);
+        } catch (AppoException | IllegalArgumentException e) {
+            setProcessflowExceptionResponseAttributes(execution,
+                    "Internal error", Constants.PROCESS_FLOW_ERROR);
+        }
+    }
+
+    /**
+     * Retrieves MEC application from inventory.
+     *
+     * @param execution delegate execution
+     */
+    private String getApplication(DelegateExecution execution) {
+
+        LOGGER.info("Retrieve MEC application from inventory");
+        String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
+        String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
+        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+
+        if (mecHost == null) {
+            AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+            if (appInstanceInfo != null) {
+                mecHost = appInstanceInfo.getMecHost();
+            }
+        }
+        String appInstId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
+
+        UrlUtil urlUtil = new UrlUtil();
+        urlUtil.addParams(Constants.TENANT_ID, tenantId);
+        urlUtil.addParams(Constants.MEC_HOST, mecHost);
+        urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstId);
+
+        try {
+            String appUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPLICATION_URI);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("access_token", accessToken);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            LOGGER.info("Get application from Inventory: {}", appUrl);
+            ResponseEntity<String> response = restTemplate.exchange(appUrl, HttpMethod.GET, entity, String.class);
+
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.error("Failed to get application: {} from inventory ", appInstId);
+                setProcessflowErrorResponseAttributes(execution,
+                        "Failed to get application from inventory " + appInstId,
+                        response.getStatusCode().toString());
+                return null;
+            }
+
+            String responseStr = response.getBody();
+            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
+            return responseStr;
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
+            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    Constants.PROCESS_FLOW_ERROR);
+        } catch (AppoException | IllegalArgumentException e) {
+            setProcessflowExceptionResponseAttributes(execution,
+                    "Internal error", Constants.PROCESS_FLOW_ERROR);
+        }
+        return null;
+    }
+
+    /**
+     * Deletes MEC application from inventory.
+     *
+     * @param execution delegate execution
+     */
+    private void deleteApplication(DelegateExecution execution) {
+
+        LOGGER.info("Deletes MEC application from inventory");
+        String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
+        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+        String appInstId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
+        UrlUtil urlUtil = new UrlUtil();
+        urlUtil.addParams(Constants.TENANT_ID, tenantId);
+        urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstId);
+
+        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+        if (appInstanceInfo != null) {
+            urlUtil.addParams(Constants.MEC_HOST, appInstanceInfo.getMecHost());
+        }
+
+        try {
+            String appUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPLICATION_URI);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("access_token", accessToken);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            LOGGER.info("Get application from Inventory: {}", appUrl);
+            ResponseEntity<String> response = restTemplate.exchange(appUrl, HttpMethod.DELETE, entity, String.class);
+
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.error("Failed to delete application: {} from inventory ", appInstId);
+                setProcessflowErrorResponseAttributes(execution,
+                        "Failed to delete application from inventory " + appInstId,
+                        response.getStatusCode().toString());
+                return;
+            }
+
+            setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
+            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    Constants.PROCESS_FLOW_ERROR);
+        } catch (AppoException | IllegalArgumentException e) {
+            setProcessflowExceptionResponseAttributes(execution,
+                    "Internal error", Constants.PROCESS_FLOW_ERROR);
         }
     }
 }

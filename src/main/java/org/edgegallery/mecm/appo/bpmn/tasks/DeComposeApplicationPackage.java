@@ -44,8 +44,8 @@ public class DeComposeApplicationPackage implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
-        //DeComposeAppPkgTask deComposeAppPkgTask = new DeComposeAppPkgTask(delegateExecution, appPkgBasesPath, appInstanceInfoService);
-        //deComposeAppPkgTask.execute();
-        return;
+        DeComposeAppPkgTask deComposeAppPkgTask = new DeComposeAppPkgTask(delegateExecution, appPkgBasesPath, appInstanceInfoService);
+        deComposeAppPkgTask.execute();
+
     }
 }
