@@ -158,22 +158,24 @@ public class AppoServiceImpl implements AppoService {
     public ResponseEntity<AppoResponse> queryKpi(String accessToken, String tenantId, String hostIp) {
         LOGGER.debug("Query KPI request received...");
 
-        return platformInfoQuery("queryKpi", accessToken, tenantId, hostIp);
+        return platformInfoQuery("queryKpi", accessToken, tenantId, hostIp, null);
     }
 
     @Override
-    public ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp) {
+    public ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp,
+                                                                  String capabilityId) {
         LOGGER.debug("Query MEP capabilities request received...");
 
-        return platformInfoQuery("queryEdgeCapabilities", accessToken, tenantId, hostIp);
+        return platformInfoQuery("queryEdgeCapabilities", accessToken, tenantId, hostIp, capabilityId);
     }
 
     private ResponseEntity<AppoResponse> platformInfoQuery(String process, String accessToken, String tenantId,
-                                                           String hostIp) {
+                                                           String hostIp, String capabilityId) {
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.MEC_HOST, hostIp);
+        requestBodyParam.put(Constants.MEP_CAPABILITY_ID, capabilityId);
         LOGGER.debug("Request input: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);

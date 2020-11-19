@@ -94,10 +94,11 @@ public class InputParameters {
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
         String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
         String hostIp = (String) delegateExecution.getVariable(Constants.MEC_HOST);
-
+        String capabilityId = (String) delegateExecution.getVariable(Constants.MEP_CAPABILITY_ID);
         delegateExecution.setVariable(Constants.ACCESS_TOKEN, accessToken);
         delegateExecution.setVariable(Constants.TENANT_ID, tenantId);
         delegateExecution.setVariable(Constants.MEC_HOST, hostIp);
+        delegateExecution.setVariable(Constants.MEP_CAPABILITY_ID, capabilityId);
 
         LOGGER.info("tenant_id: {}, mec_host: {}", tenantId, hostIp);
     }

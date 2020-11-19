@@ -208,6 +208,36 @@ public class AppOrchestratorHandler {
                                                                   @Size(max = 15) String hostIp) {
         logger.debug("Query MEP capabilities request received...");
 
-        return appoService.queryEdgehostCapabilities(accessToken, tenantId, hostIp);
+        return appoService.queryEdgehostCapabilities(accessToken, tenantId, hostIp, null);
+    }
+
+    /**
+     * Retrieves edge host platform capability.
+     *
+     * @param tenantId     tenant ID
+     * @param hostIp       edge host IP
+     * @param capabilityId capability ID
+     * @return status code 200 on success, error code on failure
+     */
+    @ApiOperation(value = "Retrieves edge host platform capabilities", response = AppoResponse.class)
+    @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/mep_capabilities/{capability_id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT')")
+    public ResponseEntity<AppoResponse> queryEdgehostCapability(@ApiParam(value = "access token")
+                                                                @RequestHeader("access_token") String accessToken,
+                                                                @ApiParam(value = "tenant id")
+                                                                @PathVariable("tenant_id")
+                                                                @Pattern(regexp = Constants.TENENT_ID_REGEX)
+                                                                @Size(max = 64) String tenantId,
+                                                                @ApiParam(value = "edge host ip")
+                                                                @PathVariable("host_ip")
+                                                                @Pattern(regexp = Constants.HOST_IP_REGX)
+                                                                @Size(max = 15) String hostIp,
+                                                                @PathVariable("capability_id")
+                                                                @Pattern(regexp = Constants.APP_NAME_REGEX)
+                                                                @Size(max = 64) String capabilityId) {
+        logger.debug("Query MEP capabilities request received...");
+
+        return appoService.queryEdgehostCapabilities(accessToken, tenantId, hostIp, capabilityId);
     }
 }
