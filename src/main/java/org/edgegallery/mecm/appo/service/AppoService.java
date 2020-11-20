@@ -66,11 +66,13 @@ public interface AppoService {
     /**
      * Retrieves edge host platform capabilities.
      *
-     * @param accessToken access token
-     * @param tenantId    tenant ID
-     * @param hostIp      edge host IP
+     * @param accessToken  access token
+     * @param tenantId     tenant ID
+     * @param hostIp       edge host IP
+     * @param capabilityId capability ID
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp);
+    ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId,
+                                                           String hostIp, String capabilityId);
 }

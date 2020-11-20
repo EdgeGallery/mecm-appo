@@ -117,6 +117,11 @@ public class Mepm extends ProcessflowAbstractTask {
                 urlUtil.addParams(Constants.MEC_HOST, hostIp);
             }
 
+            String capabilityId = (String) execution.getVariable(Constants.MEP_CAPABILITY_ID);
+            if (capabilityId != null) {
+                urlUtil.addParams(Constants.MEP_CAPABILITY_ID, capabilityId);
+            }
+
             AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
             if (appInstanceInfo != null) {
                 urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
@@ -283,7 +288,11 @@ public class Mepm extends ProcessflowAbstractTask {
     private void queryEdgeCapabilities(DelegateExecution execution) {
         LOGGER.info("Send query capabilities request to applcm");
 
-        sendQueryRequestToApplcm(execution, Constants.APPLCM_QUERY_CAPABILITY_URI);
+        String uri = Constants.APPLCM_QUERY_CAPABILITIES_URI;
+        if (null != execution.getVariable(Constants.MEP_CAPABILITY_ID)) {
+            uri = Constants.APPLCM_QUERY_CAPABILITY_URI;
+        }
+        sendQueryRequestToApplcm(execution, uri);
     }
 
     private void sendQueryRequestToApplcm(DelegateExecution execution, String uri) {

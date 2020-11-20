@@ -16,8 +16,12 @@
 
 package org.edgegallery.mecm.appo.service;
 
-import java.util.*;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.edgegallery.mecm.appo.apihandler.CreateParam;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
@@ -57,6 +61,10 @@ public class AppoServiceImpl implements AppoService {
         requestBodyParam.put(Constants.APP_NAME, createParam.getAppName());
         requestBodyParam.put(Constants.APP_DESCR, createParam.getAppInstanceDescription());
         requestBodyParam.put(Constants.MEC_HOST, createParam.getMecHost());
+
+        String hwCapabilities = createParam.getHwCapabilities().stream().map(Object::toString)
+                .collect(Collectors.joining(","));
+        requestBodyParam.put(Constants.HW_CAPABILITIES, hwCapabilities);
 
         LOGGER.debug("Create instance input parameters: {}", requestBodyParam);
 
@@ -158,22 +166,24 @@ public class AppoServiceImpl implements AppoService {
     public ResponseEntity<AppoResponse> queryKpi(String accessToken, String tenantId, String hostIp) {
         LOGGER.debug("Query KPI request received...");
 
-        return platformInfoQuery("queryKpi", accessToken, tenantId, hostIp);
+        return platformInfoQuery("queryKpi", accessToken, tenantId, hostIp, null);
     }
 
     @Override
-    public ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp) {
+    public ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp,
+                                                                  String capabilityId) {
         LOGGER.debug("Query MEP capabilities request received...");
 
-        return platformInfoQuery("queryEdgeCapabilities", accessToken, tenantId, hostIp);
+        return platformInfoQuery("queryEdgeCapabilities", accessToken, tenantId, hostIp, capabilityId);
     }
 
     private ResponseEntity<AppoResponse> platformInfoQuery(String process, String accessToken, String tenantId,
-                                                           String hostIp) {
+                                                           String hostIp, String capabilityId) {
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.MEC_HOST, hostIp);
+        requestBodyParam.put(Constants.MEP_CAPABILITY_ID, capabilityId);
         LOGGER.debug("Request input: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);

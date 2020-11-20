@@ -53,6 +53,7 @@ public class InputParameters {
         String appId = (String) delegateExecution.getVariable(Constants.APP_ID);
         String appName = (String) delegateExecution.getVariable(Constants.APP_NAME);
         String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
+        String hwCapabilities = (String) delegateExecution.getVariable(Constants.HW_CAPABILITIES);
 
         delegateExecution.setVariable(Constants.ACCESS_TOKEN, accessToken);
         delegateExecution.setVariable(Constants.TENANT_ID, tenantId);
@@ -62,10 +63,11 @@ public class InputParameters {
         delegateExecution.setVariable(Constants.APP_ID, appId);
         delegateExecution.setVariable(Constants.APP_NAME, appName);
         delegateExecution.setVariable(Constants.APP_INSTANCE_ID, appInstanceId);
+        delegateExecution.setVariable(Constants.HW_CAPABILITIES, hwCapabilities);
 
         LOGGER.info("tenant_id: {},app_package_id: {},mec_host: {},app_instance_description: {},app_id: {},"
-                        + "app_name: {},app_instance_id: {}", tenantId, appPkgId, mecHost, appDescr,
-                appId, appName, appInstanceId);
+                        + "app_name: {},app_instance_id: {}, hw_capabilities: {}", tenantId, appPkgId, mecHost,
+                appDescr, appId, appName, appInstanceId, hwCapabilities);
     }
 
     /**
@@ -94,10 +96,11 @@ public class InputParameters {
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
         String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
         String hostIp = (String) delegateExecution.getVariable(Constants.MEC_HOST);
-
+        String capabilityId = (String) delegateExecution.getVariable(Constants.MEP_CAPABILITY_ID);
         delegateExecution.setVariable(Constants.ACCESS_TOKEN, accessToken);
         delegateExecution.setVariable(Constants.TENANT_ID, tenantId);
         delegateExecution.setVariable(Constants.MEC_HOST, hostIp);
+        delegateExecution.setVariable(Constants.MEP_CAPABILITY_ID, capabilityId);
 
         LOGGER.info("tenant_id: {}, mec_host: {}", tenantId, hostIp);
     }

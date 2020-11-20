@@ -46,5 +46,6 @@ public class DeComposeApplicationPackage implements JavaDelegate {
     public void execute(DelegateExecution delegateExecution) throws Exception {
         DeComposeAppPkgTask deComposeAppPkgTask = new DeComposeAppPkgTask(delegateExecution, appPkgBasesPath, appInstanceInfoService);
         deComposeAppPkgTask.execute();
+
     }
 }
