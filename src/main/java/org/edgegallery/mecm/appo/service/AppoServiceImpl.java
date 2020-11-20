@@ -16,8 +16,12 @@
 
 package org.edgegallery.mecm.appo.service;
 
-import java.util.*;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.edgegallery.mecm.appo.apihandler.CreateParam;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
@@ -57,6 +61,10 @@ public class AppoServiceImpl implements AppoService {
         requestBodyParam.put(Constants.APP_NAME, createParam.getAppName());
         requestBodyParam.put(Constants.APP_DESCR, createParam.getAppInstanceDescription());
         requestBodyParam.put(Constants.MEC_HOST, createParam.getMecHost());
+
+        String hwCapabilities = createParam.getHwCapabilities().stream().map(Object::toString)
+                .collect(Collectors.joining(","));
+        requestBodyParam.put(Constants.HW_CAPABILITIES, hwCapabilities);
 
         LOGGER.debug("Create instance input parameters: {}", requestBodyParam);
 

@@ -103,9 +103,16 @@ public class AppoHandlerTest {
                 .andRespond(withSuccess(inputStreamResource, MediaType.APPLICATION_OCTET_STREAM));
 
         // Mocking get applcm API
-        String url4 = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
-                appInstanceId + "/instantiate";
+        String url4 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
+                "1.1.1.1" + "/apps";
         server.expect(requestTo(url4))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess());
+
+        // Mocking get applcm API
+        String url5 = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/instantiate";
+        server.expect(requestTo(url5))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess());
 

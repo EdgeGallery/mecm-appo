@@ -21,6 +21,9 @@ import static org.edgegallery.mecm.appo.utils.Constants.APP_NAME_REGEX;
 import static org.edgegallery.mecm.appo.utils.Constants.APP_PKG_ID_REGX;
 import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
 
+import java.util.LinkedList;
+import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -68,4 +71,7 @@ public final class CreateParam {
     @Size(max = 15)
     @Pattern(regexp = HOST_IP_REGX, message = "MEC host IP is invalid")
     private String mecHost;
+
+    @Size(max = 10, message = "capabilities exceeds max limit 10")
+    private List<@Valid String> hwCapabilities = new LinkedList<>();
 }

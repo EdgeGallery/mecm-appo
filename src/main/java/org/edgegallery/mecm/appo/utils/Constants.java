@@ -43,11 +43,15 @@ public final class Constants {
     public static final String APPLCM_PORT = "applcm_port";
     public static final String APP_INSTANCE_INFO = "app_instance_info";
     public static final String MEP_CAPABILITY_ID = "capability_id";
-
+    public static final String HW_CAPABILITIES = "hw_capabilities";
 
     public static final String APM_DOWNLOAD_URI = "/apm/v1/tenants/{tenant_id}/packages/{app_package_id}/download";
     public static final String INVENTORY_MEC_HOST_URI = "/inventory/v1/tenants/{tenant_id}/mechosts/{mec_host}";
     public static final String INVENTORY_APPLCM_URI = "/inventory/v1/tenants/{tenant_id}/applcms/{applcm_ip}";
+    public static final String INVENTORY_APPLICATIONS_URI = "/inventory/v1/tenants/{tenant_id}"
+            + "/mechosts/{mec_host}/apps";
+    public static final String INVENTORY_APPLICATION_URI = "/inventory/v1/tenants/{tenant_id}"
+            + "/mechosts/{mec_host}/apps/{app_instance_id}";
 
     public static final String APPLCM_INSTANTIATE_URI =
             "/lcmcontroller/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/instantiate";
