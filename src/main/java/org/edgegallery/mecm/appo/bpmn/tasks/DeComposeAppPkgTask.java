@@ -75,7 +75,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
                 appInstanceInfoService.createAppInstanceDependencies(tenantId, dependencyReqList);
             }
 
-            setProcessflowErrorResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+            setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
         }
