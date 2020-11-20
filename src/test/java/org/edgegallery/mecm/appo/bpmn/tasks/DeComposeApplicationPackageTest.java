@@ -16,13 +16,34 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import static org.edgegallery.mecm.appo.bpmn.tasks.ProcessflowAbstractTask.RESPONSE_CODE;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
+import org.edgegallery.mecm.appo.common.AppoConstantsTest;
+import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.service.AppInstanceInfoServiceImpl;
+import org.edgegallery.mecm.appo.utils.Constants;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RunWith(MockitoJUnitRunner.class)
 public class DeComposeApplicationPackageTest {
 
     @InjectMocks
@@ -31,8 +52,83 @@ public class DeComposeApplicationPackageTest {
     @Mock
     ExecutionImpl execution;
 
+    @Mock
+    AppInstanceInfoServiceImpl appInstanceInfoService;
+
+    @Before
+    public void setUp() throws Exception {
+        Field field = deComposeApplicationPackage.getClass().getDeclaredField("appPkgBasesPath");
+        field.setAccessible(true);
+        field.set(deComposeApplicationPackage, "src/test/resources/packages/");
+    }
+
     @Test
-    public void testExcuteDeComposeApplicationPackage() throws Exception {
+    public void testNoRequire() throws Exception {
+        Mockito.when(execution.getVariable(Constants.APP_PACKAGE_ID))
+                .thenReturn("test_package_id");
+        Mockito.when(execution.getVariable(Constants.MEC_HOST)).thenReturn(AppoConstantsTest.MEC_HOST);
+        Mockito.when(execution.getVariable(Constants.APP_INSTANCE_ID))
+                .thenReturn("test_instance_id");
+        Mockito.when(execution.getVariable(Constants.APP_ID))
+                .thenReturn(AppoConstantsTest.APP_ID);
+        Mockito.when(execution.getVariable(Constants.TENANT_ID)).thenReturn(AppoConstantsTest.TENANT);
+        when(appInstanceInfoService.getAppInstanceInfoByMecHost(AppoConstantsTest.TENANT_ID, AppoConstantsTest.MEC_HOST))
+                .thenReturn(new ArrayList<>());
+        Map<String, Boolean> result = new HashMap<>();
+        Mockito.doAnswer(invocationOnMock -> result.put("deploySuccess", true))
+                .when(execution).setVariable(RESPONSE_CODE, Constants.PROCESS_FLOW_SUCCESS);
+
         assertDoesNotThrow(() -> deComposeApplicationPackage.execute(execution));
+        assertEquals(true, result.containsKey("deploySuccess"));
+    }
+
+    @Test
+    public void testRequiredAndDeployFailure() throws Exception {
+        Mockito.when(execution.getVariable(Constants.APP_PACKAGE_ID))
+                .thenReturn("test_require_package_id");
+        Mockito.when(execution.getVariable(Constants.MEC_HOST)).thenReturn(AppoConstantsTest.MEC_HOST);
+        Mockito.when(execution.getVariable(Constants.APP_INSTANCE_ID))
+                .thenReturn("test_instance_id");
+        Mockito.when(execution.getVariable(Constants.APP_ID))
+                .thenReturn(AppoConstantsTest.APP_ID);
+        Mockito.when(execution.getVariable(Constants.TENANT_ID)).thenReturn(AppoConstantsTest.TENANT);
+        when(appInstanceInfoService.getAppInstanceInfoByMecHost(AppoConstantsTest.TENANT_ID, AppoConstantsTest.MEC_HOST))
+                .thenReturn(new ArrayList<>());
+        Map<String, Boolean> result = new HashMap<>();
+        Mockito.doAnswer(invocationOnMock -> result.put("deployFailure", true))
+                .when(execution).setVariable(RESPONSE_CODE, Constants.PROCESS_FLOW_ERROR);
+
+        assertDoesNotThrow(() -> deComposeApplicationPackage.execute(execution));
+        assertEquals(true, result.containsKey("deployFailure"));
+    }
+
+    @Test
+    public void testRequiredAndDeploySuccess() throws Exception {
+        AppInstanceInfo appInstanceInfo = new AppInstanceInfo();
+        appInstanceInfo.setOperationalStatus("Instantiated");
+        appInstanceInfo.setAppId("abc123");
+        appInstanceInfo.setAppPackageId("abc123");
+        appInstanceInfo.setAppName("test_gw");
+        appInstanceInfo.setMecHost(AppoConstantsTest.MEC_HOST);
+        List<AppInstanceInfo> deployList = new ArrayList<>();
+        deployList.add(appInstanceInfo);
+
+        Mockito.when(execution.getVariable(Constants.APP_PACKAGE_ID))
+                .thenReturn("test_require_package_id");
+        Mockito.when(execution.getVariable(Constants.MEC_HOST)).thenReturn(AppoConstantsTest.MEC_HOST);
+        Mockito.when(execution.getVariable(Constants.APP_INSTANCE_ID))
+                .thenReturn("test_instance_id");
+        Mockito.when(execution.getVariable(Constants.APP_ID))
+                .thenReturn(AppoConstantsTest.APP_ID);
+        Mockito.when(execution.getVariable(Constants.TENANT_ID)).thenReturn(AppoConstantsTest.TENANT_ID);
+        when(appInstanceInfoService.getAppInstanceInfoByMecHost(AppoConstantsTest.TENANT_ID, AppoConstantsTest.MEC_HOST))
+                .thenReturn(deployList);
+        Mockito.doNothing().when(appInstanceInfoService).createAppInstanceDependencies(anyString(), anyList());
+        Map<String, Boolean> result = new HashMap<>();
+        Mockito.doAnswer(invocationOnMock -> result.put("deploySuccess", true))
+                .when(execution).setVariable(RESPONSE_CODE, Constants.PROCESS_FLOW_SUCCESS);
+
+        assertDoesNotThrow(() -> deComposeApplicationPackage.execute(execution));
+        assertEquals(true, result.containsKey("deploySuccess"));
     }
 }
