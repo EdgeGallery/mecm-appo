@@ -1,7 +1,6 @@
 package org.edgegallery.mecm.appo.service;
 
 import java.util.List;
-
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 
@@ -10,7 +9,7 @@ public interface AppInstanceInfoService {
     /**
      * Retrieves application instance information.
      *
-     * @param tenantId      tenant ID
+     * @param tenantId tenant ID
      * @param appInstanceId application instance ID
      * @return application instance information
      */
@@ -25,7 +24,8 @@ public interface AppInstanceInfoService {
     List<AppInstanceInfo> getAllAppInstanceInfo(String tenantId);
 
     /**
-     * Retrieves application instance information by mec host
+     * Retrieves application instance information by mec host.
+     *
      * @param tenantId tenant ID
      * @param mecHost mec host
      * @return application instance information
@@ -35,7 +35,7 @@ public interface AppInstanceInfoService {
     /**
      * Creates application instance info.
      *
-     * @param tenantId        tenant ID
+     * @param tenantId tenant ID
      * @param appInstanceInfo application information
      * @return application information
      */
@@ -44,7 +44,7 @@ public interface AppInstanceInfoService {
     /**
      * Deletes application instance information.
      *
-     * @param tenantId      tenant ID
+     * @param tenantId tenant ID
      * @param appInstanceId application instance ID
      */
     void deleteAppInstanceInfo(String tenantId, String appInstanceId);
@@ -52,7 +52,7 @@ public interface AppInstanceInfoService {
     /**
      * Updates application instance info.
      *
-     * @param tenantId        tenant ID
+     * @param tenantId tenant ID
      * @param appInstanceInfo application information
      * @return application information
      */
@@ -61,7 +61,7 @@ public interface AppInstanceInfoService {
     /**
      * Creates application instance dependencies information.
      *
-     * @param tenantId                tenant ID
+     * @param tenantId tenant ID
      * @param appInstanceDependencies application dependencies information
      */
     void createAppInstanceDependencies(String tenantId, List<AppInstanceDependency> appInstanceDependencies);
@@ -69,9 +69,10 @@ public interface AppInstanceInfoService {
     /**
      * Retrieves application instance dependencies information.
      *
-     * @param tenantId                tenant ID
+     * @param tenantId tenant ID
      * @param dependencyAppInstanceId dependency application instance ID
      * @return dependencies information
      */
-    List<AppInstanceDependency> getDependenciesByDependencyAppInstanceId(String tenantId, String dependencyAppInstanceId);
+    List<AppInstanceDependency> getDependenciesByDependencyAppInstanceId(String tenantId,
+        String dependencyAppInstanceId);
 }
