@@ -1,17 +1,14 @@
 /*
- *  Copyright 2020 Huawei Technologies Co., Ltd.
+ * Copyright 2020 Huawei Technologies Co., Ltd.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package org.edgegallery.mecm.appo.service;
@@ -51,7 +48,7 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> createAppInstance(String accessToken, String tenantId,
-                                                          CreateParam createParam) {
+            CreateParam createParam) {
         LOGGER.debug("Application create request received...");
 
         Map<String, String> requestBodyParam = new HashMap<>();
@@ -62,8 +59,8 @@ public class AppoServiceImpl implements AppoService {
         requestBodyParam.put(Constants.APP_DESCR, createParam.getAppInstanceDescription());
         requestBodyParam.put(Constants.MEC_HOST, createParam.getMecHost());
 
-        String hwCapabilities = createParam.getHwCapabilities().stream().map(Object::toString)
-                .collect(Collectors.joining(","));
+        String hwCapabilities =
+                createParam.getHwCapabilities().stream().map(Object::toString).collect(Collectors.joining(","));
         requestBodyParam.put(Constants.HW_CAPABILITIES, hwCapabilities);
 
         LOGGER.debug("Create instance input parameters: {}", requestBodyParam);
@@ -82,7 +79,7 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId,
-                                                               String appInstanceId) {
+            String appInstanceId) {
         LOGGER.debug("Application instantiation request received...");
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
@@ -113,8 +110,10 @@ public class AppoServiceImpl implements AppoService {
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
         String operationalStatus = appInstanceInfo.getOperationalStatus();
         if (!"Instantiated".equals(operationalStatus)) {
-            return new ResponseEntity<>(new AppoResponse("Application instance operational status is : "
-                    + appInstanceInfo.getOperationalStatus()), HttpStatus.PRECONDITION_FAILED);
+            return new ResponseEntity<>(
+                    new AppoResponse(
+                            "Application instance operational status is : " + appInstanceInfo.getOperationalStatus()),
+                    HttpStatus.PRECONDITION_FAILED);
         }
 
         Map<String, String> requestBodyParam = new HashMap<>();
@@ -124,8 +123,8 @@ public class AppoServiceImpl implements AppoService {
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
-        AppoProcessFlowResponse response = processflowService.executeProcessSync("queryApplicationInstance",
-                requestBodyParam);
+        AppoProcessFlowResponse response =
+                processflowService.executeProcessSync("queryApplicationInstance", requestBodyParam);
         LOGGER.debug("Query application info response : {} ", response.getResponse());
 
         return new ResponseEntity<>(new AppoResponse(response.getResponse()),
@@ -134,7 +133,7 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> terminateAppInstance(String accessToken, String tenantId,
-                                                             String appInstanceId) {
+            String appInstanceId) {
         LOGGER.debug("Terminate application info request received...");
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
@@ -144,7 +143,8 @@ public class AppoServiceImpl implements AppoService {
         }
 
         // TODO: check dependency
-        List<AppInstanceDependency> dependencies = appInstanceInfoService.getDependenciesByDependencyAppInstanceId(tenantId, appInstanceId);
+        List<AppInstanceDependency> dependencies =
+                appInstanceInfoService.getDependenciesByDependencyAppInstanceId(tenantId, appInstanceId);
         if (dependencies.size() > 0) {
             LOGGER.error("application instance depended by others");
             throw new AppoException("application instance depended by others");
@@ -171,14 +171,14 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp,
-                                                                  String capabilityId) {
+            String capabilityId) {
         LOGGER.debug("Query MEP capabilities request received...");
 
         return platformInfoQuery("queryEdgeCapabilities", accessToken, tenantId, hostIp, capabilityId);
     }
 
     private ResponseEntity<AppoResponse> platformInfoQuery(String process, String accessToken, String tenantId,
-                                                           String hostIp, String capabilityId) {
+            String hostIp, String capabilityId) {
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);

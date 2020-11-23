@@ -27,10 +27,15 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
     private AppoTenantRepository appoTenantRepository;
     private AppInstanceDependencyRepository appInstanceDependencyRepository;
 
+    /**
+     *  构造函数.
+     * @param appInstanceInfoRepository app实例信息仓库
+     * @param appInstanceDependencyRepository 依赖的app实例仓库
+     * @param appoTenantRepository 租户仓库
+     */
     @Autowired
     public AppInstanceInfoServiceImpl(AppInstanceInfoRepository appInstanceInfoRepository,
-                                      AppInstanceDependencyRepository appInstanceDependencyRepository,
-                                      AppoTenantRepository appoTenantRepository) {
+        AppInstanceDependencyRepository appInstanceDependencyRepository, AppoTenantRepository appoTenantRepository) {
         this.appInstanceInfoRepository = appInstanceInfoRepository;
         this.appInstanceDependencyRepository = appInstanceDependencyRepository;
         this.appoTenantRepository = appoTenantRepository;
@@ -108,7 +113,8 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         }
 
         appInstanceInfoRepository.deleteById(appInstanceId);
-        List<AppInstanceDependency> dependencies = appInstanceDependencyRepository.getByAppInstanceId(tenantId, appInstanceId);
+        List<AppInstanceDependency> dependencies = appInstanceDependencyRepository
+            .getByAppInstanceId(tenantId, appInstanceId);
         if (dependencies.size() > 0) {
             appInstanceDependencyRepository.deleteAll(dependencies);
         }
@@ -179,7 +185,8 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
     }
 
     @Override
-    public List<AppInstanceDependency> getDependenciesByDependencyAppInstanceId(String tenantId, String dependencyAppInstanceId) {
+    public List<AppInstanceDependency> getDependenciesByDependencyAppInstanceId(String tenantId,
+        String dependencyAppInstanceId) {
         return appInstanceDependencyRepository.getByDependencyAppInstanceId(tenantId, dependencyAppInstanceId);
     }
 }
