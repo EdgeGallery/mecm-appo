@@ -72,8 +72,6 @@ public class DeComposeApplicationPackageTest {
         Mockito.when(execution.getVariable(Constants.APP_ID))
                 .thenReturn(AppoConstantsTest.APP_ID);
         Mockito.when(execution.getVariable(Constants.TENANT_ID)).thenReturn(AppoConstantsTest.TENANT);
-        when(appInstanceInfoService.getAppInstanceInfoByMecHost(AppoConstantsTest.TENANT_ID, AppoConstantsTest.MEC_HOST))
-                .thenReturn(new ArrayList<>());
         Map<String, Boolean> result = new HashMap<>();
         Mockito.doAnswer(invocationOnMock -> result.put("deploySuccess", true))
                 .when(execution).setVariable(RESPONSE_CODE, Constants.PROCESS_FLOW_SUCCESS);
@@ -92,8 +90,6 @@ public class DeComposeApplicationPackageTest {
         Mockito.when(execution.getVariable(Constants.APP_ID))
                 .thenReturn(AppoConstantsTest.APP_ID);
         Mockito.when(execution.getVariable(Constants.TENANT_ID)).thenReturn(AppoConstantsTest.TENANT);
-        when(appInstanceInfoService.getAppInstanceInfoByMecHost(AppoConstantsTest.TENANT_ID, AppoConstantsTest.MEC_HOST))
-                .thenReturn(new ArrayList<>());
         Map<String, Boolean> result = new HashMap<>();
         Mockito.doAnswer(invocationOnMock -> result.put("deployFailure", true))
                 .when(execution).setVariable(RESPONSE_CODE, Constants.PROCESS_FLOW_ERROR);
