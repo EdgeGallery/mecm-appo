@@ -30,6 +30,7 @@ import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -239,5 +240,16 @@ public class AppOrchestratorHandler {
         logger.debug("Query MEP capabilities request received...");
 
         return appoService.queryEdgehostCapabilities(accessToken, tenantId, hostIp, capabilityId);
+    }
+
+    /**
+     * Queries liveness & readiness.
+     *
+     * @return status code 200 when ready
+     */
+    @ApiOperation(value = "Queries liveness and readiness", response = String.class)
+    @GetMapping(path = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> healthCheck() {
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 }
