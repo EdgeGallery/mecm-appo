@@ -333,6 +333,10 @@ public class Inventory extends ProcessflowAbstractTask {
 
         LOGGER.info("Updates MEC application to inventory");
         String applicationjson = getApplication(execution);
+        if (applicationjson == null) {
+            LOGGER.info("Get Application record failed...");
+            return;
+        }
 
         JsonObject jsonObject = new JsonParser().parse(applicationjson).getAsJsonObject();
         JsonElement status = jsonObject.get("status");
@@ -445,7 +449,7 @@ public class Inventory extends ProcessflowAbstractTask {
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
+                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_RECORD_NOT_FOUND);
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
             setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
