@@ -232,7 +232,6 @@ public class AppoServiceImpl implements AppoService {
         for (String appInstanceId : appInstanceParam.getAppInstanceIds()) {
             try {
                 AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
-                String operationalStatus = appInstanceInfo.getOperationalStatus();
                 // TODO: check dependency
                 List<AppInstanceDependency> dependencies = appInstanceInfoService
                         .getDependenciesByDependencyAppInstanceId(tenantId, appInstanceId);
