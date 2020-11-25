@@ -72,17 +72,6 @@ public interface AppoService {
                                                       BatchInstancesParam appInstanceparams);
 
     /**
-     * Retrieves an application instance information.
-     *
-     * @param accessToken   access token
-     * @param tenantId      tenant ID
-     * @param appInstanceId application instance ID
-     * @return application instance info & status code 200 on success, error code on failure
-     */
-
-    ResponseEntity<AppoResponse> getAppInstance(String accessToken, String tenantId, String appInstanceId);
-
-    /**
      * Terminates an application instance.
      *
      * @param accessToken   access token
@@ -92,6 +81,17 @@ public interface AppoService {
      */
 
     ResponseEntity<AppoResponse> terminateAppInstance(String accessToken, String tenantId, String appInstanceId);
+
+    /**
+     * Retrieves an application instance information.
+     *
+     * @param accessToken   access token
+     * @param tenantId      tenant ID
+     * @param appInstanceId application instance ID
+     * @return application instance info & status code 200 on success, error code on failure
+     */
+
+    ResponseEntity<AppoResponse> getAppInstance(String accessToken, String tenantId, String appInstanceId);
 
     /**
      * Retrieves edge host performance statistics.
