@@ -14,12 +14,16 @@
 package org.edgegallery.mecm.appo.service;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.edgegallery.mecm.appo.apihandler.BatchCreateParam;
+import org.edgegallery.mecm.appo.apihandler.BatchInstancesParam;
 import org.edgegallery.mecm.appo.apihandler.CreateParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchResponseDto;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
@@ -78,6 +82,48 @@ public class AppoServiceImpl implements AppoService {
     }
 
     @Override
+    public ResponseEntity<AppoResponse> createAppInstance(String accessToken, String tenantId,
+                                                          BatchCreateParam createParam) {
+        LOGGER.debug("Batch application create request received...");
+
+        Map<String, String> requestBodyParam = new HashMap<>();
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.APP_PACKAGE_ID, createParam.getAppPackageId());
+        requestBodyParam.put(Constants.APP_ID, createParam.getAppId());
+        requestBodyParam.put(Constants.APP_NAME, createParam.getAppName());
+        requestBodyParam.put(Constants.APP_DESCR, createParam.getAppInstanceDescription());
+
+        String hosts = createParam.getMecHost().stream().map(Object::toString)
+                .collect(Collectors.joining(","));
+        requestBodyParam.put(Constants.MEC_HOSTS, hosts);
+
+        String hwCapabilities = createParam.getHwCapabilities().stream().map(Object::toString)
+                .collect(Collectors.joining(","));
+        requestBodyParam.put(Constants.HW_CAPABILITIES, hwCapabilities);
+
+        LOGGER.debug("Batch create instance input parameters: {}", requestBodyParam);
+
+        List<String> appInstanceIds = new LinkedList<>();
+        List<BatchResponseDto> response = new LinkedList<>();
+        for (String host : createParam.getMecHost()) {
+            String appInstanceID = UUID.randomUUID().toString();
+            appInstanceIds.add(appInstanceID);
+
+            BatchResponseDto batchResp = new BatchResponseDto(appInstanceID, host, "Accepted");
+            response.add(batchResp);
+        }
+        String appInstancesStr = appInstanceIds.stream().map(Object::toString)
+                .collect(Collectors.joining(","));
+        requestBodyParam.put(Constants.APP_INSTANCE_IDS, appInstancesStr);
+
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
+
+        processflowService.executeProcessAsync("batchCreateApplicationInstance", requestBodyParam);
+
+        return new ResponseEntity<>(new AppoResponse(response), HttpStatus.ACCEPTED);
+    }
+
+    @Override
     public ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId,
             String appInstanceId) {
         LOGGER.debug("Application instantiation request received...");
@@ -101,6 +147,51 @@ public class AppoServiceImpl implements AppoService {
         processflowService.executeProcessAsync("instantiateApplicationInstance", requestBodyParam);
 
         return new ResponseEntity<>(new AppoResponse(HttpStatus.ACCEPTED), HttpStatus.ACCEPTED);
+    }
+
+    @Override
+    public ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId,
+                                                               BatchInstancesParam instantiateParam) {
+        LOGGER.debug("Batch application instantiation request received...");
+
+        List<String> appInstanceIds = new LinkedList<>();
+        List<BatchResponseDto> response = new LinkedList<>();
+        for (String appInstanceId : instantiateParam.getAppInstanceIds()) {
+            try {
+                AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
+                String operationalStatus = appInstanceInfo.getOperationalStatus();
+                if ("Instantiated".equals(operationalStatus) || "Creating".equals(operationalStatus)
+                        || "Create failed".equals(operationalStatus)) {
+                    BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, appInstanceInfo.getMecHost(),
+                            "Precondition failed, app instance operational state: "
+                                    + appInstanceInfo.getOperationalStatus());
+                    response.add(batchResp);
+                } else {
+                    BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, appInstanceInfo.getMecHost(),
+                            "Accepted");
+                    response.add(batchResp);
+                    appInstanceIds.add(appInstanceId);
+                }
+            } catch (NoSuchElementException ex) {
+                BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, null, ex.getMessage());
+                response.add(batchResp);
+            }
+        }
+
+        Map<String, String> requestBodyParam = new HashMap<>();
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+
+        String appInstancesStr = appInstanceIds.stream().map(Object::toString)
+                .collect(Collectors.joining(","));
+        requestBodyParam.put(Constants.APP_INSTANCE_IDS, appInstancesStr);
+
+        LOGGER.debug("Batch instantiate input params: {}", requestBodyParam);
+
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
+
+        processflowService.executeProcessAsync("batchInstantiateApplicationInstance", requestBodyParam);
+
+        return new ResponseEntity<>(new AppoResponse(response), HttpStatus.ACCEPTED);
     }
 
     @Override
@@ -129,6 +220,52 @@ public class AppoServiceImpl implements AppoService {
 
         return new ResponseEntity<>(new AppoResponse(response.getResponse()),
                 HttpStatus.valueOf(response.getResponseCode()));
+    }
+
+    @Override
+    public ResponseEntity<AppoResponse> terminateAppInstance(String accessToken, String tenantId,
+                                                             BatchInstancesParam appInstanceParam) {
+        LOGGER.debug("Batch application terminate request received...");
+
+        List<String> appInstanceIds = new LinkedList<>();
+        List<BatchResponseDto> response = new LinkedList<>();
+        for (String appInstanceId : appInstanceParam.getAppInstanceIds()) {
+            try {
+                AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
+                // TODO: check dependency
+                List<AppInstanceDependency> dependencies = appInstanceInfoService
+                        .getDependenciesByDependencyAppInstanceId(tenantId, appInstanceId);
+                if (dependencies.size() > 0) {
+                    LOGGER.error("application instance depended by others");
+                    BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, appInstanceInfo.getMecHost(),
+                            "application instance depended by others");
+                    response.add(batchResp);
+                } else {
+                    BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, appInstanceInfo.getMecHost(),
+                            "Accepted");
+                    response.add(batchResp);
+                    appInstanceIds.add(appInstanceId);
+                }
+            } catch (NoSuchElementException ex) {
+                BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, null, ex.getMessage());
+                response.add(batchResp);
+            }
+        }
+
+        Map<String, String> requestBodyParam = new HashMap<>();
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+
+        String appInstancesStr = appInstanceIds.stream().map(Object::toString)
+                .collect(Collectors.joining(","));
+        requestBodyParam.put(Constants.APP_INSTANCE_IDS, appInstancesStr);
+
+        LOGGER.debug("Batch terminate input params: {}", requestBodyParam);
+
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
+
+        processflowService.executeProcessAsync("batchTerminateApplicationInstance", requestBodyParam);
+
+        return new ResponseEntity<>(new AppoResponse(response), HttpStatus.ACCEPTED);
     }
 
     @Override

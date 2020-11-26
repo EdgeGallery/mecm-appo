@@ -35,7 +35,10 @@ public final class Constants {
     public static final String APP_NAME = "app_name";
     public static final String APP_DESCR = "app_instance_description";
     public static final String MEC_HOST = "mec_host";
+    public static final String MEC_HOSTS = "mec_hosts";
+    public static final String APP_REQ_CNT = "app_req_cnt";
     public static final String APP_INSTANCE_ID = "app_instance_id";
+    public static final String APP_INSTANCE_IDS = "app_instance_ids";
     public static final String APP_ID = "app_id";
     public static final String ACCESS_TOKEN = "access_token";
     public static final String MEC_HOST_IP = "host_ip";
@@ -68,6 +71,7 @@ public final class Constants {
 
     public static final String PROCESS_FLOW_SUCCESS = "200";
     public static final String PROCESS_FLOW_ERROR = "500";
+    public static final String PROCESS_RECORD_NOT_FOUND = "404";
     public static final String PROCESS_FLOW_RESP_CODE = "ProcessflowResponseCode";
     public static final String PROCESS_FLOW_RESP = "ProcessflowResponse";
     public static final String PROCESS_FLOW_ERR_RESP = "ProcessflowErrResponse";

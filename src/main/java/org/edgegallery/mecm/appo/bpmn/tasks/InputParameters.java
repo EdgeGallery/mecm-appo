@@ -25,6 +25,13 @@ public class InputParameters {
             case "CreateAppInstance":
                 createAppInstance(delegateExecution);
                 break;
+            case "BatchCreateAppInstance":
+                batchCreateAppInstance(delegateExecution);
+                break;
+            case "BatchInstantiateAppInstance":
+            case "BatchTerminateAppInstance":
+                batchInstantiateAppInstance(delegateExecution);
+                break;
             case "InstantiateAppInstance":
             case "TerminateAppInstance":
             case "QueryAppInstance":
@@ -68,6 +75,54 @@ public class InputParameters {
         LOGGER.info("tenant_id: {},app_package_id: {},mec_host: {},app_instance_description: {},app_id: {},"
                         + "app_name: {},app_instance_id: {}, hw_capabilities: {}", tenantId, appPkgId, mecHost,
                 appDescr, appId, appName, appInstanceId, hwCapabilities);
+    }
+
+    /**
+     * Sets create app instance input parameters.
+     *
+     * @param delegateExecution delegate execution
+     */
+    void batchCreateAppInstance(DelegateExecution delegateExecution) {
+        String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
+        String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
+        String appPkgId = (String) delegateExecution.getVariable(Constants.APP_PACKAGE_ID);
+        String mecHosts = (String) delegateExecution.getVariable(Constants.MEC_HOSTS);
+        String appDescr = (String) delegateExecution.getVariable(Constants.APP_DESCR);
+        String appId = (String) delegateExecution.getVariable(Constants.APP_ID);
+        String appName = (String) delegateExecution.getVariable(Constants.APP_NAME);
+        String appInstanceIds = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_IDS);
+        String hwCapabilities = (String) delegateExecution.getVariable(Constants.HW_CAPABILITIES);
+
+        delegateExecution.setVariable(Constants.ACCESS_TOKEN, accessToken);
+        delegateExecution.setVariable(Constants.TENANT_ID, tenantId);
+        delegateExecution.setVariable(Constants.APP_PACKAGE_ID, appPkgId);
+        delegateExecution.setVariable(Constants.MEC_HOSTS, mecHosts);
+        delegateExecution.setVariable(Constants.APP_DESCR, appDescr);
+        delegateExecution.setVariable(Constants.APP_ID, appId);
+        delegateExecution.setVariable(Constants.APP_NAME, appName);
+        delegateExecution.setVariable(Constants.APP_INSTANCE_IDS, appInstanceIds);
+        delegateExecution.setVariable(Constants.HW_CAPABILITIES, hwCapabilities);
+
+        LOGGER.info("tenant_id: {},app_package_id: {},mec_host: {},app_instance_description: {},app_id: {},"
+                        + "app_name: {},app_instance_ids: {}, hw_capabilities: {}", tenantId, appPkgId, mecHosts,
+                appDescr, appId, appName, appInstanceIds, hwCapabilities);
+    }
+
+    /**
+     * Sets create app instance input parameters.
+     *
+     * @param delegateExecution delegate execution
+     */
+    void batchInstantiateAppInstance(DelegateExecution delegateExecution) {
+        String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
+        String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
+        String appInstanceIds = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_IDS);
+
+        delegateExecution.setVariable(Constants.ACCESS_TOKEN, accessToken);
+        delegateExecution.setVariable(Constants.TENANT_ID, tenantId);
+        delegateExecution.setVariable(Constants.APP_INSTANCE_IDS, appInstanceIds);
+
+        LOGGER.info("tenant_id: {}, app_instance_ids: {}", tenantId, appInstanceIds);
     }
 
     /**

@@ -44,6 +44,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -94,6 +95,7 @@ public class AppInstanceInfoHandler {
      * Retrieves application instance information.
      *
      * @param tenantId tenant ID
+     * @param appinstanceids applicationm instance IDs
      * @return application instance information
      */
     @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
@@ -101,18 +103,31 @@ public class AppInstanceInfoHandler {
     @PreAuthorize("hasRole('MECM_TENANT')")
     public ResponseEntity<AppoResponse> getAllAppInstanceInfo(
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
-            @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId) {
+            @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+            @RequestParam(required = false) @Size(max = 50)
+                    List<@Pattern(regexp = APP_INST_ID_REGX) String> appinstanceids) {
 
         logger.info("Retrieve application instance infos");
 
         List<AppInstanceInfoDto> appInstanceInfosDto = new LinkedList<>();
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
         if (appInstanceInfos != null && !appInstanceInfos.isEmpty()) {
-            for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
-                ModelMapper mapper = new ModelMapper();
-                appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
+            if (appinstanceids != null) {
+                for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
+                    ModelMapper mapper = new ModelMapper();
+                    if (appinstanceids.contains(tenantAppInstanceInfo.getAppInstanceId())) {
+                        appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
+                    }
+                }
+                if (appInstanceInfosDto.isEmpty()) {
+                    throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);
+                }
+            } else {
+                for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
+                    ModelMapper mapper = new ModelMapper();
+                    appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
+                }
             }
-
             return new ResponseEntity<>(new AppoResponse(appInstanceInfosDto), HttpStatus.OK);
         }
         throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);

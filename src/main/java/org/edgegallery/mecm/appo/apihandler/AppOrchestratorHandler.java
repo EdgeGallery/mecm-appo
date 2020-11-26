@@ -252,4 +252,78 @@ public class AppOrchestratorHandler {
     public ResponseEntity<String> healthCheck() {
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
+
+    /**
+     * Batch create application instances.
+     *
+     * @param tenantId    tenant ID
+     * @param createParam input parameters for creation request
+     * @return application instance IDs on success, error code on failure
+     */
+    @ApiOperation(value = "Batch creates application instances", response = AppoResponse.class)
+    @PostMapping(path = "/tenants/{tenant_id}/app_instances/batch_create", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
+            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    })
+    @PreAuthorize("hasRole('MECM_TENANT')")
+    public ResponseEntity<AppoResponse> batchCreateAppInstance(
+            @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
+            @ApiParam(value = "tenant id") @PathVariable("tenant_id")
+            @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+            @ApiParam(value = "create application instance")
+            @Valid @RequestBody BatchCreateParam createParam) {
+        logger.debug("Application create request received...");
+
+        return appoService.createAppInstance(accessToken, tenantId, createParam);
+    }
+
+    /**
+     * Batch instantiate application instances.
+     *
+     * @param tenantId         tenant ID
+     * @param appInstanceParam application instance parameters
+     * @return status code 201, error code on failure
+     */
+    @ApiOperation(value = "Batch instantiate application instances", response = AppoResponse.class)
+    @PostMapping(path = "/tenants/{tenant_id}/app_instances/batch_instantiate",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
+            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    })
+    @PreAuthorize("hasRole('MECM_TENANT')")
+    public ResponseEntity<AppoResponse> batchInstantiateAppInstance(
+            @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
+            @ApiParam(value = "tenant id") @PathVariable("tenant_id")
+            @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+            @ApiParam(value = "Instantiate application instances")
+            @Valid @RequestBody BatchInstancesParam appInstanceParam) {
+        logger.debug("Application instantiation request received...");
+
+        return appoService.instantiateAppInstance(accessToken, tenantId, appInstanceParam);
+    }
+
+    /**
+     * Batch terminates application instances.
+     *
+     * @param tenantId         tenant ID
+     * @param appInstanceParam application instance parameters
+     * @return status code 201, error code on failure
+     */
+    @ApiOperation(value = "Batch terminate application instances", response = AppoResponse.class)
+    @PostMapping(path = "/tenants/{tenant_id}/app_instances/batch_terminate",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoResponse.class),
+            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    })
+    @PreAuthorize("hasRole('MECM_TENANT')")
+    public ResponseEntity<AppoResponse> batchTerminateAppInstances(
+            @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
+            @ApiParam(value = "tenant id") @PathVariable("tenant_id")
+            @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+            @ApiParam(value = "Batch terminate application instances")
+            @Valid @RequestBody BatchInstancesParam appInstanceParam) {
+        logger.debug("Batch terminate application instance request received...");
+
+        return appoService.terminateAppInstance(accessToken, tenantId, appInstanceParam);
+    }
 }
