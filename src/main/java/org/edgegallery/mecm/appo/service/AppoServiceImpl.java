@@ -73,6 +73,17 @@ public class AppoServiceImpl implements AppoService {
         requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceID);
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
+        AppInstanceInfo appInstInfo = new AppInstanceInfo();
+        appInstInfo.setAppInstanceId(appInstanceID);
+        appInstInfo.setAppPackageId(createParam.getAppPackageId());
+        appInstInfo.setTenant(tenantId);
+        appInstInfo.setAppId(createParam.getAppId());
+        appInstInfo.setAppName(createParam.getAppName());
+        appInstInfo.setAppDescriptor(createParam.getAppInstanceDescription());
+        appInstInfo.setMecHost(createParam.getMecHost());
+        appInstInfo.setOperationalStatus("Creating");
+        appInstanceInfoService.createAppInstanceInfo(tenantId, appInstInfo);
+
         processflowService.executeProcessAsync("createApplicationInstance", requestBodyParam);
 
         Map<String, String> response = new HashMap<>();
@@ -111,6 +122,17 @@ public class AppoServiceImpl implements AppoService {
 
             BatchResponseDto batchResp = new BatchResponseDto(appInstanceID, host, "Accepted");
             response.add(batchResp);
+
+            AppInstanceInfo appInstInfo = new AppInstanceInfo();
+            appInstInfo.setAppInstanceId(appInstanceID);
+            appInstInfo.setAppPackageId(createParam.getAppPackageId());
+            appInstInfo.setTenant(tenantId);
+            appInstInfo.setAppId(createParam.getAppId());
+            appInstInfo.setAppName(createParam.getAppName());
+            appInstInfo.setAppDescriptor(createParam.getAppInstanceDescription());
+            appInstInfo.setMecHost(host);
+            appInstInfo.setOperationalStatus("Creating");
+            appInstanceInfoService.createAppInstanceInfo(tenantId, appInstInfo);
         }
         String appInstancesStr = appInstanceIds.stream().map(Object::toString)
                 .collect(Collectors.joining(","));

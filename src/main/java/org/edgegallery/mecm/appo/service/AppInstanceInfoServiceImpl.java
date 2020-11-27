@@ -169,7 +169,11 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         }
 
         if (appInstanceInfo.getOperationInfo() != null) {
-            info.setOperationInfo(appInstanceInfo.getOperationInfo());
+            String operInfo = appInstanceInfo.getOperationInfo();
+            if (operInfo.length() > 250) {
+                operInfo = operInfo.substring(0, 250) + "...";
+            }
+            info.setOperationInfo(operInfo);
         }
         LOGGER.debug("Update application instance {}", info);
         return appInstanceInfoRepository.save(info);
