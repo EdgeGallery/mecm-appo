@@ -143,8 +143,6 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
 
             LOGGER.info("Update application instance info {}", appInstanceId);
 
-            String responseCode = (String) delegateExecution.getVariable(RESPONSE_CODE);
-
             String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
             if (applcmIp != null) {
                 appInstanceInfo.setApplcmHost(applcmIp);
@@ -153,13 +151,16 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             String operationalStatus = (String) delegateExecution.getVariable("operational_status");
             appInstanceInfo.setOperationalStatus(operationalStatus);
 
-            int statusCode = Integer.parseInt(responseCode);
-            if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
-                String response = (String) delegateExecution.getVariable(ERROR_RESPONSE);
-                appInstanceInfo.setOperationInfo(response);
-            } else {
-                String response = (String) delegateExecution.getVariable(RESPONSE);
-                appInstanceInfo.setOperationInfo(response);
+            String responseCode = (String) delegateExecution.getVariable(RESPONSE_CODE);
+            if (responseCode != null) {
+                int statusCode = Integer.parseInt(responseCode);
+                if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
+                    String response = (String) delegateExecution.getVariable(ERROR_RESPONSE);
+                    appInstanceInfo.setOperationInfo(response);
+                } else {
+                    String response = (String) delegateExecution.getVariable(RESPONSE);
+                    appInstanceInfo.setOperationInfo(response);
+                }
             }
 
             String tenantId = (String) delegateExecution.getVariable("tenant_id");
