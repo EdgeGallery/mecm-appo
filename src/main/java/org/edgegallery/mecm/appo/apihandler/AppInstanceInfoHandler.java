@@ -75,7 +75,7 @@ public class AppInstanceInfoHandler {
     @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
     @GetMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT')")
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_GUEST')")
     public ResponseEntity<AppoResponse> getAppInstanceInfo(
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
@@ -100,7 +100,7 @@ public class AppInstanceInfoHandler {
      */
     @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
     @GetMapping(value = "/tenants/{tenant_id}/app_instance_infos", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT')")
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_GUEST')")
     public ResponseEntity<AppoResponse> getAllAppInstanceInfo(
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
