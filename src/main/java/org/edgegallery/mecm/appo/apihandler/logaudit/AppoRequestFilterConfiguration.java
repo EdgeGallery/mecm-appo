@@ -34,7 +34,7 @@ public class AppoRequestFilterConfiguration {
     public FilterRegistrationBean<OncePerRequestFilter> authFilterRegistrationBean() {
         FilterRegistrationBean<OncePerRequestFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new AppoTraceLogFilter());
-        registration.addUrlPatterns("/appo/v1/*");
+        registration.addUrlPatterns("/appo/v1/tenants/*");
         registration.setName("HttpTraceLogFilter");
         return registration;
     }
