@@ -17,6 +17,7 @@
 package org.edgegallery.mecm.appo.apihandler.filter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Map;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -76,8 +77,27 @@ public class AccessTokenFilter extends OncePerRequestFilter {
                 return;
             }
 
+            String userIdFromRequest = getTenantId(request.getRequestURI());
+            String userIdFromToken = additionalInfoMap.get("userId").toString();
+            if (!StringUtils.isEmpty(userIdFromRequest) && !userIdFromRequest.equals(userIdFromToken)) {
+                LOGGER.error("Illegal tenant ID");
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Illegal tenant ID");
+                return;
+            }
+
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(request, response);
+    }
+
+    private String getTenantId(String url) {
+        if (url != null) {
+            String[] parts = url.split("/");
+            int indexOfTenant = Arrays.asList(parts).indexOf("tenants");
+            if (indexOfTenant != -1 && parts.length >= indexOfTenant) {
+                return parts[indexOfTenant + 1];
+            }
+        }
+        return null;
     }
 }
