@@ -33,9 +33,15 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
     private final AppInstanceInfoService appInstanceInfoService;
 
     private static final String OPERATIONAL_STATUS_INSTANTIATED = "Instantiated";
-    private static final String YAML_KEY_DEPENDENCIES = "dependencies";
+
+    private static final String YAML_KEY_TOPOLOGY_TEMPLATE = "topology_template";
+    private static final String YAML_KEY_NODE_TEMPLATES = "node_templates";
+    private static final String YAML_KEY_TYPE = "type";
+    private static final String YAML_KEY_PROPERTIES = "properties";
+    private static final String YAML_VALUE_CONFIGURATION = "tosca.nodes.nfv.app.configuration";
+    private static final String YAML_KEY_APP_SERVICE_REQUIRED = "appServiceRequired";
     private static final String YAML_KEY_PACKAGE_ID = "packageId";
-    private static final String YAML_KEY_NAME = "name";
+    private static final String YAML_KEY_SERVICE_NAME = "serName";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeComposeAppPkgTask.class);
 
@@ -115,8 +121,8 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
             .filter(appInstanceInfo -> OPERATIONAL_STATUS_INSTANTIATED.equals(appInstanceInfo.getOperationalStatus()))
             .collect(Collectors.toMap(AppInstanceInfo::getAppPackageId, appInstanceInfo -> appInstanceInfo));
 
-        // 从csar中读取MainServiceTemplate.yaml
         List<Map<String, String>> dependencies = null;
+        // 从csar中读取MainServiceTemplate.yaml
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(appPackagePath))) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
@@ -124,7 +130,24 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
                     Yaml yaml = new Yaml();
                     try {
                         Map<String, Object> mainTemplateMap = yaml.load(zis);
-                        dependencies = (List<Map<String, String>>) mainTemplateMap.get(YAML_KEY_DEPENDENCIES);
+                        Map<String, Object> nodeTemplates = (Map<String, Object>) mainTemplateMap.get(YAML_KEY_TOPOLOGY_TEMPLATE);
+                        Map<String, Object> appConfigurationProperties = null;
+                        int appConfigurationNum = 0;
+                        for (String key: nodeTemplates.keySet()) {
+                            Map<String, Object> nodeTemplate = (Map<String, Object>) nodeTemplates.get(key);
+                            if (nodeTemplate.containsKey(YAML_KEY_TYPE)
+                                    && nodeTemplate.get(YAML_KEY_TYPE).equals(YAML_VALUE_CONFIGURATION)) {
+                                appConfigurationProperties = (Map<String, Object>) nodeTemplate.get(YAML_KEY_PROPERTIES);
+                                appConfigurationNum++;
+                            }
+                        }
+                        if (appConfigurationNum > 1) {
+                            LOGGER.error("analyze tosca template error");
+                            throw new AppoException(FAILED_TO_LOAD_YAML);
+                        }
+                        if (appConfigurationProperties != null) {
+                            dependencies = (List<Map<String, String>>) appConfigurationProperties.get(YAML_KEY_APP_SERVICE_REQUIRED);
+                        }
                     } catch (Exception e) {
                         LOGGER.error(FAILED_TO_LOAD_YAML);
                         throw new AppoException(FAILED_TO_LOAD_YAML);
@@ -151,7 +174,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
             AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(appPkgId);
             if (appInstanceInfo == null) {
                 dependencyExisted = false;
-                noExistDependencyList.append(dependency.get(YAML_KEY_NAME));
+                noExistDependencyList.append(dependency.get(YAML_KEY_SERVICE_NAME));
                 noExistDependencyList.append(" ");
             } else {
                 returnList.add(appInstanceInfo);
