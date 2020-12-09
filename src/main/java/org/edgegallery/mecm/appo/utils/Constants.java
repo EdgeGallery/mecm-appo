@@ -50,16 +50,26 @@ public final class Constants {
     public static final String ACCESS_TOKEN = "access_token";
     public static final String MEC_HOST_IP = "host_ip";
     public static final String APPLCM_IP = "applcm_ip";
+    public static final String APPRULE_IP = "app_rule_manager_ip";
     public static final String APPLCM_PORT = "applcm_port";
+    public static final String APPRULE_PORT = "apprule_port";
     public static final String APP_INSTANCE_INFO = "app_instance_info";
     public static final String MEP_CAPABILITY_ID = "capability_id";
     public static final String HW_CAPABILITIES = "hw_capabilities";
+    public static final String APP_RULES = "app_rules";
+    public static final String APP_RULE_CFG_STATUS = "app_rule_status";
+    public static final String INVENTORY_APP_RULES = "inventory_app_rules";
+    public static final String UPDATED_APP_RULES = "updated_app_rules";
+    public static final String APP_RULE_ACTION = "app_rule_action";
+    public static final String APPRULE_TASK_ID = "apprule_task_id";
 
     public static final String APM_DOWNLOAD_URI = "/apm/v1/tenants/{tenant_id}/packages/{app_package_id}/download";
     public static final String INVENTORY_MEC_HOST_URI = "/inventory/v1/tenants/{tenant_id}/mechosts/{mec_host}";
     public static final String INVENTORY_APPLCM_URI = "/inventory/v1/tenants/{tenant_id}/applcms/{applcm_ip}";
     public static final String INVENTORY_APPLICATIONS_URI = "/inventory/v1/tenants/{tenant_id}"
             + "/mechosts/{mec_host}/apps";
+    public static final String INVENTORY_APPRULECFG_URI = "/inventory/v1/tenants/{tenant_id}/apprulemanagers"
+            + "/{app_rule_manager_ip}";
     public static final String INVENTORY_APPLICATION_URI = "/inventory/v1/tenants/{tenant_id}"
             + "/mechosts/{mec_host}/apps/{app_instance_id}";
 
@@ -74,10 +84,14 @@ public final class Constants {
             + "}/mep_capabilities";
     public static final String APPLCM_QUERY_CAPABILITY_URI = "/lcmcontroller/v1/tenants/{tenant_id}/hosts/{mec_host"
             + "}/mep_capabilities/{capability_id}";
-
+    public static final String APPRULE_URI =
+            "/apprulemgr/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/appd_configuration";
+    public static final String INVENTORY_APPRULE_URI =
+            "/inventory/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/appd_configuration";
 
     public static final String PROCESS_FLOW_SUCCESS = "200";
     public static final String PROCESS_FLOW_ERROR = "500";
+    public static final String PROCESS_FLOW_ERROR_400 = "400";
     public static final String PROCESS_RECORD_NOT_FOUND = "404";
     public static final String PROCESS_FLOW_RESP_CODE = "ProcessflowResponseCode";
     public static final String PROCESS_FLOW_RESP = "ProcessflowResponse";
@@ -103,9 +117,12 @@ public final class Constants {
 
     public static final String FAILED_TO_CONNECT_INVENTORY = "failed to connect to inventory {}";
     public static final String FAILED_TO_CONNECT_APPLCM = "failed to connect to applcm {}";
+    public static final String FAILED_TO_CONNECT_APPRULE = "failed to connect to apprule {}";
     public static final String APPLCM_RETURN_FAILURE = "applcm return failure {}";
+    public static final String APPRULE_RETURN_FAILURE = "apprule return failure {}";
     public static final String INVENTORY_RETURN_FAILURE = "inventory return failure {}";
     public static final String APM_RETURN_FAILURE = "apm return failure {}";
+
 
     private Constants() {
     }
