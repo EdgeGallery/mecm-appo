@@ -15,6 +15,19 @@
         primary key (app_instance_id)
     );
 
+    create table appruletask (
+       app_rule_task_id  varchar(64) not null,
+        tenant varchar(64) not null,
+        task_id varchar(64),
+        app_instance_id varchar(64),
+        app_rules varchar(2097154),
+        detail varchar(256),
+        config_result varchar(256),
+        create_time timestamp default current_timestamp,
+        update_time timestamp default current_timestamp,
+        primary key (app_rule_task_id)
+    );
+
     create table appotenant (
         tenant  varchar(255) not null,
         primary key (tenant)
