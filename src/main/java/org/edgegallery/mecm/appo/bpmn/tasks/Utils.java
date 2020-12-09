@@ -17,13 +17,19 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
 
+import com.google.gson.Gson;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.edgegallery.mecm.appo.model.AppRule;
+import org.edgegallery.mecm.appo.model.DnsRule;
+import org.edgegallery.mecm.appo.model.TrafficRule;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 public class Utils extends ProcessflowAbstractTask implements JavaDelegate {
 
@@ -71,8 +77,121 @@ public class Utils extends ProcessflowAbstractTask implements JavaDelegate {
             case "matchCapabilities":
                 matchHwCapabilities(execution);
                 break;
+            case "mergeAppRules":
+                mergeAppRules(execution);
+                break;
             default:
                 LOGGER.info("Invalid util type...{}", utilType);
         }
+    }
+
+    /**
+     * Match hardware capabilities.
+     *
+     * @param execution execution variable
+     */
+    public void mergeAppRules(DelegateExecution execution) {
+        LOGGER.info("Merge input apprules with apprule exist from inventory...");
+        String inAppRules = (String) execution.getVariable(Constants.APP_RULES);
+        String inventoryAppRules = (String) execution.getVariable(Constants.INVENTORY_APP_RULES);
+
+        if (StringUtils.isEmpty(inventoryAppRules)) {
+            LOGGER.info("No app rules exists in inventory... configure apprule received from input {}", inAppRules);
+            execution.setVariable(Constants.UPDATED_APP_RULES, inAppRules);
+            return;
+        }
+
+        Gson gson = new Gson();
+        AppRule inAppRule = gson.fromJson(inAppRules, AppRule.class);
+        AppRule appRule = gson.fromJson(inventoryAppRules, AppRule.class);
+
+        boolean isConfigure = false;
+        String operType = (String) execution.getVariable(Constants.APP_RULE_ACTION);
+        if (!"DELETE".equals(operType)) {
+            isConfigure = true;
+        }
+        AppRule appRules = updateTrafficRule(appRule, inAppRule, isConfigure);
+        appRules = updateDnsRule(appRules, inAppRule, isConfigure);
+
+        String appRuleJson = gson.toJson(appRules);
+
+        execution.setVariable(Constants.UPDATED_APP_RULES, appRuleJson);
+
+        LOGGER.info("App rules:Input {}, \n existing {}, \nmerged {}", inAppRules, inventoryAppRules, appRuleJson);
+    }
+
+    /**
+     * Updates traffic rule.
+     *
+     * @param appRule   existing application rule
+     * @param inAppRule application rule from input
+     * @return app rule
+     */
+    private AppRule updateTrafficRule(AppRule appRule, AppRule inAppRule, boolean isConfigure) {
+        if (appRule == null || appRule.getAppTrafficRule() == null
+                || inAppRule == null || inAppRule.getAppTrafficRule() == null) {
+            LOGGER.error("App Rule or traffic rule is null");
+            return appRule;
+        }
+        Set<TrafficRule> appTrafficRule = appRule.getAppTrafficRule();
+        for (TrafficRule inTr : inAppRule.getAppTrafficRule()) {
+            boolean matchFound = false;
+            for (TrafficRule tr : appRule.getAppTrafficRule()) {
+                if (tr.getTrafficRuleId().equals(inTr.getTrafficRuleId())) {
+                    appTrafficRule.remove(tr);
+                    if (isConfigure) {
+                        appTrafficRule.add(inTr);
+                        LOGGER.info("Updating traffic rule {}", inTr);
+                    }
+                    matchFound = true;
+                    break;
+                }
+            }
+            if (isConfigure && !matchFound) {
+                //Add
+                appTrafficRule.add(inTr);
+                LOGGER.info("Adding traffic rule {}", inTr);
+            }
+        }
+        appRule.setAppTrafficRule(appTrafficRule);
+        return appRule;
+    }
+
+    /**
+     * Updates dns rule.
+     *
+     * @param appRule   existing application rule
+     * @param inAppRule application rule from input
+     * @return app rule
+     */
+    private AppRule updateDnsRule(AppRule appRule, AppRule inAppRule, boolean isConfigure) {
+
+        if (appRule == null || appRule.getAppDNSRule() == null
+                || inAppRule == null || inAppRule.getAppDNSRule() == null) {
+            LOGGER.error("App Rule or DNS rule is null");
+            return appRule;
+        }
+        Set<DnsRule> appDnsRule = appRule.getAppDNSRule();
+        for (DnsRule inDnsRule : inAppRule.getAppDNSRule()) {
+            boolean matchFound = false;
+            for (DnsRule dnsRule : appRule.getAppDNSRule()) {
+                if (dnsRule.getDnsRuleId().equals(inDnsRule.getDnsRuleId())) {
+                    appDnsRule.remove(dnsRule);
+                    if (isConfigure) {
+                        appDnsRule.add(inDnsRule);
+                        LOGGER.info("Updating DNS rule {}", inDnsRule);
+                    }
+                    matchFound = true;
+                    break;
+                }
+            }
+            if (isConfigure && !matchFound) {
+                //Add
+                appDnsRule.add(inDnsRule);
+                LOGGER.info("Adding DNS rule {}", inDnsRule);
+            }
+        }
+        appRule.setAppDNSRule(appDnsRule);
+        return appRule;
     }
 }
