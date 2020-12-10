@@ -28,7 +28,9 @@ import java.util.NoSuchElementException;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceInfoDto;
+import org.edgegallery.mecm.appo.apihandler.dto.AppRuleTaskDto;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.model.AppRuleTask;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.Constants;
@@ -48,20 +50,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Application instance info API handler.
+ * Appo database API handler.
  */
 @Api(value = "Application instance info api system")
 @Validated
 @RequestMapping("/appo/v1")
 @RestController
-public class AppInstanceInfoHandler {
+public class AppoDbHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppInstanceInfoHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(AppoDbHandler.class);
 
     private final AppInstanceInfoService appInstanceInfoService;
 
     @Autowired
-    public AppInstanceInfoHandler(AppInstanceInfoService appInstanceInfoService) {
+    public AppoDbHandler(AppInstanceInfoService appInstanceInfoService) {
         this.appInstanceInfoService = appInstanceInfoService;
     }
 
@@ -94,7 +96,7 @@ public class AppInstanceInfoHandler {
     /**
      * Retrieves application instance information.
      *
-     * @param tenantId tenant ID
+     * @param tenantId       tenant ID
      * @param appinstanceids applicationm instance IDs
      * @return application instance information
      */
@@ -131,5 +133,31 @@ public class AppInstanceInfoHandler {
             return new ResponseEntity<>(new AppoResponse(appInstanceInfosDto), HttpStatus.OK);
         }
         throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);
+    }
+
+    /**
+     * Retrieves application instance information.
+     *
+     * @param tenantId      tenant ID
+     * @param appRuleTaskId application rule task ID
+     * @return application instance information
+     */
+    @ApiOperation(value = "Retrieves application rule task info", response = AppoResponse.class)
+    @GetMapping(path = "/tenants/{tenant_id}/apprule_task_infos/{apprule_task_id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_GUEST')")
+    public ResponseEntity<AppoResponse> getAppRuletaskInfo(
+            @ApiParam(value = "tenant id") @PathVariable("tenant_id")
+            @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+            @ApiParam(value = "application instance id") @PathVariable("apprule_task_id")
+            @Pattern(regexp = APP_INST_ID_REGX) @Size(max = 64) String appRuleTaskId) {
+
+        logger.info("Retrieve application rule task info: {}", appRuleTaskId);
+
+        AppRuleTask appRuletaskInfo = appInstanceInfoService.getAppRuleTaskInfo(tenantId, appRuleTaskId);
+        ModelMapper mapper = new ModelMapper();
+        AppRuleTaskDto dto = mapper.map(appRuletaskInfo, AppRuleTaskDto.class);
+
+        return new ResponseEntity<>(new AppoResponse(dto), HttpStatus.OK);
     }
 }

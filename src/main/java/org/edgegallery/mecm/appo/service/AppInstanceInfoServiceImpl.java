@@ -8,9 +8,11 @@ import javax.transaction.Transactional;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.model.AppRuleTask;
 import org.edgegallery.mecm.appo.model.AppoTenant;
 import org.edgegallery.mecm.appo.repository.AppInstanceDependencyRepository;
 import org.edgegallery.mecm.appo.repository.AppInstanceInfoRepository;
+import org.edgegallery.mecm.appo.repository.AppRuleTaskRepository;
 import org.edgegallery.mecm.appo.repository.AppoTenantRepository;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
@@ -24,21 +26,26 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
     public static final Logger LOGGER = LoggerFactory.getLogger(AppInstanceInfoServiceImpl.class);
     private static final String RECORD_NOT_FOUND = "Record does not exist, app instance id: ";
     private AppInstanceInfoRepository appInstanceInfoRepository;
+    private AppRuleTaskRepository appRuleTaskRepository;
     private AppoTenantRepository appoTenantRepository;
     private AppInstanceDependencyRepository appInstanceDependencyRepository;
 
     /**
-     *  构造函数.
-     * @param appInstanceInfoRepository app实例信息仓库
+     * 构造函数.
+     *
+     * @param appInstanceInfoRepository       app实例信息仓库
      * @param appInstanceDependencyRepository 依赖的app实例仓库
-     * @param appoTenantRepository 租户仓库
+     * @param appoTenantRepository            租户仓库
      */
     @Autowired
     public AppInstanceInfoServiceImpl(AppInstanceInfoRepository appInstanceInfoRepository,
-        AppInstanceDependencyRepository appInstanceDependencyRepository, AppoTenantRepository appoTenantRepository) {
+                                      AppInstanceDependencyRepository appInstanceDependencyRepository,
+                                      AppoTenantRepository appoTenantRepository,
+                                      AppRuleTaskRepository appRuleTaskRepository) {
         this.appInstanceInfoRepository = appInstanceInfoRepository;
         this.appInstanceDependencyRepository = appInstanceDependencyRepository;
         this.appoTenantRepository = appoTenantRepository;
+        this.appRuleTaskRepository = appRuleTaskRepository;
     }
 
     @Override
@@ -114,7 +121,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
 
         appInstanceInfoRepository.deleteById(appInstanceId);
         List<AppInstanceDependency> dependencies = appInstanceDependencyRepository
-            .getByAppInstanceId(tenantId, appInstanceId);
+                .getByAppInstanceId(tenantId, appInstanceId);
         if (dependencies.size() > 0) {
             appInstanceDependencyRepository.deleteAll(dependencies);
         }
@@ -190,7 +197,118 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
 
     @Override
     public List<AppInstanceDependency> getDependenciesByDependencyAppInstanceId(String tenantId,
-        String dependencyAppInstanceId) {
+                                                                                String dependencyAppInstanceId) {
         return appInstanceDependencyRepository.getByDependencyAppInstanceId(tenantId, dependencyAppInstanceId);
+    }
+
+    @Override
+    public AppRuleTask getAppRuleTaskInfo(String tenantId, String appRuleTaskId) {
+        LOGGER.debug("Get application rule task if {}... from DB", appRuleTaskId);
+
+        AppRuleTask info = appRuleTaskRepository.findByTenantIdAndAppRuleTaskId(tenantId, appRuleTaskId);
+        if (info == null) {
+            LOGGER.debug("application rule task info not found {}", appRuleTaskId);
+            throw new NoSuchElementException(RECORD_NOT_FOUND + appRuleTaskId);
+        }
+        return info;
+    }
+
+    @Override
+    public AppRuleTask createAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo) {
+
+        LOGGER.debug("Add application rule task info {}", appRuleTaskInfo);
+        boolean addTenant = false;
+        AppRuleTask appRuleTask = null;
+        appRuleTaskInfo.setTenant(tenantId);
+
+        Optional<AppoTenant> info = appoTenantRepository.findById(tenantId);
+        if (info.isPresent()) {
+            List<AppRuleTask> record = appRuleTaskRepository.findByTenantId(tenantId);
+            if (record.size() == Constants.MAX_ENTRY_PER_TENANT_PER_MODEL) {
+                LOGGER.error("Max app rule task's limit {} reached, delete old entry",
+                        Constants.MAX_ENTRY_PER_TENANT_PER_MODEL);
+                //TODO: delete old entry
+                appRuleTaskRepository.deleteById(record.get(0).getAppRuleTaskId());
+            }
+        } else {
+            if (appoTenantRepository.count() == Constants.MAX_TENANTS) {
+                LOGGER.error("Max tenant limit {} reached", Constants.MAX_TENANTS);
+                throw new AppoException(Constants.MAX_LIMIT_REACHED_ERROR);
+            }
+            addTenant = true;
+        }
+
+        appRuleTask = appRuleTaskRepository.save(appRuleTaskInfo);
+
+        if (addTenant) {
+            LOGGER.info("Add tenant {}", tenantId);
+            AppoTenant tenant = new AppoTenant();
+            tenant.setTenant(tenantId);
+            appoTenantRepository.save(tenant);
+        }
+        return appRuleTask;
+    }
+
+    @Override
+    @Transactional
+    public void deleteAppRuleTaskInfo(String tenantId, String appRuleTaskId) {
+        LOGGER.debug("Delete application rule task {}... from DB", appRuleTaskId);
+
+        AppRuleTask info = appRuleTaskRepository.findByTenantIdAndAppRuleTaskId(tenantId, appRuleTaskId);
+        if (info == null) {
+            LOGGER.debug("Record does not exist, application rule task {}", appRuleTaskId);
+            throw new NoSuchElementException(RECORD_NOT_FOUND + appRuleTaskId);
+        }
+
+        appRuleTaskRepository.deleteById(appRuleTaskId);
+
+        List<AppRuleTask> appRuleTaskRec = appRuleTaskRepository.findByTenantId(tenantId);
+        List<AppInstanceInfo> appInstanceRec = appInstanceInfoRepository.findByTenantId(tenantId);
+        if (appRuleTaskRec.isEmpty() && appInstanceRec.isEmpty()) {
+            LOGGER.info("Delete tenant {}", tenantId);
+            appoTenantRepository.deleteById(tenantId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public AppRuleTask updateAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo) {
+
+        String appRuleTaskId = appRuleTaskInfo.getAppRuleTaskId();
+
+        LOGGER.debug("Update application rule task ID {}", appRuleTaskId);
+
+        AppRuleTask info = appRuleTaskRepository.findByTenantIdAndAppRuleTaskId(tenantId, appRuleTaskId);
+        if (info == null) {
+            LOGGER.debug("Record does not exist, application rule task {}", appRuleTaskId);
+            throw new NoSuchElementException(RECORD_NOT_FOUND + appRuleTaskId);
+        }
+
+        if (appRuleTaskInfo.getTaskId() != null) {
+            info.setTaskId(appRuleTaskInfo.getTaskId());
+        }
+
+        if (appRuleTaskInfo.getAppInstanceId() != null) {
+            info.setAppInstanceId(appRuleTaskInfo.getAppInstanceId());
+        }
+
+        if (appRuleTaskInfo.getAppRules() != null) {
+            info.setAppRules(appRuleTaskInfo.getAppRules());
+        }
+
+        if (appRuleTaskInfo.getConfigResult() != null) {
+            info.setConfigResult(appRuleTaskInfo.getConfigResult());
+        }
+
+        if (appRuleTaskInfo.getDetailed() != null) {
+            String detail = appRuleTaskInfo.getDetailed();
+            if (detail.length() > 250) {
+                detail = detail.substring(0, 250) + "...";
+            }
+            info.setDetailed(detail);
+        }
+
+        LOGGER.debug("Update application rule task {}", info);
+        return appRuleTaskRepository.save(info);
     }
 }

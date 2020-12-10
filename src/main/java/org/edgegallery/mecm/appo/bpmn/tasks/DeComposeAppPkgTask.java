@@ -3,6 +3,7 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 import static org.edgegallery.mecm.appo.bpmn.tasks.Apm.FAILED_TO_LOAD_YAML;
 import static org.edgegallery.mecm.appo.bpmn.tasks.Apm.FAILED_TO_UNZIP_CSAR;
 
+import com.google.gson.Gson;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,8 +16,10 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.utils.Constants;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -28,26 +31,31 @@ import org.yaml.snakeyaml.Yaml;
  * @date 2020/11/9
  */
 public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
+
+    private static final String OPERATIONAL_STATUS_INSTANTIATED = "Instantiated";
+    private static final String YAML_KEY_DEPENDENCIES = "dependencies";
+    private static final String YAML_KEY_TOPOLOGY = "topology_template";
+    private static final String YAML_KEY_NODES = "node_templates";
+    private static final String YAML_KEY_APP_CONFIG = "app_configuration";
+    private static final String YAML_KEY_PROPERTIES = "properties";
+    private static final String YAML_KEY_TRAFFIC_RULE = "appTrafficRule";
+    private static final String YAML_KEY_DNS_RULE = "appDNSRule";
+    private static final String YAML_KEY_PACKAGE_ID = "packageId";
+    private static final String YAML_KEY_NAME = "name";
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeComposeAppPkgTask.class);
     private final DelegateExecution execution;
     private final String appPkgBasePath;
     private final AppInstanceInfoService appInstanceInfoService;
 
-    private static final String OPERATIONAL_STATUS_INSTANTIATED = "Instantiated";
-    private static final String YAML_KEY_DEPENDENCIES = "dependencies";
-    private static final String YAML_KEY_PACKAGE_ID = "packageId";
-    private static final String YAML_KEY_NAME = "name";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeComposeAppPkgTask.class);
-
     /**
      * 构造函数.
      *
-     * @param delegateExecution 执行对象
-     * @param appPkgBasePath 包路径
+     * @param delegateExecution      执行对象
+     * @param appPkgBasePath         包路径
      * @param appInstanceInfoService 应用实例信息
      */
     public DeComposeAppPkgTask(DelegateExecution delegateExecution, String appPkgBasePath,
-        AppInstanceInfoService appInstanceInfoService) {
+                               AppInstanceInfoService appInstanceInfoService) {
         this.execution = delegateExecution;
         this.appPkgBasePath = appPkgBasePath;
         this.appInstanceInfoService = appInstanceInfoService;
@@ -66,17 +74,17 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         final String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
 
         LOGGER.info("param: tenant:{}, app_instance_id:{}, app_package_id:{}, app_id:{}, mec_host:{}", tenantId,
-            appInstanceId, appPackageId, appId, mecHost);
+                appInstanceId, appPackageId, appId, mecHost);
 
         final String appPackagePath = appPkgBasePath + appInstanceId + Constants.SLASH + appPackageId
-            + Constants.APP_PKG_EXT;
+                + Constants.APP_PKG_EXT;
 
         try {
             LOGGER.info("check application {} dependency", appId);
             List<AppInstanceInfo> dependencies = getDependenciesAppInstance(appPackagePath, tenantId, mecHost);
             if (dependencies == null) {
                 setProcessflowExceptionResponseAttributes(execution, "dependency APP not deployed",
-                    Constants.PROCESS_FLOW_ERROR);
+                        Constants.PROCESS_FLOW_ERROR);
                 return;
             }
             if (dependencies.size() > 0) {
@@ -100,31 +108,33 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
      * 获取依赖的app实例列表.
      *
      * @param appPackagePath app package path
-     * @param tenantId tenant ID
-     * @param mecHost mec host
+     * @param tenantId       tenant ID
+     * @param mecHost        mec host
      * @return app实例列表
      */
     private List<AppInstanceInfo> getDependenciesAppInstance(String appPackagePath, String tenantId, String mecHost) {
         // 根据mec host筛选实例列表，按照appPkgId转化为map，过滤掉状态非active的实例
         List<AppInstanceInfo> appInstanceInfoListInHost = appInstanceInfoService
-            .getAppInstanceInfoByMecHost(tenantId, mecHost);
+                .getAppInstanceInfoByMecHost(tenantId, mecHost);
 
         LOGGER.debug("app instance in mec host: {}, number:{}", mecHost, appInstanceInfoListInHost.size());
 
         Map<String, AppInstanceInfo> appInstanceInfoMapWithPkg = appInstanceInfoListInHost.stream()
-            .filter(appInstanceInfo -> OPERATIONAL_STATUS_INSTANTIATED.equals(appInstanceInfo.getOperationalStatus()))
-            .collect(Collectors.toMap(AppInstanceInfo::getAppPackageId, appInstanceInfo -> appInstanceInfo));
+                .filter(appInstanceInfo -> OPERATIONAL_STATUS_INSTANTIATED
+                        .equals(appInstanceInfo.getOperationalStatus()))
+                .collect(Collectors.toMap(AppInstanceInfo::getAppPackageId, appInstanceInfo -> appInstanceInfo));
 
         // 从csar中读取MainServiceTemplate.yaml
         List<Map<String, String>> dependencies = null;
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(appPackagePath))) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
-                if (entry.getName().contains("Definitions/MainServiceTemplate.yaml")) {
+                if (entry.getName().contains("/MainServiceTemplate.yaml")) {
                     Yaml yaml = new Yaml();
                     try {
                         Map<String, Object> mainTemplateMap = yaml.load(zis);
                         dependencies = (List<Map<String, String>>) mainTemplateMap.get(YAML_KEY_DEPENDENCIES);
+                        updateApplicationDescriptor(mainTemplateMap);
                     } catch (Exception e) {
                         LOGGER.error(FAILED_TO_LOAD_YAML);
                         throw new AppoException(FAILED_TO_LOAD_YAML);
@@ -164,5 +174,53 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
             LOGGER.debug("dependency app {}not exist", noExistDependencyList.toString());
             return null;
         }
+    }
+
+    /**
+     * Updates application descriptor from main service template yaml to the exection environment.
+     *
+     * @param mainTemplateMap main template map
+     */
+    public void updateApplicationDescriptor(Map<String, Object> mainTemplateMap) {
+        Map<String, Object> topology = (Map<String, Object>) mainTemplateMap.get(YAML_KEY_TOPOLOGY);
+        if (topology == null) {
+            LOGGER.error("topology template null in main service template yaml");
+            return;
+        }
+
+        Map<String, Object> nodes = (Map<String, Object>) topology.get(YAML_KEY_NODES);
+        if (nodes == null) {
+            LOGGER.error("nodes null in main service template yaml");
+            return;
+        }
+        Map<String, Object> appConfigs = (Map<String, Object>) nodes.get(YAML_KEY_APP_CONFIG);
+        if (appConfigs == null) {
+            LOGGER.error("appConfigs null in main service template yaml");
+            return;
+        }
+        Map<String, Object> properties = (Map<String, Object>) appConfigs.get(YAML_KEY_PROPERTIES);
+        if (properties == null) {
+            LOGGER.error("properties null in main service template yaml");
+            return;
+        }
+
+        ModelMapper mapper = new ModelMapper();
+        AppRule appRule = mapper.map(properties, AppRule.class);
+
+        if (appRule.getAppTrafficRule() == null && appRule.getAppDNSRule() == null) {
+            return;
+        }
+
+        //Get app name from the input not from the package app name
+        String appName = (String) execution.getVariable(Constants.APP_NAME);
+        appRule.setAppName(appName);
+
+        Gson gson = new Gson();
+        String appRulejson = gson.toJson(appRule);
+        execution.setVariable(Constants.APP_RULES, appRulejson);
+
+        LOGGER.info("Set app rules : {}", appRulejson);
+
+        return;
     }
 }
