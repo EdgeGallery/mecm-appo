@@ -59,10 +59,10 @@ public class AppoServiceImpl implements AppoService {
         LOGGER.debug("Application create request received...");
 
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
-        for (AppInstanceInfo instInfo: appInstanceInfos) {
-           if (instInfo.getAppName().equals(createParam.getAppName())) {
-               return new ResponseEntity<>(new AppoResponse("cannot re-use app name"), HttpStatus.PRECONDITION_FAILED);
-           }
+        for (AppInstanceInfo instInfo : appInstanceInfos) {
+            if (instInfo.getAppName().equals(createParam.getAppName())) {
+                return new ResponseEntity<>(new AppoResponse("cannot re-use app name"), HttpStatus.PRECONDITION_FAILED);
+            }
         }
 
         Map<String, String> requestBodyParam = new HashMap<>();
@@ -116,7 +116,7 @@ public class AppoServiceImpl implements AppoService {
         LOGGER.debug("Batch application create request received...");
 
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
-        for (AppInstanceInfo instInfo: appInstanceInfos) {
+        for (AppInstanceInfo instInfo : appInstanceInfos) {
             if (instInfo.getAppName().equals(createParam.getAppName())) {
                 return new ResponseEntity<>(new AppoResponse("cannot re-use app name"), HttpStatus.PRECONDITION_FAILED);
             }
