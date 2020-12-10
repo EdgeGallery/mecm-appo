@@ -52,7 +52,7 @@ import org.springframework.web.client.RestTemplate;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AppoApplicationTest.class)
 @AutoConfigureMockMvc
-public class AppoHandlerTest {
+public class AppRulesConfigurationTest {
 
     @Autowired
     MockMvc mvc;
@@ -83,7 +83,7 @@ public class AppoHandlerTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"1.1.1.1\"}",
+                                + "\"applcmIp\":\"1.1.1.1\", \"appRuleIp\":\"1.1.1.1\"}",
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
@@ -95,19 +95,28 @@ public class AppoHandlerTest {
                         MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
 
         // Mocking download package from APM
-        File file = ResourceUtils.getFile("classpath:22406fba-fd5d-4f55-b3fa-89a45fee913a.csar");
+        File file = ResourceUtils.getFile("classpath:22406fba-fd5d-4f55-b3fa-89a45fee913a-apprules.csar");
         InputStream ins = new BufferedInputStream(new FileInputStream(file.getPath()));
         InputStreamResource inputStreamResource = new InputStreamResource(ins);
-        String url3 = "http://10.9.9.2:11112/apm/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/packages"
+        String url4 = "http://10.9.9.2:11112/apm/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/packages"
                 + "/f20358433cf8eb4719a62a49ed118c9b/download";
-        server.expect(requestTo(url3))
+        server.expect(requestTo(url4))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(inputStreamResource, MediaType.APPLICATION_OCTET_STREAM));
 
+        // Mocking get apprule from inventory
+        String url5 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
+                + "/1.1.1.1";
+        server.expect(requestTo(url5))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"appRuleIp\":\"1.1.1.1\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON));
+
+
         // Mocking get applcm API
-        String url4 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
+        String url6 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "1.1.1.1" + "/apps";
-        server.expect(requestTo(url4))
+        server.expect(requestTo(url6))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess());
 
@@ -170,10 +179,10 @@ public class AppoHandlerTest {
         /***********************************************************************************************/
 
         // Mocking get MEC host from inventory
-        String url6 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
+        String url7 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
                 + ".1";
         server = MockRestServiceServer.createServer(restTemplate);
-        server.expect(requestTo(url6))
+        server.expect(requestTo(url7))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"mechostIp\":\"1.1.1.1\",\"mechostName\":\"TestHost\","
                                 + "\"zipCode\":null,"
@@ -184,30 +193,89 @@ public class AppoHandlerTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        String url7 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
+        String url8 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
                 + ".1";
-        server.expect(requestTo(url7))
+        server.expect(requestTo(url8))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
                         MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
 
+        // Mocking get apprule from inventory
+        String url9 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
+                + "/1.1.1.1";
+        server.expect(requestTo(url9))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"appRuleIp\":\"1.1.1.1\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON));
+
         // Mocking get applcm API
-        String url8 = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+        String url10 = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/instantiate";
-        server.expect(requestTo(url8))
+        server.expect(requestTo(url10))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess());
 
-        String url9 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
+
+        String url11 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
+                + ".1";
+        server.expect(requestTo(url11))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"mechostIp\":\"1.1.1.1\",\"mechostName\":\"TestHost\","
+                                + "\"zipCode\":null,"
+                                + "\"city\":\"TestCity\","
+                                + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
+                                + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
+                                + "\"applcmIp\":\"1.1.1.1\",\"appRuleIp\":\"1.1.1.1\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+
+        // Mocking get apprule from inventory
+        String url12 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
+                + "/1.1.1.1";
+        server.expect(requestTo(url12))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"appRuleIp\":\"1.1.1.1\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON));
+
+        // Mocking get applcm from inventory
+        String url13 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances/"+ appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url13))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND)); /// validate response , use this query , // applcm port ,
+
+        // Mocking get applcm API
+        String url14 = "http://1.1.1.1:10000/apprulemgr/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url14))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess("{\"taskId\": \"\",\"appInstanceId\": \"40519ee1-fb9d-4a61-855c-1b5c2a41da9f\","
+                                + "\"detailed\": \"duplicate dns entry\",\"configResult\": \"FAILURE\"}",
+                        MediaType.APPLICATION_JSON));
+
+        // Mocking get applcm API
+        String url15 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url15))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
+
+        // Mocking get applcm API
+        String url16 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url16))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess());
+
+        // Mocking get applcm API
+        String url17 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "1.1.1.1" + "/apps/" + appInstanceId;
-        server.expect(requestTo(url9))
+        server.expect(requestTo(url17))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess());
 
         // Mocking get applcm API
-        String url10 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
+        String url18 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "1.1.1.1" + "/apps/" + appInstanceId;
-        server.expect(requestTo(url10))
+        server.expect(requestTo(url18))
                 .andExpect(method(HttpMethod.PUT))
                 .andRespond(withSuccess());
 
@@ -226,10 +294,10 @@ public class AppoHandlerTest {
         /***********************************************************************************************/
 
         // Mocking get MEC host from inventory
-        String url11 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
+        String url19 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
                 + ".1";
         server = MockRestServiceServer.createServer(restTemplate);
-        server.expect(requestTo(url11))
+        server.expect(requestTo(url19))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"mechostIp\":\"1.1.1.1\",\"mechostName\":\"TestHost\","
                                 + "\"zipCode\":null,"
@@ -240,29 +308,55 @@ public class AppoHandlerTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        String url12 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
+        String url20 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
                 + ".1";
-        server.expect(requestTo(url12))
+        server.expect(requestTo(url20))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
                         MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
 
         // Mocking get applcm from inventory
-        String url13 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances/"+ appInstanceId + "/appd_configuration";
-        server.expect(requestTo(url13))
+        String url21 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances"
+                + "/"+ appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url21))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.NOT_FOUND)); /// validate response , use this query , // applcm port ,
+                .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+
+        // Mocking get apprule from inventory
+        String url22 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
+                + "/1.1.1.1";
+        server.expect(requestTo(url22))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"appRuleIp\":\"1.1.1.1\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON));
 
         // Mocking get applcm API
-        String url14 = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+        String url23 = "http://1.1.1.1:10000/apprulemgr/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url23))
+                .andExpect(method(HttpMethod.DELETE))
+                .andRespond(withSuccess("{\"taskId\": \"\",\"appInstanceId\": \"40519ee1-fb9d-4a61-855c-1b5c2a41da9f\","
+                                + "\"detailed\": \"duplicate dns entry\",\"configResult\": \"FAILURE\"}",
+                        MediaType.APPLICATION_JSON));
+
+        // Mocking get applcm from inventory
+        String url24 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances"
+                + "/"+ appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url24))
+                .andExpect(method(HttpMethod.DELETE))
+                .andRespond(withStatus(HttpStatus.OK)); /// validate response , use this query , // applcm port ,
+
+        // Mocking get applcm API
+        String url25 = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/terminate";
-        server.expect(requestTo(url14))
+        server.expect(requestTo(url25))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess());
 
-        String url15 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
+        String url26 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "1.1.1.1" + "/apps/" + appInstanceId;
-        server.expect(requestTo(url15))
+        server.expect(requestTo(url26))
                 .andExpect(method(HttpMethod.DELETE))
                 .andRespond(withSuccess());
 
