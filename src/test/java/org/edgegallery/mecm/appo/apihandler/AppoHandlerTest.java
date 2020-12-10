@@ -46,6 +46,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -278,15 +279,6 @@ public class AppoHandlerTest {
                 .andReturn();
 
         File deleteDir = new File("src/test/resources/packages/" + appInstanceId);
-        String filePath = deleteDir.getCanonicalPath();
-        File deletePath = new File(filePath);
-        if (deletePath.isDirectory() == false) {
-            return;
-        }
-        File[] listFiles = deletePath.listFiles();
-        for (File fileSelected : listFiles) {
-            fileSelected.delete();
-        }
-        deletePath.delete();
+        FileSystemUtils.deleteRecursively(deleteDir);
     }
 }
