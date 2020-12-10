@@ -13,6 +13,7 @@
 
 package org.edgegallery.mecm.appo.service;
 
+import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,8 @@ import org.edgegallery.mecm.appo.apihandler.dto.BatchResponseDto;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.model.AppRule;
+import org.edgegallery.mecm.appo.model.AppRuleTask;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
@@ -52,8 +55,15 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> createAppInstance(String accessToken, String tenantId,
-            CreateParam createParam) {
+                                                          CreateParam createParam) {
         LOGGER.debug("Application create request received...");
+
+        List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
+        for (AppInstanceInfo instInfo : appInstanceInfos) {
+            if (instInfo.getAppName().equals(createParam.getAppName())) {
+                return new ResponseEntity<>(new AppoResponse("cannot re-use app name"), HttpStatus.PRECONDITION_FAILED);
+            }
+        }
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
@@ -84,6 +94,14 @@ public class AppoServiceImpl implements AppoService {
         appInstInfo.setOperationalStatus("Creating");
         appInstanceInfoService.createAppInstanceInfo(tenantId, appInstInfo);
 
+        requestBodyParam.put(Constants.APPRULE_TASK_ID, appInstanceID);
+        AppRuleTask appRuleTaskInfo = new AppRuleTask();
+        appRuleTaskInfo.setAppRuleTaskId(appInstanceID);
+        appRuleTaskInfo.setTenant(tenantId);
+        appRuleTaskInfo.setAppInstanceId(appInstanceID);
+        appRuleTaskInfo.setConfigResult("PROCESSING");
+        appInstanceInfoService.createAppRuleTaskInfo(tenantId, appRuleTaskInfo);
+
         processflowService.executeProcessAsync("createApplicationInstance", requestBodyParam);
 
         Map<String, String> response = new HashMap<>();
@@ -96,6 +114,13 @@ public class AppoServiceImpl implements AppoService {
     public ResponseEntity<AppoResponse> createAppInstance(String accessToken, String tenantId,
                                                           BatchCreateParam createParam) {
         LOGGER.debug("Batch application create request received...");
+
+        List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
+        for (AppInstanceInfo instInfo : appInstanceInfos) {
+            if (instInfo.getAppName().equals(createParam.getAppName())) {
+                return new ResponseEntity<>(new AppoResponse("cannot re-use app name"), HttpStatus.PRECONDITION_FAILED);
+            }
+        }
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
@@ -133,6 +158,14 @@ public class AppoServiceImpl implements AppoService {
             appInstInfo.setMecHost(host);
             appInstInfo.setOperationalStatus("Creating");
             appInstanceInfoService.createAppInstanceInfo(tenantId, appInstInfo);
+
+            requestBodyParam.put(Constants.APPRULE_TASK_ID, appInstanceID);
+            AppRuleTask appRuleTaskInfo = new AppRuleTask();
+            appRuleTaskInfo.setAppRuleTaskId(appInstanceID);
+            appRuleTaskInfo.setTenant(tenantId);
+            appRuleTaskInfo.setAppInstanceId(appInstanceID);
+            appRuleTaskInfo.setConfigResult("PROCESSING");
+            appInstanceInfoService.createAppRuleTaskInfo(tenantId, appRuleTaskInfo);
         }
         String appInstancesStr = appInstanceIds.stream().map(Object::toString)
                 .collect(Collectors.joining(","));
@@ -147,7 +180,7 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId,
-            String appInstanceId) {
+                                                               String appInstanceId) {
         LOGGER.debug("Application instantiation request received...");
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
@@ -164,6 +197,7 @@ public class AppoServiceImpl implements AppoService {
         requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceId);
         LOGGER.debug("Instantiate input params: {}", requestBodyParam);
 
+        requestBodyParam.put(Constants.APPRULE_TASK_ID, appInstanceId);
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
         processflowService.executeProcessAsync("instantiateApplicationInstance", requestBodyParam);
@@ -292,7 +326,7 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> terminateAppInstance(String accessToken, String tenantId,
-            String appInstanceId) {
+                                                             String appInstanceId) {
         LOGGER.debug("Terminate application info request received...");
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
@@ -315,6 +349,7 @@ public class AppoServiceImpl implements AppoService {
         LOGGER.debug("Terminate input params: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
+        requestBodyParam.put(Constants.APPRULE_TASK_ID, appInstanceId);
 
         processflowService.executeProcessAsync("terminateApplicationInstance", requestBodyParam);
 
@@ -330,14 +365,14 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp,
-            String capabilityId) {
+                                                                  String capabilityId) {
         LOGGER.debug("Query MEP capabilities request received...");
 
         return platformInfoQuery("queryEdgeCapabilities", accessToken, tenantId, hostIp, capabilityId);
     }
 
     private ResponseEntity<AppoResponse> platformInfoQuery(String process, String accessToken, String tenantId,
-            String hostIp, String capabilityId) {
+                                                           String hostIp, String capabilityId) {
 
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
@@ -356,5 +391,54 @@ public class AppoServiceImpl implements AppoService {
 
         return new ResponseEntity<>(new AppoResponse(response.getResponse()),
                 HttpStatus.valueOf(response.getResponseCode()));
+    }
+
+    @Override
+    public ResponseEntity<AppoResponse> configureAppRules(String accessToken, String tenantId, String appInstanceId,
+                                                          AppRule appRule, String action) {
+        LOGGER.debug("Add application rule request received... action {}", action);
+        return configureAppRule(accessToken, tenantId, appInstanceId, appRule, action);
+    }
+
+    private ResponseEntity<AppoResponse> configureAppRule(String accessToken, String tenantId, String appInstanceId,
+                                                          AppRule appRule, String action) {
+        LOGGER.debug("Configure application rule request received...");
+
+        AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
+        String operationalStatus = appInstanceInfo.getOperationalStatus();
+        if (!"Instantiated".equals(operationalStatus) && !"Created".equals(operationalStatus)) {
+            return new ResponseEntity<>(
+                    new AppoResponse("Pre condition failed, application instance operational status"
+                            + " is : " + appInstanceInfo.getOperationalStatus()),
+                    HttpStatus.PRECONDITION_FAILED);
+        }
+
+        Map<String, String> requestBodyParam = new HashMap<>();
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceId);
+        requestBodyParam.put(Constants.APP_RULE_ACTION, action);
+
+        Gson gson = new Gson();
+        String appRules = gson.toJson(appRule);
+        requestBodyParam.put(Constants.APP_RULES, appRules);
+
+        LOGGER.debug("Application rules instance input parameters: {}", requestBodyParam);
+
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
+
+        String appRuleTaskId = UUID.randomUUID().toString();
+        requestBodyParam.put(Constants.APPRULE_TASK_ID, appRuleTaskId);
+
+        AppRuleTask appRuleTaskInfo = new AppRuleTask();
+        appRuleTaskInfo.setAppRuleTaskId(appRuleTaskId);
+        appRuleTaskInfo.setTenant(tenantId);
+        appRuleTaskInfo.setAppInstanceId(appInstanceId);
+        appRuleTaskInfo.setConfigResult("PROCESSING");
+        appInstanceInfoService.createAppRuleTaskInfo(tenantId, appRuleTaskInfo);
+
+        processflowService.executeProcessAsync("configureAppRules", requestBodyParam);
+        Map<String, String> response = new HashMap<>();
+        response.put(Constants.APPRULE_TASK_ID, appRuleTaskId);
+        return new ResponseEntity<>(new AppoResponse(response), HttpStatus.ACCEPTED);
     }
 }
