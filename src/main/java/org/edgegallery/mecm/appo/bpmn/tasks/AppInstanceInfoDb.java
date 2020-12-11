@@ -99,7 +99,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo.setAppName((String) delegateExecution.getVariable(Constants.APP_NAME));
             appInstanceInfo.setAppId((String) delegateExecution.getVariable(Constants.APP_ID));
             appInstanceInfo.setAppDescriptor((String) delegateExecution.getVariable(Constants.APP_DESCR));
-            appInstanceInfo.setOperationalStatus("Creating");
+            appInstanceInfo.setOperationalStatus(Constants.OPER_STATUS_CREATING);
             appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
             LOGGER.info("App instance info record added ");

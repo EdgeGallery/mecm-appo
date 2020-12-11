@@ -298,7 +298,8 @@ public class Mepm extends ProcessflowAbstractTask {
         LOGGER.info("Query app instance ");
 
         AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
-        if (appInstanceInfo != null && !"Instantiated".equals(appInstanceInfo.getOperationalStatus())) {
+        if (appInstanceInfo != null
+                && !Constants.OPER_STATUS_INSTANTIATED.equals(appInstanceInfo.getOperationalStatus())) {
             setProcessflowErrorResponseAttributes(execution,
                     "Application instance operational status is: " + appInstanceInfo.getOperationalStatus(),
                     Constants.PROCESS_FLOW_SUCCESS);

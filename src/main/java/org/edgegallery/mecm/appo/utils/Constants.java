@@ -123,6 +123,11 @@ public final class Constants {
     public static final String INVENTORY_RETURN_FAILURE = "inventory return failure {}";
     public static final String APM_RETURN_FAILURE = "apm return failure {}";
 
+    public static final String OPER_STATUS_CREATING = "Creating";
+    public static final String OPER_STATUS_CREATED = "Created";
+    public static final String OPER_STATUS_CREATE_FAILED = "Create failed";
+    public static final String OPER_STATUS_INSTANTIATED = "Instantiated";
+    public static final String OPER_STATUS_INSTANTIATED_FAILED = "Instantiation failed";
 
     private Constants() {
     }
