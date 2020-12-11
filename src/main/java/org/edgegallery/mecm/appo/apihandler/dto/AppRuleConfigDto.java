@@ -45,7 +45,7 @@ public final class AppRuleConfigDto {
     @Size(max = 16)
     private Set<@Valid TrafficRuleDto> appTrafficRule = new LinkedHashSet<>();
 
-    @Size(max = 16)
+    @Size(max = 32)
     private Set<@Valid DnsRuleDto> appDNSRule = new LinkedHashSet<>();
 
     @NotEmpty(message = "Application name is mandatory")
