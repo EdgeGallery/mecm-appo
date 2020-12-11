@@ -41,7 +41,6 @@ public class DstInterfaceDto {
     @Size(max = 64)
     private String interfaceType;
 
-    @NotEmpty(message = "Tunnel info is mandatory")
     private TunnelInfoDto tunnelInfo;
 
     @Size(max = 17)
@@ -54,6 +53,6 @@ public class DstInterfaceDto {
 
     @NotEmpty(message = "Destination ip address is mandatory")
     @Size(max = 15)
-    @Pattern(regexp = Constants.IP_CIRD_REGX, message = "Dstination ip address is invalid")
+    @Pattern(regexp = Constants.IP_CIRD_REGX, message = "Destination ip address is invalid")
     private String dstIpAddress;
 }

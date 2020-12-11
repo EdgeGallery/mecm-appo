@@ -39,12 +39,15 @@ import org.springframework.validation.annotation.Validated;
 public class DnsRuleDto {
 
     @Size(max = 128)
+    @NotEmpty(message = "DNS rule id is mandatory")
     private String dnsRuleId;
 
     @Size(max = 256)
+    @NotEmpty(message = "Domain name is mandatory")
     private String domainName;
 
     @Size(max = 8)
+    @NotEmpty(message = "ip address is mandatory")
     private String ipAddressType;
 
     @NotEmpty(message = "IP address is mandatory")

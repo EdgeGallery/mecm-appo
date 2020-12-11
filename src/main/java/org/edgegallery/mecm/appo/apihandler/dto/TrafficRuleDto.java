@@ -47,7 +47,7 @@ public class TrafficRuleDto {
     @Size(max = 6)
     private String filterType;
 
-    private int priority;
+    private Integer priority;
 
     @NotEmpty(message = "Action is mandatory")
     @Size(max = 24)
