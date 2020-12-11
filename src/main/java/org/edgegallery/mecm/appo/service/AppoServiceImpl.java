@@ -60,7 +60,9 @@ public class AppoServiceImpl implements AppoService {
 
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
         for (AppInstanceInfo instInfo : appInstanceInfos) {
-            if (instInfo.getAppName().equals(createParam.getAppName())) {
+            if (instInfo.getOperationalStatus().equals(Constants.OPER_STATUS_INSTANTIATED)
+                    && instInfo.getAppName().equals(createParam.getAppName())) {
+                LOGGER.error("cannot re-use app name...");
                 return new ResponseEntity<>(new AppoResponse("cannot re-use app name"), HttpStatus.PRECONDITION_FAILED);
             }
         }
@@ -91,7 +93,7 @@ public class AppoServiceImpl implements AppoService {
         appInstInfo.setAppName(createParam.getAppName());
         appInstInfo.setAppDescriptor(createParam.getAppInstanceDescription());
         appInstInfo.setMecHost(createParam.getMecHost());
-        appInstInfo.setOperationalStatus("Creating");
+        appInstInfo.setOperationalStatus(Constants.OPER_STATUS_CREATING);
         appInstanceInfoService.createAppInstanceInfo(tenantId, appInstInfo);
 
         requestBodyParam.put(Constants.APPRULE_TASK_ID, appInstanceID);
@@ -117,7 +119,9 @@ public class AppoServiceImpl implements AppoService {
 
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
         for (AppInstanceInfo instInfo : appInstanceInfos) {
-            if (instInfo.getAppName().equals(createParam.getAppName())) {
+            if (instInfo.getOperationalStatus().equals(Constants.OPER_STATUS_INSTANTIATED)
+                    && instInfo.getAppName().equals(createParam.getAppName())) {
+                LOGGER.error("cannot re-use app name...");
                 return new ResponseEntity<>(new AppoResponse("cannot re-use app name"), HttpStatus.PRECONDITION_FAILED);
             }
         }
@@ -156,7 +160,7 @@ public class AppoServiceImpl implements AppoService {
             appInstInfo.setAppName(createParam.getAppName());
             appInstInfo.setAppDescriptor(createParam.getAppInstanceDescription());
             appInstInfo.setMecHost(host);
-            appInstInfo.setOperationalStatus("Creating");
+            appInstInfo.setOperationalStatus(Constants.OPER_STATUS_CREATING);
             appInstanceInfoService.createAppInstanceInfo(tenantId, appInstInfo);
 
             requestBodyParam.put(Constants.APPRULE_TASK_ID, appInstanceID);
@@ -185,7 +189,10 @@ public class AppoServiceImpl implements AppoService {
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
         String operationalStatus = appInstanceInfo.getOperationalStatus();
-        if ("Instantiated".equals(operationalStatus) || "Creating".equals(operationalStatus)) {
+        if (Constants.OPER_STATUS_INSTANTIATED.equals(operationalStatus)
+                || Constants.OPER_STATUS_CREATING.equals(operationalStatus)
+                || Constants.OPER_STATUS_CREATE_FAILED.equals(operationalStatus)) {
+            LOGGER.error("Application instance operational status is : {}", appInstanceInfo.getOperationalStatus());
             return new ResponseEntity<>(
                     new AppoResponse(
                             "Application instance operational status is : " + appInstanceInfo.getOperationalStatus()),
@@ -216,8 +223,11 @@ public class AppoServiceImpl implements AppoService {
             try {
                 AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
                 String operationalStatus = appInstanceInfo.getOperationalStatus();
-                if ("Instantiated".equals(operationalStatus) || "Creating".equals(operationalStatus)
-                        || "Create failed".equals(operationalStatus)) {
+                if (Constants.OPER_STATUS_INSTANTIATED.equals(operationalStatus)
+                        || Constants.OPER_STATUS_CREATING.equals(operationalStatus)
+                        || Constants.OPER_STATUS_CREATE_FAILED.equals(operationalStatus)) {
+                    LOGGER.error("Application instance operational status is : {}",
+                            appInstanceInfo.getOperationalStatus());
                     BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, appInstanceInfo.getMecHost(),
                             "Precondition failed, app instance operational state: "
                                     + appInstanceInfo.getOperationalStatus());
@@ -256,7 +266,7 @@ public class AppoServiceImpl implements AppoService {
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
         String operationalStatus = appInstanceInfo.getOperationalStatus();
-        if (!"Instantiated".equals(operationalStatus)) {
+        if (!Constants.OPER_STATUS_INSTANTIATED.equals(operationalStatus)) {
             return new ResponseEntity<>(
                     new AppoResponse(
                             "Application instance operational status is : " + appInstanceInfo.getOperationalStatus()),
@@ -406,7 +416,8 @@ public class AppoServiceImpl implements AppoService {
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
         String operationalStatus = appInstanceInfo.getOperationalStatus();
-        if (!"Instantiated".equals(operationalStatus) && !"Created".equals(operationalStatus)) {
+        if (!Constants.OPER_STATUS_INSTANTIATED.equals(operationalStatus)
+                && !Constants.OPER_STATUS_CREATED.equals(operationalStatus)) {
             return new ResponseEntity<>(
                     new AppoResponse("Pre condition failed, application instance operational status"
                             + " is : " + appInstanceInfo.getOperationalStatus()),
