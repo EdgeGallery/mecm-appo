@@ -56,6 +56,6 @@ public class TrafficRuleDto {
     @Size(max = 16)
     private Set<@Valid TrafficFilterDto> trafficFilter = new LinkedHashSet<>();
 
-    @Size(max = 16)
+    @Size(max = 2)
     private Set<@Valid DstInterfaceDto> dstInterface = new LinkedHashSet<>();
 }
