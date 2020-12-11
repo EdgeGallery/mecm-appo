@@ -35,12 +35,11 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 public class TrafficRule {
 
-    // TODO: input validations
     private String trafficRuleId;
 
     private String filterType;
 
-    private int priority;
+    private Integer priority;
 
     private String action;
 
