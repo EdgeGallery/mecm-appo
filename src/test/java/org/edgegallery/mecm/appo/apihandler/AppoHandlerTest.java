@@ -112,13 +112,6 @@ public class AppoHandlerTest {
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess());
 
-        // Mocking get applcm API
-        //String url5 = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
-        //        appInstanceId + "/instantiate";
-        //server.expect(requestTo(url5))
-        //        .andExpect(method(HttpMethod.POST))
-        //        .andRespond(withSuccess());
-
         // Create a app instance
         ResultActions postResult =
                 mvc.perform(MockMvcRequestBuilders.post(APPO_TENANT + TENANT_ID + "/app_instances")
