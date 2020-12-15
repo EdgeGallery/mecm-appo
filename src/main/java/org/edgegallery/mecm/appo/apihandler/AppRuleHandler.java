@@ -3,17 +3,20 @@ package org.edgegallery.mecm.appo.apihandler;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.apihandler.dto.AppRuleConfigDto;
+import org.edgegallery.mecm.appo.apihandler.dto.AppRuleDeleteConfigDto;
 import org.edgegallery.mecm.appo.model.AppRule;
+import org.edgegallery.mecm.appo.model.DnsRule;
+import org.edgegallery.mecm.appo.model.TrafficRule;
 import org.edgegallery.mecm.appo.service.AppoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/appo/v1")
 @RestController
 public class AppRuleHandler {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppRuleHandler.class);
 
     private final AppoService appoService;
 
@@ -117,10 +118,24 @@ public class AppRuleHandler {
             @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
             @ApiParam(value = "app instance identifier") @PathVariable("app_instance_id")
             @Pattern(regexp = Constants.APP_INST_ID_REGX) @Size(max = 64) String appInstanceId,
-            @Valid @ApiParam(value = "app rule information") @RequestBody AppRuleConfigDto appRuleConfigDto) {
+            @Valid @ApiParam(value = "app rule information") @RequestBody AppRuleDeleteConfigDto appRuleDelConfigDto) {
 
-        ModelMapper mapper = new ModelMapper();
-        AppRule appRule = mapper.map(appRuleConfigDto, AppRule.class);
+        Set<TrafficRule> appTrafficRule = new LinkedHashSet<>();
+        for (String trafficRuleId : appRuleDelConfigDto.getAppTrafficRule()) {
+            TrafficRule trafficRule = new TrafficRule();
+            trafficRule.setTrafficRuleId(trafficRuleId);
+            appTrafficRule.add(trafficRule);
+        }
+
+        Set<DnsRule> appDnsRule = new LinkedHashSet<>();
+        for (String dnsRuleId : appRuleDelConfigDto.getAppDNSRule()) {
+            DnsRule dnsRule = new DnsRule();
+            dnsRule.setDnsRuleId(dnsRuleId);
+            appDnsRule.add(dnsRule);
+        }
+        AppRule appRule = new AppRule();
+        appRule.setAppTrafficRule(appTrafficRule);
+        appRule.setAppDNSRule(appDnsRule);
 
         return appoService.configureAppRules(accessToken, tenantId, appInstanceId, appRule, "DELETE");
     }

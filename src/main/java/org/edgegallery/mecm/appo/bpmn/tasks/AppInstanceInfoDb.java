@@ -309,7 +309,6 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * @throws AppoException exception
      */
     private void deleteAppRuleTask(DelegateExecution delegateExecution) {
-        AppRuleTask appRuleTaskInfo = null;
         try {
             String appRuleTaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
@@ -326,6 +325,5 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app rule task info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
-        return;
     }
 }

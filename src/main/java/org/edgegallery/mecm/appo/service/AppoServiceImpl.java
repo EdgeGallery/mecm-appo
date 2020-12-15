@@ -406,7 +406,7 @@ public class AppoServiceImpl implements AppoService {
     @Override
     public ResponseEntity<AppoResponse> configureAppRules(String accessToken, String tenantId, String appInstanceId,
                                                           AppRule appRule, String action) {
-        LOGGER.debug("Add application rule request received... action {}", action);
+        LOGGER.debug("Application configuration rule request received... action {}", action);
         return configureAppRule(accessToken, tenantId, appInstanceId, appRule, action);
     }
 

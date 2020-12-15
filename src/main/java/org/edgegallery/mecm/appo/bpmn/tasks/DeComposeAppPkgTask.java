@@ -38,8 +38,6 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
     private static final String YAML_KEY_NODES = "node_templates";
     private static final String YAML_KEY_APP_CONFIG = "app_configuration";
     private static final String YAML_KEY_PROPERTIES = "properties";
-    private static final String YAML_KEY_TRAFFIC_RULE = "appTrafficRule";
-    private static final String YAML_KEY_DNS_RULE = "appDNSRule";
     private static final String YAML_KEY_PACKAGE_ID = "packageId";
     private static final String YAML_KEY_NAME = "name";
     private static final Logger LOGGER = LoggerFactory.getLogger(DeComposeAppPkgTask.class);
@@ -220,7 +218,5 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         execution.setVariable(Constants.APP_RULES, appRulejson);
 
         LOGGER.info("Set app rules : {}", appRulejson);
-
-        return;
     }
 }

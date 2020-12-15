@@ -293,6 +293,7 @@
                     <excludes>
                         **/org/edgegallery/mecm/appo/apihandler/dto/AppRuleConfigDto.java,
                         **/org/edgegallery/mecm/appo/apihandler/dto/TrafficFilterDto.java,
+                        **/org/edgegallery/mecm/appo/apihandler/dto/AppRuleDeleteConfigDto.java,
                         **/org/edgegallery/mecm/appo/model/TrafficFilter.java,
                         **/org/edgegallery/mecm/appo/model/AppRule.java
                     </excludes>
