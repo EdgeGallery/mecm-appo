@@ -26,7 +26,7 @@ public final class Constants {
 
     public static final String IP_CIRD_REGX = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.)"
             + "{3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))?$";
-    public static final String MAC_ADDRESS_REGX = "^(?:[0-9A-Fa-f]{2}([-: ]?))(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}|"
+    public static final String MAC_ADDRESS_REGX = "^(?:[0-9A-Fa-f]{2}([-: ]?))(?:[0-9A-Fa-f]{2}\\1){4}[0-9A-Fa-f]{2}|"
             + "([0-9A-Fa-f]{4}\\.){2}[0-9A-Fa-f]{4}$";
     public static final String PORT_REGEX = "^([1-9]|[1-9]\\d{1,3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d"
             + "|6553[0-5])$";
