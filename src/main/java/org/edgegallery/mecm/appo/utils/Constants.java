@@ -101,6 +101,7 @@ public final class Constants {
     public static final Integer HTTP_STATUS_CODE_200 = 200;
     public static final Integer HTTP_STATUS_CODE_299 = 299;
     public static final String SUCCESS = "success";
+    public static final String INTERNAL_ERROR = "Internal error";
 
     public static final int MAX_ENTRY_PER_TENANT_PER_MODEL = 50;
     public static final int MAX_TENANTS = 20;

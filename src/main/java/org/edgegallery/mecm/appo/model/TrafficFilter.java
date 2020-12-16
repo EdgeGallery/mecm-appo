@@ -35,7 +35,6 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 public class TrafficFilter {
 
-    // TODO: input validations
     private Set<String> srcAddress;
 
     private Set<String> srcPort;

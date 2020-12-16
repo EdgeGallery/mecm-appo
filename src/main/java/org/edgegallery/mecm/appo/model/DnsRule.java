@@ -34,7 +34,6 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 public class DnsRule {
 
-    // TODO: input validations
     private String dnsRuleId;
 
     private String domainName;

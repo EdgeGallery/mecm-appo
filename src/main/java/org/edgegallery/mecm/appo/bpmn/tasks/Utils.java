@@ -110,8 +110,8 @@ public class Utils extends ProcessflowAbstractTask implements JavaDelegate {
         if (!"DELETE".equals(operType)) {
             isConfigure = true;
         }
-        AppRule appRules = updateTrafficRule(appRule, inAppRule, isConfigure);
-        appRules = updateDnsRule(appRules, inAppRule, isConfigure);
+        AppRule appTrafficRules = updateTrafficRule(appRule, inAppRule, isConfigure);
+        AppRule appRules = updateDnsRule(appTrafficRules, inAppRule, isConfigure);
 
         String appRuleJson = gson.toJson(appRules);
 
