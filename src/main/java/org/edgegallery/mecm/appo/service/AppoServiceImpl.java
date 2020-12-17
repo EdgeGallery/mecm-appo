@@ -64,9 +64,11 @@ public class AppoServiceImpl implements AppoService {
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
         for (AppInstanceInfo instInfo : appInstanceInfos) {
             if (instInfo.getOperationalStatus().equals(Constants.OPER_STATUS_INSTANTIATED)
+                    && createParam.getMecHost().equals(instInfo.getMecHost())
                     && instInfo.getAppName().equals(createParam.getAppName())) {
-                LOGGER.error("cannot re-use app name...");
-                return new ResponseEntity<>(new AppoResponse("cannot re-use app name"), HttpStatus.PRECONDITION_FAILED);
+                LOGGER.error("cannot re-use app name... {}", createParam.getAppName());
+                return new ResponseEntity<>(new AppoResponse("cannot re-use app name : " + createParam.getAppName()),
+                        HttpStatus.PRECONDITION_FAILED);
             }
         }
 
@@ -120,15 +122,6 @@ public class AppoServiceImpl implements AppoService {
                                                           BatchCreateParam createParam) {
         LOGGER.debug("Batch application create request received...");
 
-        List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
-        for (AppInstanceInfo instInfo : appInstanceInfos) {
-            if (instInfo.getOperationalStatus().equals(Constants.OPER_STATUS_INSTANTIATED)
-                    && instInfo.getAppName().equals(createParam.getAppName())) {
-                LOGGER.error("cannot re-use app name...");
-                return new ResponseEntity<>(new AppoResponse("cannot re-use app name"), HttpStatus.PRECONDITION_FAILED);
-            }
-        }
-
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.APP_PACKAGE_ID, createParam.getAppPackageId());
@@ -148,8 +141,26 @@ public class AppoServiceImpl implements AppoService {
 
         List<String> appInstanceIds = new LinkedList<>();
         List<BatchResponseDto> response = new LinkedList<>();
+        List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
         for (String host : createParam.getMecHost()) {
             String appInstanceID = UUID.randomUUID().toString();
+            boolean isAppNameReused = false;
+            for (AppInstanceInfo instInfo : appInstanceInfos) {
+                if (instInfo.getOperationalStatus().equals(Constants.OPER_STATUS_INSTANTIATED)
+                        && host.equals(instInfo.getMecHost())
+                        && instInfo.getAppName().equals(createParam.getAppName())) {
+                    LOGGER.error("cannot re-use app name... {}", createParam.getAppName());
+                    BatchResponseDto batchResp = new BatchResponseDto(appInstanceID, host,
+                            "cannot re-use app name: " + createParam.getAppName());
+                    response.add(batchResp);
+                    isAppNameReused = true;
+                    break;
+                }
+            }
+            if (isAppNameReused) {
+                continue;
+            }
+
             appInstanceIds.add(appInstanceID);
 
             BatchResponseDto batchResp = new BatchResponseDto(appInstanceID, host, REQUEST_ACCEPTED);
