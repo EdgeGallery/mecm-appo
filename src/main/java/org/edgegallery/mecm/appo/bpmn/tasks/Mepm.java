@@ -92,10 +92,8 @@ public class Mepm extends ProcessflowAbstractTask {
                 queryEdgeCapabilities(execution);
                 break;
             case "configureAppRules":
-                configureAppRules(execution);
-                break;
             case "deleteAppRules":
-                deleteAppRules(execution);
+                configureOrDeleteAppRules(execution);
                 break;
             default:
                 LOGGER.info("Invalid MEPM action...{}", action);
@@ -369,12 +367,11 @@ public class Mepm extends ProcessflowAbstractTask {
         }
     }
 
-    private void configureAppRules(DelegateExecution execution) {
-        LOGGER.info("Send app rules to mepm app-rule");
+    private void configureOrDeleteAppRules(DelegateExecution execution) {
+        LOGGER.info("Configure or delete app rules");
         String appRuleUrl;
         try {
             appRuleUrl = resolveUrlPathParameters(Constants.APPRULE_URI);
-
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
             return;
@@ -392,23 +389,39 @@ public class Mepm extends ProcessflowAbstractTask {
         try {
             // Creating HTTP entity with header
             HttpEntity<String> httpEntity = new HttpEntity<>(appRules, httpHeaders);
+            ResponseEntity<String> response;
+            switch (action) {
+                case "configureAppRules":
 
-            String appRuleAction = (String) execution.getVariable(Constants.APP_RULE_ACTION);
-            HttpMethod method = HttpMethod.POST;
-            if ("PUT".equals(appRuleAction) || "DELETE".equals(appRuleAction)) {
-                method = HttpMethod.PUT;
+                    String appRuleAction = (String) execution.getVariable(Constants.APP_RULE_ACTION);
+                    HttpMethod method = HttpMethod.POST;
+                    if ("PUT".equals(appRuleAction) || "DELETE".equals(appRuleAction)) {
+                        method = HttpMethod.PUT;
+                    }
+
+                    LOGGER.info("Configure app rule, method: {}, url: {}, rules: {}", method, appRuleUrl, appRules);
+                    // Sending request
+                    response = restTemplate.exchange(appRuleUrl, method, httpEntity, String.class);
+                    break;
+                case "deleteAppRules":
+                    LOGGER.info("delete app rule, method: {}, url: {}, rules: {}", HttpMethod.DELETE, appRuleUrl,
+                            appRules);
+                    // Sending request
+                    response = restTemplate.exchange(appRuleUrl, HttpMethod.DELETE, httpEntity, String.class);
+                    break;
+                default:
+                    LOGGER.error("Invalid action {}", action);
+                    setProcessflowErrorResponseAttributes(execution, Constants.INTERNAL_ERROR,
+                            Constants.PROCESS_FLOW_ERROR);
+                    return;
             }
 
-            LOGGER.info("App rule configure opern {}, url: {}, rules: {}", method, appRuleUrl, appRules);
-            // Sending request
-            ResponseEntity<String> response = restTemplate.exchange(appRuleUrl, method,
-                    httpEntity, String.class);
             if (HttpStatus.OK.equals(response.getStatusCode())) {
                 setProcessflowResponseAttributes(execution, response.getBody(), Constants.PROCESS_FLOW_SUCCESS);
             } else {
                 LOGGER.error(Constants.APPRULE_RETURN_FAILURE, response);
-                setProcessflowErrorResponseAttributes(execution,
-                        response.getBody(), response.getStatusCode().toString());
+                setProcessflowErrorResponseAttributes(execution, response.getBody(),
+                        response.getStatusCode().toString());
             }
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT_APPRULE, ex.getMessage());
@@ -416,54 +429,9 @@ public class Mepm extends ProcessflowAbstractTask {
                     Constants.FAILED_TO_CONNECT_APPRULE, Constants.PROCESS_FLOW_ERROR);
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.APPRULE_RETURN_FAILURE, ex.getResponseBodyAsString());
-            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                    String.valueOf(ex.getRawStatusCode()));
-        }
-    }
-
-    private void deleteAppRules(DelegateExecution execution) {
-        LOGGER.info("Send delete app rules to mepm app-rule");
-        String appRuleUrl;
-        try {
-            appRuleUrl = resolveUrlPathParameters(Constants.APPRULE_URI);
-
-        } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
-            return;
-        }
-
-        String appRules = (String) execution.getVariable(Constants.UPDATED_APP_RULES);
-
-        // Preparing HTTP header
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-        httpHeaders.set(Constants.ACCESS_TOKEN, accessToken);
-
-        try {
-            // Creating HTTP entity with header
-            HttpEntity<String> httpEntity = new HttpEntity<>(appRules, httpHeaders);
-
-            LOGGER.info("App rule configure opern {}, url: {}, rules: {}", HttpMethod.DELETE, appRuleUrl, appRules);
-            // Sending request
-            ResponseEntity<String> response = restTemplate.exchange(appRuleUrl, HttpMethod.DELETE,
-                    httpEntity, String.class);
-            if (HttpStatus.OK.equals(response.getStatusCode())) {
-                setProcessflowResponseAttributes(execution, response.getBody(), Constants.PROCESS_FLOW_SUCCESS);
-            } else {
-                LOGGER.error(Constants.APPRULE_RETURN_FAILURE, response);
-                setProcessflowErrorResponseAttributes(execution,
-                        response.getBody(), response.getStatusCode().toString());
-            }
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_APPRULE, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_APPRULE, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException | HttpClientErrorException ex) {
-            LOGGER.error(Constants.APPRULE_RETURN_FAILURE, ex.getResponseBodyAsString());
-            if (Constants.PROCESS_FLOW_ERROR_400.equals(String.valueOf(ex.getRawStatusCode()))
-                    || Constants.PROCESS_RECORD_NOT_FOUND.equals(String.valueOf(ex.getRawStatusCode()))) {
+            if (action.equals("deleteAppRules")
+                    && (Constants.PROCESS_FLOW_ERROR_400.equals(String.valueOf(ex.getRawStatusCode()))
+                    || Constants.PROCESS_RECORD_NOT_FOUND.equals(String.valueOf(ex.getRawStatusCode())))) {
                 setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
             } else {
                 setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
