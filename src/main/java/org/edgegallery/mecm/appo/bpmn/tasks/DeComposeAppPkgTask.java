@@ -85,7 +85,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
                         Constants.PROCESS_FLOW_ERROR);
                 return;
             }
-            if (dependencies.size() > 0) {
+            if (!dependencies.isEmpty()) {
                 List<AppInstanceDependency> dependencyReqList = new ArrayList<>(dependencies.size());
                 dependencies.forEach(item -> {
                     AppInstanceDependency appInstanceDependency = new AppInstanceDependency();
@@ -128,15 +128,9 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.getName().contains("/MainServiceTemplate.yaml")) {
-                    Yaml yaml = new Yaml();
-                    try {
-                        Map<String, Object> mainTemplateMap = yaml.load(zis);
-                        dependencies = (List<Map<String, String>>) mainTemplateMap.get(YAML_KEY_DEPENDENCIES);
-                        updateApplicationDescriptor(mainTemplateMap);
-                    } catch (Exception e) {
-                        LOGGER.error(FAILED_TO_LOAD_YAML);
-                        throw new AppoException(FAILED_TO_LOAD_YAML);
-                    }
+                    Map<String, Object> mainTemplateMap = loadMainServiceTemplateYaml(zis);
+                    dependencies = (List<Map<String, String>>) mainTemplateMap.get(YAML_KEY_DEPENDENCIES);
+                    updateApplicationDescriptor(mainTemplateMap);
                     break;
                 }
             }
@@ -172,6 +166,18 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
             LOGGER.debug("dependency app {}not exist", noExistDependencyList.toString());
             return null;
         }
+    }
+
+    private Map<String, Object> loadMainServiceTemplateYaml(ZipInputStream zis) {
+        Map<String, Object> mainTemplateMap;
+        Yaml yaml = new Yaml();
+        try {
+            mainTemplateMap = yaml.load(zis);
+        } catch (Exception e) {
+            LOGGER.error(FAILED_TO_LOAD_YAML);
+            throw new AppoException(FAILED_TO_LOAD_YAML);
+        }
+        return mainTemplateMap;
     }
 
     /**

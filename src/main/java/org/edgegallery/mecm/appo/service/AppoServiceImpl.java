@@ -47,6 +47,9 @@ public class AppoServiceImpl implements AppoService {
     private AppoProcessflowService processflowService;
     private AppInstanceInfoService appInstanceInfoService;
 
+    private static final String APP_RULE_PROCESSING = "PROCESSING";
+    private static final String REQUEST_ACCEPTED = "Accepted";
+
     @Autowired
     public AppoServiceImpl(AppoProcessflowService processflowService, AppInstanceInfoService appInstanceInfoService) {
         this.processflowService = processflowService;
@@ -101,7 +104,7 @@ public class AppoServiceImpl implements AppoService {
         appRuleTaskInfo.setAppRuleTaskId(appInstanceID);
         appRuleTaskInfo.setTenant(tenantId);
         appRuleTaskInfo.setAppInstanceId(appInstanceID);
-        appRuleTaskInfo.setConfigResult("PROCESSING");
+        appRuleTaskInfo.setConfigResult(APP_RULE_PROCESSING);
         appInstanceInfoService.createAppRuleTaskInfo(tenantId, appRuleTaskInfo);
 
         processflowService.executeProcessAsync("createApplicationInstance", requestBodyParam);
@@ -149,7 +152,7 @@ public class AppoServiceImpl implements AppoService {
             String appInstanceID = UUID.randomUUID().toString();
             appInstanceIds.add(appInstanceID);
 
-            BatchResponseDto batchResp = new BatchResponseDto(appInstanceID, host, "Accepted");
+            BatchResponseDto batchResp = new BatchResponseDto(appInstanceID, host, REQUEST_ACCEPTED);
             response.add(batchResp);
 
             AppInstanceInfo appInstInfo = new AppInstanceInfo();
@@ -168,7 +171,7 @@ public class AppoServiceImpl implements AppoService {
             appRuleTaskInfo.setAppRuleTaskId(appInstanceID);
             appRuleTaskInfo.setTenant(tenantId);
             appRuleTaskInfo.setAppInstanceId(appInstanceID);
-            appRuleTaskInfo.setConfigResult("PROCESSING");
+            appRuleTaskInfo.setConfigResult(APP_RULE_PROCESSING);
             appInstanceInfoService.createAppRuleTaskInfo(tenantId, appRuleTaskInfo);
         }
         String appInstancesStr = appInstanceIds.stream().map(Object::toString)
@@ -234,7 +237,7 @@ public class AppoServiceImpl implements AppoService {
                     response.add(batchResp);
                 } else {
                     BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, appInstanceInfo.getMecHost(),
-                            "Accepted");
+                            REQUEST_ACCEPTED);
                     response.add(batchResp);
                     appInstanceIds.add(appInstanceId);
                 }
@@ -298,17 +301,16 @@ public class AppoServiceImpl implements AppoService {
         for (String appInstanceId : appInstanceParam.getAppInstanceIds()) {
             try {
                 AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
-                // TODO: check dependency
                 List<AppInstanceDependency> dependencies = appInstanceInfoService
                         .getDependenciesByDependencyAppInstanceId(tenantId, appInstanceId);
-                if (dependencies.size() > 0) {
-                    LOGGER.error("application instance depended by others");
+                if (!dependencies.isEmpty()) {
+                    LOGGER.error("terminate failed, application instance depended by others");
                     BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, appInstanceInfo.getMecHost(),
                             "application instance depended by others");
                     response.add(batchResp);
                 } else {
                     BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, appInstanceInfo.getMecHost(),
-                            "Accepted");
+                            REQUEST_ACCEPTED);
                     response.add(batchResp);
                     appInstanceIds.add(appInstanceId);
                 }
@@ -345,11 +347,10 @@ public class AppoServiceImpl implements AppoService {
             throw new NoSuchElementException(Constants.APP_INSTANCE_NOT_FOUND + appInstanceId);
         }
 
-        // TODO: check dependency
         List<AppInstanceDependency> dependencies =
                 appInstanceInfoService.getDependenciesByDependencyAppInstanceId(tenantId, appInstanceId);
-        if (dependencies.size() > 0) {
-            LOGGER.error("application instance depended by others");
+        if (!dependencies.isEmpty()) {
+            LOGGER.error("Terminated failed, application instance depended by others");
             throw new AppoException("application instance depended by others");
         }
 
@@ -444,7 +445,7 @@ public class AppoServiceImpl implements AppoService {
         appRuleTaskInfo.setAppRuleTaskId(appRuleTaskId);
         appRuleTaskInfo.setTenant(tenantId);
         appRuleTaskInfo.setAppInstanceId(appInstanceId);
-        appRuleTaskInfo.setConfigResult("PROCESSING");
+        appRuleTaskInfo.setConfigResult(APP_RULE_PROCESSING);
         appInstanceInfoService.createAppRuleTaskInfo(tenantId, appRuleTaskInfo);
 
         processflowService.executeProcessAsync("configureAppRules", requestBodyParam);

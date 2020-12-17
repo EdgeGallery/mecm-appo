@@ -218,40 +218,26 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * @throws AppoException exception
      */
     private AppRuleTask updateAppRuleTask(DelegateExecution delegateExecution) {
-        AppRuleTask appRuleTaskInfo = new AppRuleTask();
+        AppRuleTask appRuleTaskInfo = null;
         try {
 
             String appRuleTaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
             LOGGER.info("Update application rule task id {}", appRuleTaskId);
 
             String responseCode = (String) delegateExecution.getVariable(RESPONSE_CODE);
-            if (responseCode != null && !responseCode.isEmpty()) {
+            if (responseCode == null || responseCode.isEmpty()) {
+                String appRules = (String) delegateExecution.getVariable(Constants.APP_RULES);
+                appRuleTaskInfo = new AppRuleTask();
+                appRuleTaskInfo.setAppRules(appRules);
+            } else {
                 int statusCode = Integer.parseInt(responseCode);
-                Gson gson = new Gson();
                 if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
                     String response = (String) delegateExecution.getVariable(ERROR_RESPONSE);
-
-                    try {
-                        appRuleTaskInfo = gson.fromJson(response, AppRuleTask.class);
-                    } catch (JsonParseException e) {
-                        appRuleTaskInfo.setDetailed(response);
-                    }
-
-                    appRuleTaskInfo.setConfigResult("FAILURE");
+                    appRuleTaskInfo = convertRspStrToAppRuleTaskObj(response, true);
                 } else {
                     String response = (String) delegateExecution.getVariable(RESPONSE);
-                    try {
-                        appRuleTaskInfo = gson.fromJson(response, AppRuleTask.class);
-                    } catch (JsonParseException e) {
-                        appRuleTaskInfo.setDetailed("SUCCESS");
-                    }
-
-                    appRuleTaskInfo.setConfigResult("SUCCESS");
+                    appRuleTaskInfo = convertRspStrToAppRuleTaskObj(response, false);
                 }
-            } else {
-                String appRules = (String) delegateExecution.getVariable(Constants.APP_RULES);
-
-                appRuleTaskInfo.setAppRules(appRules);
             }
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
 
@@ -266,6 +252,24 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
                     Constants.PROCESS_FLOW_ERROR);
         }
         return appRuleTaskInfo;
+    }
+
+    private AppRuleTask convertRspStrToAppRuleTaskObj(String jsonString, boolean isErrResp) {
+        Gson gson = new Gson();
+        AppRuleTask appRuleTask;
+        try {
+            appRuleTask = gson.fromJson(jsonString, AppRuleTask.class);
+        } catch (JsonParseException ex) {
+            appRuleTask = new AppRuleTask();
+            appRuleTask.setDetailed(jsonString);
+        }
+
+        if (isErrResp) {
+            appRuleTask.setConfigResult("FAILURE");
+        } else {
+            appRuleTask.setConfigResult("SUCCESS");
+        }
+        return appRuleTask;
     }
 
     /**

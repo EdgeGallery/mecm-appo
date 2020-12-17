@@ -122,7 +122,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         appInstanceInfoRepository.deleteById(appInstanceId);
         List<AppInstanceDependency> dependencies = appInstanceDependencyRepository
                 .getByAppInstanceId(tenantId, appInstanceId);
-        if (dependencies.size() > 0) {
+        if (!dependencies.isEmpty()) {
             appInstanceDependencyRepository.deleteAll(dependencies);
         }
 
@@ -227,7 +227,6 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             if (record.size() == Constants.MAX_ENTRY_PER_TENANT_PER_MODEL) {
                 LOGGER.error("Max app rule task's limit {} reached, delete old entry",
                         Constants.MAX_ENTRY_PER_TENANT_PER_MODEL);
-                //TODO: delete old entry
                 appRuleTaskRepository.deleteById(record.get(0).getAppRuleTaskId());
             }
         } else {

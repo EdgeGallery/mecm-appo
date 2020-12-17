@@ -113,26 +113,28 @@ public class AppoDbHandler {
 
         List<AppInstanceInfoDto> appInstanceInfosDto = new LinkedList<>();
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
-        if (appInstanceInfos != null && !appInstanceInfos.isEmpty()) {
-            if (appinstanceids != null) {
-                for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
-                    ModelMapper mapper = new ModelMapper();
-                    if (appinstanceids.contains(tenantAppInstanceInfo.getAppInstanceId())) {
-                        appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
-                    }
-                }
-                if (appInstanceInfosDto.isEmpty()) {
-                    throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);
-                }
-            } else {
-                for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
-                    ModelMapper mapper = new ModelMapper();
-                    appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
-                }
+        if (appInstanceInfos == null || appInstanceInfos.isEmpty()) {
+            throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);
+        }
+
+        if (appinstanceids == null) {
+            for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
+                ModelMapper mapper = new ModelMapper();
+                appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
             }
             return new ResponseEntity<>(new AppoResponse(appInstanceInfosDto), HttpStatus.OK);
         }
-        throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);
+
+        for (AppInstanceInfo tenantAppInstanceInfo : appInstanceInfos) {
+            ModelMapper mapper = new ModelMapper();
+            if (appinstanceids.contains(tenantAppInstanceInfo.getAppInstanceId())) {
+                appInstanceInfosDto.add(mapper.map(tenantAppInstanceInfo, AppInstanceInfoDto.class));
+            }
+        }
+        if (appInstanceInfosDto.isEmpty()) {
+            throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);
+        }
+        return new ResponseEntity<>(new AppoResponse(appInstanceInfosDto), HttpStatus.OK);
     }
 
     /**

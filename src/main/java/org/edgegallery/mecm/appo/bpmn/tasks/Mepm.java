@@ -52,6 +52,7 @@ public class Mepm extends ProcessflowAbstractTask {
     private String appPkgBasePath;
     private RestTemplate restTemplate;
     private String protocol = "https://";
+    private static final String URL_PARAM_ERROR = "Failed to resolve url path parameters";
 
     /**
      * Creates an MEPM instance.
@@ -167,8 +168,7 @@ public class Mepm extends ProcessflowAbstractTask {
             instantiateUrl = resolveUrlPathParameters(Constants.APPLCM_INSTANTIATE_URI);
 
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution, "Failed to resolve url path parameters",
-                    Constants.PROCESS_FLOW_ERROR);
+            setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
             return;
         }
 
@@ -209,7 +209,7 @@ public class Mepm extends ProcessflowAbstractTask {
             ResponseEntity<String> response = restTemplate.exchange(instantiateUrl, HttpMethod.POST,
                     httpEntity, String.class);
             if (HttpStatus.OK.equals(response.getStatusCode())) {
-                setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
+                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
 
                 //Delete application package
                 String deletePackage = appPkgBasePath + appInstanceInfo.getAppInstanceId()
@@ -257,7 +257,7 @@ public class Mepm extends ProcessflowAbstractTask {
             response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
             if (HttpStatus.OK.equals(response.getStatusCode())) {
-                setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
+                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
                 return;
             }
             LOGGER.error(Constants.APPLCM_RETURN_FAILURE, response);
@@ -272,7 +272,7 @@ public class Mepm extends ProcessflowAbstractTask {
             if (ex.getResponseBodyAsString().contains("record does not exist in database")
                     || ex.getResponseBodyAsString().contains("not found")
                     || String.valueOf(ex.getRawStatusCode()).equals(Constants.PROCESS_RECORD_NOT_FOUND)) {
-                setProcessflowResponseAttributes(execution, "success", Constants.PROCESS_FLOW_SUCCESS);
+                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
             } else {
                 setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
                         String.valueOf(ex.getRawStatusCode()));
@@ -376,8 +376,7 @@ public class Mepm extends ProcessflowAbstractTask {
             appRuleUrl = resolveUrlPathParameters(Constants.APPRULE_URI);
 
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution, "Failed to resolve url path parameters",
-                    Constants.PROCESS_FLOW_ERROR);
+            setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
             return;
         }
 
@@ -392,7 +391,7 @@ public class Mepm extends ProcessflowAbstractTask {
 
         try {
             // Creating HTTP entity with header
-            HttpEntity<String> httpEntity = new HttpEntity<String>(appRules, httpHeaders);
+            HttpEntity<String> httpEntity = new HttpEntity<>(appRules, httpHeaders);
 
             String appRuleAction = (String) execution.getVariable(Constants.APP_RULE_ACTION);
             HttpMethod method = HttpMethod.POST;
@@ -429,8 +428,7 @@ public class Mepm extends ProcessflowAbstractTask {
             appRuleUrl = resolveUrlPathParameters(Constants.APPRULE_URI);
 
         } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution, "Failed to resolve url path parameters",
-                    Constants.PROCESS_FLOW_ERROR);
+            setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
             return;
         }
 
@@ -445,7 +443,7 @@ public class Mepm extends ProcessflowAbstractTask {
 
         try {
             // Creating HTTP entity with header
-            HttpEntity<String> httpEntity = new HttpEntity<String>(appRules, httpHeaders);
+            HttpEntity<String> httpEntity = new HttpEntity<>(appRules, httpHeaders);
 
             LOGGER.info("App rule configure opern {}, url: {}, rules: {}", HttpMethod.DELETE, appRuleUrl, appRules);
             // Sending request
@@ -464,7 +462,6 @@ public class Mepm extends ProcessflowAbstractTask {
                     Constants.FAILED_TO_CONNECT_APPRULE, Constants.PROCESS_FLOW_ERROR);
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.APPRULE_RETURN_FAILURE, ex.getResponseBodyAsString());
-            //TODO: PROCESS_FLOW_ERROR_400 to be removed once apprule support 404 error code
             if (Constants.PROCESS_FLOW_ERROR_400.equals(String.valueOf(ex.getRawStatusCode()))
                     || Constants.PROCESS_RECORD_NOT_FOUND.equals(String.valueOf(ex.getRawStatusCode()))) {
                 setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
