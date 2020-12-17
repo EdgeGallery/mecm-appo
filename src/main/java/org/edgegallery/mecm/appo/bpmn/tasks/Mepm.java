@@ -53,6 +53,8 @@ public class Mepm extends ProcessflowAbstractTask {
     private RestTemplate restTemplate;
     private String protocol = "https://";
     private static final String URL_PARAM_ERROR = "Failed to resolve url path parameters";
+    private static final String DELETE_APP_RULES = "deleteAppRules";
+    private static final String CONFIGURE_APP_RULES = "configureAppRules";
 
     /**
      * Creates an MEPM instance.
@@ -91,8 +93,8 @@ public class Mepm extends ProcessflowAbstractTask {
             case "queryEdgeCapabilities":
                 queryEdgeCapabilities(execution);
                 break;
-            case "configureAppRules":
-            case "deleteAppRules":
+            case CONFIGURE_APP_RULES:
+            case DELETE_APP_RULES:
                 configureOrDeleteAppRules(execution);
                 break;
             default:
@@ -391,7 +393,7 @@ public class Mepm extends ProcessflowAbstractTask {
             HttpEntity<String> httpEntity = new HttpEntity<>(appRules, httpHeaders);
             ResponseEntity<String> response;
             switch (action) {
-                case "configureAppRules":
+                case CONFIGURE_APP_RULES:
 
                     String appRuleAction = (String) execution.getVariable(Constants.APP_RULE_ACTION);
                     HttpMethod method = HttpMethod.POST;
@@ -403,7 +405,7 @@ public class Mepm extends ProcessflowAbstractTask {
                     // Sending request
                     response = restTemplate.exchange(appRuleUrl, method, httpEntity, String.class);
                     break;
-                case "deleteAppRules":
+                case DELETE_APP_RULES:
                     LOGGER.info("delete app rule, method: {}, url: {}, rules: {}", HttpMethod.DELETE, appRuleUrl,
                             appRules);
                     // Sending request
@@ -429,7 +431,7 @@ public class Mepm extends ProcessflowAbstractTask {
                     Constants.FAILED_TO_CONNECT_APPRULE, Constants.PROCESS_FLOW_ERROR);
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.APPRULE_RETURN_FAILURE, ex.getResponseBodyAsString());
-            if (action.equals("deleteAppRules")
+            if (action.equals(DELETE_APP_RULES)
                     && (Constants.PROCESS_FLOW_ERROR_400.equals(String.valueOf(ex.getRawStatusCode()))
                     || Constants.PROCESS_RECORD_NOT_FOUND.equals(String.valueOf(ex.getRawStatusCode())))) {
                 setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);

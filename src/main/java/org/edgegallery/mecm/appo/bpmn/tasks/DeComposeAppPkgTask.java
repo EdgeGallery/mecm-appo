@@ -80,11 +80,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         try {
             LOGGER.info("check application {} dependency", appId);
             List<AppInstanceInfo> dependencies = getDependenciesAppInstance(appPackagePath, tenantId, mecHost);
-            if (dependencies == null) {
-                setProcessflowExceptionResponseAttributes(execution, "dependency APP not deployed",
-                        Constants.PROCESS_FLOW_ERROR);
-                return;
-            }
+            
             if (!dependencies.isEmpty()) {
                 List<AppInstanceDependency> dependencyReqList = new ArrayList<>(dependencies.size());
                 dependencies.forEach(item -> {
@@ -164,7 +160,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
             return returnList;
         } else {
             LOGGER.debug("dependency app {}not exist", noExistDependencyList.toString());
-            return null;
+            throw new AppoException("dependency APP not deployed");
         }
     }
 
