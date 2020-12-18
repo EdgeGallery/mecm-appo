@@ -20,6 +20,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,13 +50,12 @@ import org.springframework.web.client.RestTemplate;
 public class Inventory extends ProcessflowAbstractTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Inventory.class);
-
+    private static final String STATUS = "status";
     private final DelegateExecution execution;
     private final String table;
     RestTemplate restTemplate;
     private String baseUrl;
     private String protocol = "https://";
-    private static final String STATUS = "status";
 
     /**
      * Constructor for get inventory.
@@ -650,27 +653,9 @@ public class Inventory extends ProcessflowAbstractTask {
             if (getAppRules(execution) == null) {
                 method = HttpMethod.POST;
             }
-            ResponseEntity<String> response = restTemplate.exchange(appUrl, method, entity, String.class);
 
-            if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.error("Failed to add app rule: {} ", appRules);
-                setProcessflowErrorResponseAttributes(execution,
-                        "Failed to add app rule " + appInstId,
-                        response.getStatusCode().toString());
-                return;
-            }
-            LOGGER.info("Added app rule record: {}", appRules);
-            String responseStr = response.getBody();
-            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
+            sendRequest(appUrl, entity, appInstId, method);
 
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException | HttpClientErrorException ex) {
-            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
-            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                    Constants.PROCESS_FLOW_ERROR);
         } catch (AppoException | IllegalArgumentException e) {
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.INTERNAL_ERROR, Constants.PROCESS_FLOW_ERROR);
@@ -705,27 +690,10 @@ public class Inventory extends ProcessflowAbstractTask {
             String appUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPRULE_URI);
 
             LOGGER.info("Update app rules to Inventory: {}", appUrl);
-            ResponseEntity<String> response = restTemplate.exchange(appUrl, HttpMethod.PUT, entity, String.class);
-
-            if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.error("Failed to update app rule: {} ", appRules);
-                setProcessflowErrorResponseAttributes(execution,
-                        "Failed to update app rule " + appInstId,
-                        response.getStatusCode().toString());
-                return;
+            String response = sendRequest(appUrl, entity, appInstId, HttpMethod.PUT);
+            if (response != null) {
+                LOGGER.info("Modified app rule record: {}", appRules);
             }
-            LOGGER.info("Modified app rule record: {}", appRules);
-            String responseStr = response.getBody();
-            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
-
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException | HttpClientErrorException ex) {
-            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
-            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                    Constants.PROCESS_FLOW_ERROR);
         } catch (AppoException | IllegalArgumentException e) {
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.INTERNAL_ERROR, Constants.PROCESS_FLOW_ERROR);
@@ -756,32 +724,14 @@ public class Inventory extends ProcessflowAbstractTask {
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
             LOGGER.info("Get app rule from Inventory: {}", appRuleUrl);
-            ResponseEntity<String> response = restTemplate.exchange(appRuleUrl, HttpMethod.GET, entity, String.class);
-
-            if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.error("Failed to get app rule: {} from inventory ", appInstId);
-                setProcessflowErrorResponseAttributes(execution,
-                        "Failed to get app rule from inventory " + appInstId,
-                        response.getStatusCode().toString());
-                return null;
+            String responseStr = sendRequest(appRuleUrl, entity, appInstId, HttpMethod.GET);
+            if (responseStr != null) {
+                execution.setVariable(Constants.INVENTORY_APP_RULES, responseStr);
             }
-
-            String responseStr = response.getBody();
-            execution.setVariable(Constants.INVENTORY_APP_RULES, responseStr);
-            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
             return responseStr;
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_RECORD_NOT_FOUND);
-        } catch (HttpServerErrorException | HttpClientErrorException ex) {
-            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE,
-                    ex.getResponseBodyAsString() + ", error code: " + ex.getRawStatusCode());
-            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                    String.valueOf(ex.getRawStatusCode()));
         } catch (AppoException | IllegalArgumentException e) {
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.INTERNAL_ERROR, Constants.PROCESS_FLOW_ERROR);
+            setProcessflowExceptionResponseAttributes(execution, Constants.INTERNAL_ERROR,
+                    Constants.PROCESS_FLOW_ERROR);
         }
         return null;
     }
@@ -812,28 +762,8 @@ public class Inventory extends ProcessflowAbstractTask {
             HttpEntity<String> entity = new HttpEntity<>(appRules, headers);
 
             String appUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPRULE_URI);
-            LOGGER.info("Update application rule to Inventory: {}", appUrl);
-            ResponseEntity<String> response = restTemplate.exchange(appUrl, HttpMethod.PUT, entity, String.class);
+            sendRequest(appUrl, entity, appInstId, HttpMethod.PUT);
 
-            if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.error("Failed to update app rule: {} ", appRules);
-                setProcessflowErrorResponseAttributes(execution,
-                        "Failed to update app rule " + appInstId,
-                        response.getStatusCode().toString());
-                return;
-            }
-            LOGGER.info("Modified app rule record: {}", appRules);
-            String responseStr = response.getBody();
-            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
-
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException | HttpClientErrorException ex) {
-            LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
-            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                    Constants.PROCESS_FLOW_ERROR);
         } catch (AppoException | IllegalArgumentException e) {
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.INTERNAL_ERROR, Constants.PROCESS_FLOW_ERROR);
@@ -863,15 +793,27 @@ public class Inventory extends ProcessflowAbstractTask {
             headers.set(Constants.ACCESS_TOKEN, accessToken);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            LOGGER.info("Delete app rule from Inventory: {}", appRuleUrl);
-            ResponseEntity<String> response = restTemplate.exchange(appRuleUrl, HttpMethod.DELETE, entity,
-                    String.class);
+            return sendRequest(appRuleUrl, entity, appInstId, HttpMethod.DELETE);
+
+        } catch (AppoException | IllegalArgumentException e) {
+            setProcessflowExceptionResponseAttributes(execution,
+                    Constants.INTERNAL_ERROR, Constants.PROCESS_FLOW_ERROR);
+        }
+        return null;
+    }
+
+
+    private String sendRequest(String url, HttpEntity<String> entity, String appInstanceId, HttpMethod method) {
+        URI uri = null;
+        try {
+            uri = new URL(url).toURI();
+
+            LOGGER.info("Request: method: {} | URL: {} \n {}", method, url, entity.getBody());
+            ResponseEntity<String> response = restTemplate.exchange(url, method, entity, String.class);
 
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.error("Failed to delete app rule: {} from inventory ", appInstId);
-                setProcessflowErrorResponseAttributes(execution,
-                        "Failed to delete app rule from inventory " + appInstId,
-                        response.getStatusCode().toString());
+                LOGGER.info("Response: method: {} | URL: {} | Failed: {}", method, url, response.getStatusCode());
+                setProcessflowErrorResponseAttributes(execution, uri.toString(), response.getStatusCode().toString());
                 return null;
             }
 
@@ -880,19 +822,19 @@ public class Inventory extends ProcessflowAbstractTask {
             return responseStr;
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT_INVENTORY, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_INVENTORY, Constants.PROCESS_RECORD_NOT_FOUND);
+            setProcessflowExceptionResponseAttributes(execution, Constants.FAILED_TO_CONNECT + uri,
+                    Constants.PROCESS_FLOW_ERROR);
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error(Constants.INVENTORY_RETURN_FAILURE, ex.getResponseBodyAsString());
-            if (Constants.PROCESS_RECORD_NOT_FOUND.equals(String.valueOf(ex.getRawStatusCode()))) {
+            if (method.equals(HttpMethod.DELETE)
+                    && Constants.PROCESS_RECORD_NOT_FOUND.equals(String.valueOf(ex.getRawStatusCode()))) {
                 setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
             } else {
                 setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
                         String.valueOf(ex.getRawStatusCode()));
             }
-        } catch (AppoException | IllegalArgumentException e) {
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.INTERNAL_ERROR, Constants.PROCESS_FLOW_ERROR);
+        } catch (MalformedURLException | URISyntaxException ex) {
+            setProcessflowExceptionResponseAttributes(execution, ex.getMessage(), Constants.PROCESS_FLOW_ERROR);
         }
         return null;
     }
