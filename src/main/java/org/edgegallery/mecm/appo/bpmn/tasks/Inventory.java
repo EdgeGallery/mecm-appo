@@ -654,7 +654,7 @@ public class Inventory extends ProcessflowAbstractTask {
                 method = HttpMethod.POST;
             }
 
-            sendRequest(appUrl, entity, appInstId, method);
+            sendRequest(appUrl, entity, method);
 
         } catch (AppoException | IllegalArgumentException e) {
             setProcessflowExceptionResponseAttributes(execution,
@@ -690,7 +690,7 @@ public class Inventory extends ProcessflowAbstractTask {
             String appUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPRULE_URI);
 
             LOGGER.info("Update app rules to Inventory: {}", appUrl);
-            String response = sendRequest(appUrl, entity, appInstId, HttpMethod.PUT);
+            String response = sendRequest(appUrl, entity, HttpMethod.PUT);
             if (response != null) {
                 LOGGER.info("Modified app rule record: {}", appRules);
             }
@@ -724,7 +724,7 @@ public class Inventory extends ProcessflowAbstractTask {
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
             LOGGER.info("Get app rule from Inventory: {}", appRuleUrl);
-            String responseStr = sendRequest(appRuleUrl, entity, appInstId, HttpMethod.GET);
+            String responseStr = sendRequest(appRuleUrl, entity, HttpMethod.GET);
             if (responseStr != null) {
                 execution.setVariable(Constants.INVENTORY_APP_RULES, responseStr);
             }
@@ -762,7 +762,7 @@ public class Inventory extends ProcessflowAbstractTask {
             HttpEntity<String> entity = new HttpEntity<>(appRules, headers);
 
             String appUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPRULE_URI);
-            sendRequest(appUrl, entity, appInstId, HttpMethod.PUT);
+            sendRequest(appUrl, entity, HttpMethod.PUT);
 
         } catch (AppoException | IllegalArgumentException e) {
             setProcessflowExceptionResponseAttributes(execution,
@@ -793,7 +793,7 @@ public class Inventory extends ProcessflowAbstractTask {
             headers.set(Constants.ACCESS_TOKEN, accessToken);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            return sendRequest(appRuleUrl, entity, appInstId, HttpMethod.DELETE);
+            return sendRequest(appRuleUrl, entity, HttpMethod.DELETE);
 
         } catch (AppoException | IllegalArgumentException e) {
             setProcessflowExceptionResponseAttributes(execution,
@@ -803,7 +803,7 @@ public class Inventory extends ProcessflowAbstractTask {
     }
 
 
-    private String sendRequest(String url, HttpEntity<String> entity, String appInstanceId, HttpMethod method) {
+    private String sendRequest(String url, HttpEntity<String> entity, HttpMethod method) {
         URI uri = null;
         try {
             uri = new URL(url).toURI();
