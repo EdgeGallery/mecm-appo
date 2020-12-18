@@ -120,7 +120,7 @@ public class AppoExceptionHandler {
     }
 
     /**
-     * Returns error when Access is Denied.
+     * Returns error when access is denied.
      *
      * @param ex exception while processing request
      * @return response entity with error code and message
