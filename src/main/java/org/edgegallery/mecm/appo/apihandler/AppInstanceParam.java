@@ -43,10 +43,30 @@ import org.springframework.validation.annotation.Validated;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public final class CreateParam extends AppInstanceParam {
+public abstract class AppInstanceParam {
 
-    @NotEmpty(message = "MEC host is mandatory")
-    @Size(max = 15)
-    @Pattern(regexp = HOST_IP_REGX, message = "MEC host IP is invalid")
-    private String mecHost;
+    @NotEmpty(message = "Package ID is mandatory")
+    @Size(max = 64)
+    @Pattern(regexp = APP_PKG_ID_REGX, message = "Package ID is invalid. It must be lowercase letters or digits with "
+            + "length of 32 characters.")
+    private String appPackageId;
+
+    @NotEmpty(message = "Application name is mandatory")
+    @Size(max = 128)
+    @Pattern(regexp = APP_NAME_REGEX, message = "App name is invalid. It must start and end with alpha numeric "
+            + "character and special characters allowed are hyphen and underscore.")
+    private String appName;
+
+    @NotEmpty(message = "Application instance ID is mandatory")
+    @Size(max = 64)
+    @Pattern(regexp = APPD_ID_REGEX, message = "Application instance ID is invalid. It must be lowercase letters or "
+            + "digits with length of 32 characters.")
+    private String appId;
+
+    @NotEmpty(message = "Application instance description is mandatory")
+    @Size(max = 256)
+    private String appInstanceDescription;
+
+    @Size(max = 10, message = "capabilities exceeds max limit 10")
+    private List<@Valid String> hwCapabilities = new LinkedList<>();
 }
