@@ -19,7 +19,6 @@ package org.edgegallery.mecm.appo.apihandler;
 import static org.edgegallery.mecm.appo.utils.Constants.APPD_ID_REGEX;
 import static org.edgegallery.mecm.appo.utils.Constants.APP_NAME_REGEX;
 import static org.edgegallery.mecm.appo.utils.Constants.APP_PKG_ID_REGX;
-import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
 
 import java.util.LinkedList;
 import java.util.List;
