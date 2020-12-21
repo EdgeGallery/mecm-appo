@@ -179,12 +179,12 @@ public abstract class ProcessflowAbstractTask {
                 return null;
             }
 
-            String responseStr = "{}";
+            String responsBody = "{}";
             if (response.getBody() != null) {
-                responseStr = response.getBody();
+                responsBody = response.getBody();
             }
-            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
-            return responseStr;
+            setProcessflowResponseAttributes(execution, responsBody, Constants.PROCESS_FLOW_SUCCESS);
+            return responsBody;
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT + "{}", ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
@@ -236,12 +236,12 @@ public abstract class ProcessflowAbstractTask {
                 return null;
             }
 
-            String responseStr = "{}";
+            String responseBody = "{}";
             if (response.getBody() != null) {
-                responseStr = response.getBody();
+                responseBody = response.getBody();
             }
-            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
-            return responseStr;
+            setProcessflowResponseAttributes(execution, responseBody, Constants.PROCESS_FLOW_SUCCESS);
+            return responseBody;
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT + "{}", ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,
