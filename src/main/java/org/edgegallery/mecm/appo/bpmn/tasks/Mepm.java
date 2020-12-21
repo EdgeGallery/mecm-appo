@@ -30,16 +30,9 @@ import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 public class Mepm extends ProcessflowAbstractTask {
@@ -47,14 +40,14 @@ public class Mepm extends ProcessflowAbstractTask {
     public static final String HOST_IP = "hostIp";
     public static final String APPLICATION_NAME = "appName";
     private static final Logger LOGGER = LoggerFactory.getLogger(Mepm.class);
+    private static final String URL_PARAM_ERROR = "Failed to resolve url path parameters";
+    private static final String DELETE_APP_RULES = "deleteAppRules";
+    private static final String CONFIGURE_APP_RULES = "configureAppRules";
     private final DelegateExecution execution;
     private final String action;
     private String appPkgBasePath;
     private RestTemplate restTemplate;
     private String protocol = "https://";
-    private static final String URL_PARAM_ERROR = "Failed to resolve url path parameters";
-    private static final String DELETE_APP_RULES = "deleteAppRules";
-    private static final String CONFIGURE_APP_RULES = "configureAppRules";
 
     /**
      * Creates an MEPM instance.
@@ -94,8 +87,10 @@ public class Mepm extends ProcessflowAbstractTask {
                 queryEdgeCapabilities(execution);
                 break;
             case CONFIGURE_APP_RULES:
+                configureAppRules(execution);
+                break;
             case DELETE_APP_RULES:
-                configureOrDeleteAppRules(execution);
+                deleteAppRules(execution);
                 break;
             default:
                 LOGGER.info("Invalid MEPM action...{}", action);
@@ -163,121 +158,66 @@ public class Mepm extends ProcessflowAbstractTask {
 
     private void instantiate(DelegateExecution execution) {
         LOGGER.info("Send Instantiate request to applcm");
-        String instantiateUrl;
-        try {
-            instantiateUrl = resolveUrlPathParameters(Constants.APPLCM_INSTANTIATE_URI);
 
-        } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
+        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
+        if (appInstanceInfo == null) {
+            setProcessflowErrorResponseAttributes(execution, "app instance info null", Constants.PROCESS_FLOW_ERROR);
             return;
         }
 
-        AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
         String appPackagePath = appPkgBasePath + appInstanceInfo.getAppInstanceId()
                 + Constants.SLASH + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
 
-        FileSystemResource appPkgRes;
         try {
-            appPkgRes = new FileSystemResource(new File(appPackagePath));
-        } catch (InvalidPathException e) {
-            setProcessflowExceptionResponseAttributes(execution,
-                    "Failed to find application package to instantiate", Constants.PROCESS_FLOW_ERROR);
-            return;
-        }
+            FileSystemResource appPkgRes = new FileSystemResource(new File(appPackagePath));
 
-        // Preparing request parts.
-        LinkedMultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
-        parts.add("file", appPkgRes);
-        parts.add(HOST_IP, appInstanceInfo.getMecHost());
-        parts.add(APPLICATION_NAME, appInstanceInfo.getAppName());
+            // Preparing request parts.
+            LinkedMultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+            parts.add("file", appPkgRes);
+            parts.add(HOST_IP, appInstanceInfo.getMecHost());
+            parts.add(APPLICATION_NAME, appInstanceInfo.getAppName());
 
-        // Preparing HTTP header
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+            LOGGER.info("hostIp {} and appName {}", appInstanceInfo.getMecHost(), appInstanceInfo.getAppName());
 
-        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-        httpHeaders.set(Constants.ACCESS_TOKEN, accessToken);
+            String instantiateUrl = resolveUrlPathParameters(Constants.APPLCM_INSTANTIATE_URI);
 
-        try {
-            // Creating HTTP entity with header and parts
-            HttpEntity<LinkedMultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, httpHeaders);
-
-            LOGGER.info("Instantiate application package, host: {}, package: {}, url:{}", appInstanceInfo.getMecHost(),
-                    appInstanceInfo.getAppPackageId(),
-                    instantiateUrl);
-            // Sending request
-            ResponseEntity<String> response = restTemplate.exchange(instantiateUrl, HttpMethod.POST,
-                    httpEntity, String.class);
-            if (HttpStatus.OK.equals(response.getStatusCode())) {
-                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-
+            String response = sendRequest(execution, restTemplate, instantiateUrl, parts,
+                    MediaType.MULTIPART_FORM_DATA, HttpMethod.POST);
+            if (response != null) {
                 //Delete application package
                 String deletePackage = appPkgBasePath + appInstanceInfo.getAppInstanceId()
                         + Constants.SLASH + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
                 Files.delete(Paths.get(deletePackage));
-            } else {
-                LOGGER.error(Constants.APPLCM_RETURN_FAILURE, response);
-                setProcessflowErrorResponseAttributes(execution,
-                        Constants.APPLCM_RETURN_FAILURE, response.getStatusCode().toString());
             }
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
         } catch (IOException ex) {
             LOGGER.error("Failed to delete application package {}", appInstanceInfo.getAppPackageId());
-        } catch (HttpServerErrorException | HttpClientErrorException ex) {
-            LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
-            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                    String.valueOf(ex.getRawStatusCode()));
+        } catch (AppoException e) {
+            setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
+        } catch (InvalidPathException e) {
+            setProcessflowExceptionResponseAttributes(execution,
+                    "Failed to find application package to instantiate", Constants.PROCESS_FLOW_ERROR);
         }
     }
 
     private void terminate(DelegateExecution execution) {
         LOGGER.info("Terminate application instance");
 
-        String url;
         try {
-            url = resolveUrlPathParameters(Constants.APPLCM_TERMINATE_URI);
+            String url = resolveUrlPathParameters(Constants.APPLCM_TERMINATE_URI);
+
+            String response = sendRequest(execution, restTemplate, url, HttpMethod.POST);
+            if (response == null) {
+                String errResponse = (String) execution.getVariable("ErrResponse");
+                if (errResponse != null && (errResponse.contains("record does not exist in database")
+                        || errResponse.contains("not found"))) {
+                    setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+                }
+            }
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
             return;
         }
 
-        ResponseEntity<String> response;
-        try {
-            HttpHeaders headers = new HttpHeaders();
-
-            String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-            headers.set(Constants.ACCESS_TOKEN, accessToken);
-
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            LOGGER.info("Terminate application package, url:{}", url);
-            response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-
-            if (HttpStatus.OK.equals(response.getStatusCode())) {
-                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-                return;
-            }
-            LOGGER.error(Constants.APPLCM_RETURN_FAILURE, response);
-            setProcessflowErrorResponseAttributes(execution,
-                    Constants.APPLCM_RETURN_FAILURE, response.getStatusCode().toString());
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException | HttpClientErrorException ex) {
-            LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
-            if (ex.getResponseBodyAsString().contains("record does not exist in database")
-                    || ex.getResponseBodyAsString().contains("not found")
-                    || String.valueOf(ex.getRawStatusCode()).equals(Constants.PROCESS_RECORD_NOT_FOUND)) {
-                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-            } else {
-                setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                        String.valueOf(ex.getRawStatusCode()));
-            }
-        }
         AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
         try {
             if (appInstanceInfo != null) {
@@ -326,119 +266,55 @@ public class Mepm extends ProcessflowAbstractTask {
 
     private void sendQueryRequestToApplcm(DelegateExecution execution, String uri) {
         LOGGER.info("Send query request to applcm");
-
-        String url;
+        
         try {
-            url = resolveUrlPathParameters(uri);
+            String url = resolveUrlPathParameters(uri);
+
+            sendRequest(execution, restTemplate, url, HttpMethod.GET);
 
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
             LOGGER.info("Query KPI failed {}", e.getMessage());
-            return;
-        }
-
-        ResponseEntity<String> response;
-        try {
-            HttpHeaders headers = new HttpHeaders();
-
-            String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-            headers.set(Constants.ACCESS_TOKEN, accessToken);
-
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-
-            LOGGER.info("Query... url:{}", url);
-            response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-            if (!HttpStatus.OK.equals(response.getStatusCode())) {
-                LOGGER.error(Constants.APPLCM_RETURN_FAILURE, response);
-                setProcessflowErrorResponseAttributes(execution,
-                        Constants.APPLCM_RETURN_FAILURE, response.getStatusCode().toString());
-                return;
-            }
-
-            String responseStr = response.getBody();
-            setProcessflowResponseAttributes(execution, responseStr, Constants.PROCESS_FLOW_SUCCESS);
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_APPLCM, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_APPLCM, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException | HttpClientErrorException ex) {
-            LOGGER.error(Constants.APPLCM_RETURN_FAILURE, ex.getResponseBodyAsString());
-            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                    String.valueOf(ex.getStatusCode().value()));
         }
     }
 
-    private void configureOrDeleteAppRules(DelegateExecution execution) {
-        LOGGER.info("Configure or delete app rules");
-        String appRuleUrl;
+    private void configureAppRules(DelegateExecution execution) {
+        LOGGER.info("Configure app rules");
+
         try {
-            appRuleUrl = resolveUrlPathParameters(Constants.APPRULE_URI);
+            String appRuleUrl = resolveUrlPathParameters(Constants.APPRULE_URI);
+
+            String appRuleAction = (String) execution.getVariable(Constants.APP_RULE_ACTION);
+            HttpMethod method = HttpMethod.POST;
+            if ("PUT".equals(appRuleAction) || "DELETE".equals(appRuleAction)) {
+                method = HttpMethod.PUT;
+            }
+
+            String appRules = (String) execution.getVariable(Constants.UPDATED_APP_RULES);
+            sendRequest(execution, restTemplate, appRuleUrl, appRules, method);
+
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
-            return;
         }
+    }
 
-        String appRules = (String) execution.getVariable(Constants.UPDATED_APP_RULES);
-
-        // Preparing HTTP header
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-
-        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
-        httpHeaders.set(Constants.ACCESS_TOKEN, accessToken);
+    private void deleteAppRules(DelegateExecution execution) {
+        LOGGER.info("Delete app rules");
 
         try {
-            // Creating HTTP entity with header
-            HttpEntity<String> httpEntity = new HttpEntity<>(appRules, httpHeaders);
-            ResponseEntity<String> response;
-            switch (action) {
-                case CONFIGURE_APP_RULES:
+            String appRuleUrl = resolveUrlPathParameters(Constants.APPRULE_URI);
 
-                    String appRuleAction = (String) execution.getVariable(Constants.APP_RULE_ACTION);
-                    HttpMethod method = HttpMethod.POST;
-                    if ("PUT".equals(appRuleAction) || "DELETE".equals(appRuleAction)) {
-                        method = HttpMethod.PUT;
-                    }
-
-                    LOGGER.info("Configure app rule, method: {}, url: {}, rules: {}", method, appRuleUrl, appRules);
-                    // Sending request
-                    response = restTemplate.exchange(appRuleUrl, method, httpEntity, String.class);
-                    break;
-                case DELETE_APP_RULES:
-                    LOGGER.info("delete app rule, method: {}, url: {}, rules: {}", HttpMethod.DELETE, appRuleUrl,
-                            appRules);
-                    // Sending request
-                    response = restTemplate.exchange(appRuleUrl, HttpMethod.DELETE, httpEntity, String.class);
-                    break;
-                default:
-                    LOGGER.error("Invalid action {}", action);
-                    setProcessflowErrorResponseAttributes(execution, Constants.INTERNAL_ERROR,
-                            Constants.PROCESS_FLOW_ERROR);
-                    return;
+            String appRules = (String) execution.getVariable(Constants.UPDATED_APP_RULES);
+            String response = sendRequest(execution, restTemplate, appRuleUrl, appRules, HttpMethod.DELETE);
+            if (response == null) {
+                String respCode = (String) execution.getVariable("ResponseCode");
+                if (Constants.PROCESS_FLOW_ERROR_400.equals(respCode)
+                        || Constants.PROCESS_RECORD_NOT_FOUND.equals(respCode)) {
+                    setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+                }
             }
-
-            if (HttpStatus.OK.equals(response.getStatusCode())) {
-                setProcessflowResponseAttributes(execution, response.getBody(), Constants.PROCESS_FLOW_SUCCESS);
-            } else {
-                LOGGER.error(Constants.APPRULE_RETURN_FAILURE, response);
-                setProcessflowErrorResponseAttributes(execution, response.getBody(),
-                        response.getStatusCode().toString());
-            }
-        } catch (ResourceAccessException ex) {
-            LOGGER.error(Constants.FAILED_TO_CONNECT_APPRULE, ex.getMessage());
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.FAILED_TO_CONNECT_APPRULE, Constants.PROCESS_FLOW_ERROR);
-        } catch (HttpServerErrorException | HttpClientErrorException ex) {
-            LOGGER.error(Constants.APPRULE_RETURN_FAILURE, ex.getResponseBodyAsString());
-            if (action.equals(DELETE_APP_RULES)
-                    && (Constants.PROCESS_FLOW_ERROR_400.equals(String.valueOf(ex.getRawStatusCode()))
-                    || Constants.PROCESS_RECORD_NOT_FOUND.equals(String.valueOf(ex.getRawStatusCode())))) {
-                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-            } else {
-                setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
-                        String.valueOf(ex.getRawStatusCode()));
-            }
+        } catch (AppoException e) {
+            setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
         }
     }
 }
