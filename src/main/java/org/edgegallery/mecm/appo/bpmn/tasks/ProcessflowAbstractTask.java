@@ -1,8 +1,24 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
 
 public abstract class ProcessflowAbstractTask {
 
@@ -26,7 +42,7 @@ public abstract class ProcessflowAbstractTask {
             LOGGER.info(ILLEGAL_ARGUMENT);
             throw new IllegalArgumentException();
         }
-        LOGGER.info("Set process flow response, response: {} response code: {}", response, responseCode);
+        LOGGER.info("\nresponse: {} response code: {}\n", response, responseCode);
         delegateExecution.setVariable(RESPONSE, response);
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
     }
@@ -44,7 +60,7 @@ public abstract class ProcessflowAbstractTask {
             LOGGER.info(ILLEGAL_ARGUMENT);
             throw new IllegalArgumentException();
         }
-        LOGGER.info("Set process flow error response, response: {} response code: {}", response, responseCode);
+        LOGGER.error("\nfailure response: {} response code: {}\n", response, responseCode);
         delegateExecution.setVariable(ERROR_RESPONSE, response);
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
     }
@@ -62,9 +78,196 @@ public abstract class ProcessflowAbstractTask {
             LOGGER.info(ILLEGAL_ARGUMENT);
             throw new IllegalArgumentException();
         }
-        LOGGER.info("Set process flow exception response, response: {} response code: {}", response, responseCode);
+        LOGGER.error("\nfailure response: {} response code: {}\n", response, responseCode);
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
         delegateExecution.setVariable(FLOW_EXCEPTION, response);
         delegateExecution.setVariable(ERROR_RESPONSE, response);
+    }
+
+    /**
+     * Send request to remote entity.
+     * @param execution execution
+     * @param restTemplate rest template
+     * @param url request url
+     * @param method method
+     * @return response data
+     */
+    public String sendRequest(DelegateExecution execution, RestTemplate restTemplate, String url,
+                              HttpMethod method) {
+
+        HttpHeaders headers = getBaseHttpHeader(execution);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        return sendRequest(execution, restTemplate, url, entity, method);
+
+    }
+
+    /**
+     * Send request to remote entity.
+     * @param execution execution
+     * @param restTemplate rest template
+     * @param url request url
+     * @param data data to send
+     * @param method method
+     * @return response data
+     */
+    public String sendRequest(DelegateExecution execution, RestTemplate restTemplate, String url,
+                              String data, HttpMethod method) {
+
+        HttpHeaders headers = getBaseHttpHeader(execution);
+        HttpEntity<String> entity = new HttpEntity<>(data, headers);
+
+        return sendRequest(execution, restTemplate, url, entity, method);
+
+    }
+
+    /**
+     * Send request to remote entity.
+     * @param execution execution
+     * @param restTemplate rest template
+     * @param url request url
+     * @param data data to send
+     * @param method method
+     * @return response data
+     */
+    public String sendRequest(DelegateExecution execution, RestTemplate restTemplate, String url,
+                              LinkedMultiValueMap<String, Object> data,  MediaType mediaType,
+                              HttpMethod method) {
+
+        HttpHeaders headers = getBaseHttpHeader(execution);
+        headers.setContentType(mediaType);
+
+        HttpEntity<LinkedMultiValueMap<String, Object>> entity = new HttpEntity<>(data, headers);
+
+        return sendRequestWithMultipartFormData(execution, restTemplate, url, entity, method);
+
+    }
+
+    /**
+     * Send request to remote entity.
+     * @param execution execution
+     * @param restTemplate rest template
+     * @param url request url
+     * @param entity request entity
+     * @param method method
+     * @return response data
+     */
+    public String sendRequest(DelegateExecution execution, RestTemplate restTemplate, String url,
+                              HttpEntity<String> entity, HttpMethod method) {
+
+        if (url == null || entity == null || method == null) {
+            setProcessflowErrorResponseAttributes(execution, "Invalid input parameters",
+                    Constants.PROCESS_FLOW_ERROR);
+            return null;
+        }
+
+        URI uri = null;
+        try {
+            uri = new URL(url).toURI();
+
+            if (entity.getBody() == null) {
+                LOGGER.info("\n\nSending Request: {}: URL: {}", method, url);
+            } else {
+                LOGGER.info("\n\nSending Request: {}: URL: {} \n{}", method, url, entity.getBody());
+            }
+
+            ResponseEntity<String> response = restTemplate.exchange(url, method, entity, String.class);
+
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.info("Response: \nmethod: {} \nURL: {} \nFailed: {}", method, url, response.getStatusCode());
+                setProcessflowErrorResponseAttributes(execution, uri.toString(), response.getStatusCode().toString());
+                return null;
+            }
+
+            String responsBody = "{}";
+            if (response.getBody() != null) {
+                responsBody = response.getBody();
+            }
+            setProcessflowResponseAttributes(execution, responsBody, Constants.PROCESS_FLOW_SUCCESS);
+            return responsBody;
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT + "{}", ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    uri + Constants.FAILED_TO_CONNECT + ex.getMessage(), Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
+            LOGGER.error("failure response from remote entity: {}", ex.getResponseBodyAsString());
+            if (method.equals(HttpMethod.DELETE)
+                    && Constants.PROCESS_RECORD_NOT_FOUND.equals(String.valueOf(ex.getRawStatusCode()))) {
+                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+            } else {
+                setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                        String.valueOf(ex.getRawStatusCode()));
+            }
+        } catch (MalformedURLException | URISyntaxException ex) {
+            setProcessflowExceptionResponseAttributes(execution, ex.getMessage(), Constants.PROCESS_FLOW_ERROR);
+        }
+        return null;
+    }
+
+    /**
+     * Send request to remote entity.
+     * @param execution execution
+     * @param restTemplate rest template
+     * @param url request url
+     * @param entity request entity
+     * @param method method
+     * @return response data
+     */
+    public String sendRequestWithMultipartFormData(DelegateExecution execution, RestTemplate restTemplate, String url,
+                                       HttpEntity<LinkedMultiValueMap<String, Object>> entity, HttpMethod method) {
+
+        if (url == null || entity == null || method == null) {
+            setProcessflowErrorResponseAttributes(execution, "Invalid input parameters",
+                    Constants.PROCESS_FLOW_ERROR);
+            return null;
+        }
+
+        URI uri = null;
+        try {
+            uri = new URL(url).toURI();
+
+            LOGGER.info("\n\nSending Request: {}: URL: {}", method, url);
+
+            ResponseEntity<String> response = restTemplate.exchange(url, method, entity, String.class);
+
+            if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                LOGGER.info("Response: \nmethod: {} \nURL: {} \nFailed: {}", method, url, response.getStatusCode());
+                setProcessflowErrorResponseAttributes(execution, uri.toString(), response.getStatusCode().toString());
+                return null;
+            }
+
+            String responseBody = "{}";
+            if (response.getBody() != null) {
+                responseBody = response.getBody();
+            }
+            setProcessflowResponseAttributes(execution, responseBody, Constants.PROCESS_FLOW_SUCCESS);
+            return responseBody;
+        } catch (ResourceAccessException ex) {
+            LOGGER.error(Constants.FAILED_TO_CONNECT + "{}", ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution,
+                    uri + Constants.FAILED_TO_CONNECT + ex.getMessage(), Constants.PROCESS_FLOW_ERROR);
+        } catch (HttpServerErrorException | HttpClientErrorException ex) {
+            LOGGER.error("failure response from remote entity: {}", ex.getResponseBodyAsString());
+            setProcessflowExceptionResponseAttributes(execution, ex.getResponseBodyAsString(),
+                    String.valueOf(ex.getRawStatusCode()));
+        } catch (MalformedURLException | URISyntaxException ex) {
+            setProcessflowExceptionResponseAttributes(execution, ex.getMessage(), Constants.PROCESS_FLOW_ERROR);
+        }
+        return null;
+    }
+
+    /**
+     * Returns base HTTP header.
+     * @param execution execution
+     * @return http headers
+     */
+    public HttpHeaders getBaseHttpHeader(DelegateExecution execution) {
+
+        HttpHeaders headers = new HttpHeaders();
+        String accessToken = (String) execution.getVariable(Constants.ACCESS_TOKEN);
+        headers.set(Constants.ACCESS_TOKEN, accessToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return headers;
     }
 }
