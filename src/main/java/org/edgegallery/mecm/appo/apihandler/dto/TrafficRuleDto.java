@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.apihandler;
+package org.edgegallery.mecm.appo.apihandler.dto;
 
-import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
-
+import java.util.LinkedHashSet;
+import java.util.Set;
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,18 +29,33 @@ import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Create instance input schema.
+ * Traffic Rule Inventory input request schema.
  */
 @Validated
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
-public final class CreateParam extends AppInstanceParam {
+@NoArgsConstructor
+public class TrafficRuleDto {
 
-    @NotEmpty(message = "MEC host is mandatory")
-    @Size(max = 15)
-    @Pattern(regexp = HOST_IP_REGX, message = "MEC host IP is invalid")
-    private String mecHost;
+    @NotEmpty(message = "Traffic rule id is mandatory")
+    @Size(max = 128)
+    private String trafficRuleId;
+
+    @NotEmpty(message = "Filter type is mandatory")
+    @Size(max = 6)
+    private String filterType;
+
+    private Integer priority;
+
+    @NotEmpty(message = "Action is mandatory")
+    @Size(max = 24)
+    private String action;
+
+    @Size(max = 16)
+    private Set<@Valid TrafficFilterDto> trafficFilter = new LinkedHashSet<>();
+
+    @Size(max = 2)
+    private Set<@Valid DstInterfaceDto> dstInterface = new LinkedHashSet<>();
 }

@@ -3,6 +3,7 @@ package org.edgegallery.mecm.appo.service;
 import org.edgegallery.mecm.appo.apihandler.BatchCreateParam;
 import org.edgegallery.mecm.appo.apihandler.BatchInstancesParam;
 import org.edgegallery.mecm.appo.apihandler.CreateParam;
+import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -116,4 +117,18 @@ public interface AppoService {
 
     ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId,
                                                            String hostIp, String capabilityId);
+
+    /**
+     * Configures application rules.
+     *
+     * @param accessToken   access token
+     * @param tenantId      tenant ID
+     * @param appInstanceId application instance ID
+     * @param appRule       app rule input parameters
+     * @param action        action
+     * @return application instance ID on success, error code on failure
+     */
+
+    ResponseEntity<AppoResponse> configureAppRules(String accessToken, String tenantId, String appInstanceId,
+                                                   AppRule appRule, String action);
 }

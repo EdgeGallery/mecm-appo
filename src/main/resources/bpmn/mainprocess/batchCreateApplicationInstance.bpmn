@@ -26,8 +26,7 @@
     <bpmn:serviceTask id="ServiceTask_0qij8bj" name="Set params for create app instance" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.BatchProcessParameters">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="requestAction">SetAppCreateParams
-</camunda:inputParameter>
+          <camunda:inputParameter name="requestAction">SetAppCreateParams</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_12qjxg8</bpmn:incoming>
@@ -38,8 +37,7 @@
     <bpmn:serviceTask id="ServiceTask_0tfk9pu" name="Update count" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.BatchProcessParameters">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="requestAction">SetRequestCount
-</camunda:inputParameter>
+          <camunda:inputParameter name="requestAction">SetRequestCount</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_045pcl5</bpmn:incoming>
@@ -57,6 +55,7 @@
         <camunda:in source="app_instance_id" target="app_instance_id" />
         <camunda:in source="hw_capabilities" target="hw_capabilities" />
         <camunda:in source="mec_host" target="mec_host" />
+        <camunda:in source="app_instance_id" target="apprule_task_id" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1fcxj16</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_045pcl5</bpmn:outgoing>

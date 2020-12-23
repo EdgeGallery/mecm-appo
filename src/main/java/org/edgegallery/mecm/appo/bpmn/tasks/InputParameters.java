@@ -39,6 +39,9 @@ public class InputParameters {
             case "QueryKPI":
                 queryCapabilities(delegateExecution);
                 break;
+            case "ConfigureAppRule":
+                configAppRule(delegateExecution);
+                break;
             default:
                 // Statements
         }
@@ -56,6 +59,7 @@ public class InputParameters {
         String appDescr = (String) delegateExecution.getVariable(Constants.APP_DESCR);
         String appId = (String) delegateExecution.getVariable(Constants.APP_ID);
         String appName = (String) delegateExecution.getVariable(Constants.APP_NAME);
+        String appRuleTaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
         String hwCapabilities = (String) delegateExecution.getVariable(Constants.HW_CAPABILITIES);
 
         delegateExecution.setVariable(Constants.ACCESS_TOKEN, accessToken);
@@ -65,6 +69,7 @@ public class InputParameters {
         delegateExecution.setVariable(Constants.APP_ID, appId);
         delegateExecution.setVariable(Constants.APP_NAME, appName);
         delegateExecution.setVariable(Constants.HW_CAPABILITIES, hwCapabilities);
+        delegateExecution.setVariable(Constants.APPRULE_TASK_ID, appRuleTaskId);
 
         if (action.equals("CreateAppInstance")) {
             String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
@@ -113,10 +118,12 @@ public class InputParameters {
         String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
         String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
         String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
+        String appRuletaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
 
         delegateExecution.setVariable(Constants.ACCESS_TOKEN, accessToken);
         delegateExecution.setVariable(Constants.TENANT_ID, tenantId);
         delegateExecution.setVariable(Constants.APP_INSTANCE_ID, appInstanceId);
+        delegateExecution.setVariable(Constants.APPRULE_TASK_ID, appRuletaskId);
 
         LOGGER.info("tenant_id: {}, app_instance_id: {}", tenantId, appInstanceId);
     }
@@ -137,5 +144,27 @@ public class InputParameters {
         delegateExecution.setVariable(Constants.MEP_CAPABILITY_ID, capabilityId);
 
         LOGGER.info("tenant_id: {}, mec_host: {}", tenantId, hostIp);
+    }
+
+    /**
+     * Sets query capabilities request input parameters.
+     *
+     * @param delegateExecution delegate execution
+     */
+    void configAppRule(DelegateExecution delegateExecution) {
+        String accessToken = (String) delegateExecution.getVariable(Constants.ACCESS_TOKEN);
+        String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
+        String appRules = (String) delegateExecution.getVariable(Constants.APP_RULES);
+        String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
+        String appRuleAction = (String) delegateExecution.getVariable(Constants.APP_RULE_ACTION);
+        String appRuleTaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
+        delegateExecution.setVariable(Constants.ACCESS_TOKEN, accessToken);
+        delegateExecution.setVariable(Constants.TENANT_ID, tenantId);
+        delegateExecution.setVariable(Constants.APP_RULES, appRules);
+        delegateExecution.setVariable(Constants.APP_INSTANCE_ID, appInstanceId);
+        delegateExecution.setVariable(Constants.APP_RULE_ACTION, appRuleAction);
+        delegateExecution.setVariable(Constants.APPRULE_TASK_ID, appRuleTaskId);
+
+        LOGGER.info("tenant_id: {}, app_instance_id: {}", tenantId, appInstanceId);
     }
 }

@@ -143,7 +143,7 @@ public class Apm extends ProcessflowAbstractTask {
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.set("access_token", accessToken);
+            headers.set(Constants.ACCESS_TOKEN, accessToken);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
             LOGGER.info("Download application package from APM: {}", url);

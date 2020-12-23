@@ -14,13 +14,9 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.apihandler;
+package org.edgegallery.mecm.appo.model;
 
-import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,18 +25,34 @@ import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Create instance input schema.
+ * Traffic Rule input request schema.
  */
 @Validated
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
-public final class CreateParam extends AppInstanceParam {
+@NoArgsConstructor
+public class TrafficFilter {
 
-    @NotEmpty(message = "MEC host is mandatory")
-    @Size(max = 15)
-    @Pattern(regexp = HOST_IP_REGX, message = "MEC host IP is invalid")
-    private String mecHost;
+    private Set<String> srcAddress;
+
+    private Set<String> srcPort;
+
+    private Set<String> dstAddress;
+
+    private Set<String> dstPort;
+
+    private Set<String> protocol;
+
+    private Set<String> tag;
+    private Set<String> srcTunnelAddress;
+    private Set<String> dstTunnelAddress;
+    private Set<String> srcTunnelPort;
+    private Set<String> dstTunnelPort;
+    private int qCI;
+
+    private int dSCP;
+
+    private int tC;
 }

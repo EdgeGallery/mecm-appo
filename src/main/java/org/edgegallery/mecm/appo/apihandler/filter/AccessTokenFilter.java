@@ -45,6 +45,7 @@ public class AccessTokenFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessTokenFilter.class);
     private static final String INVALID_TOKEN_MESSAGE = "Invalid access token";
+    private static final String INVALID_USER_MESSAGE = "Invalid user";
     public static final String HEALTH_URI = "/appo/v1/health";
 
     @Autowired
@@ -79,7 +80,13 @@ public class AccessTokenFilter extends OncePerRequestFilter {
 
             String userIdFromRequest = getTenantId(request.getRequestURI());
             String userIdFromToken = additionalInfoMap.get("userId").toString();
-            if (!StringUtils.isEmpty(userIdFromRequest) && !userIdFromRequest.equals(userIdFromToken)) {
+            if (userIdFromRequest == null || userIdFromToken == null) {
+                LOGGER.error("User ID is invalid.");
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), INVALID_USER_MESSAGE);
+                return;
+            }
+
+            if (!userIdFromRequest.equals(userIdFromToken)) {
                 LOGGER.error("Illegal tenant ID");
                 response.sendError(HttpStatus.UNAUTHORIZED.value(), "Illegal tenant ID");
                 return;

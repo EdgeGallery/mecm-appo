@@ -14,9 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.apihandler;
-
-import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
+package org.edgegallery.mecm.appo.apihandler.dto;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
@@ -26,21 +24,35 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Create instance input schema.
+ * Dst interface Inventory input request schema.
  */
 @Validated
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
-public final class CreateParam extends AppInstanceParam {
+@NoArgsConstructor
+public class DstInterfaceDto {
 
-    @NotEmpty(message = "MEC host is mandatory")
+    @Size(max = 64)
+    private String interfaceType;
+
+    private TunnelInfoDto tunnelInfo;
+
+    @Size(max = 17)
+    @Pattern(regexp = Constants.MAC_ADDRESS_REGX, message = "Source MAC address is invalid")
+    private String srcMacAddress;
+
+    @Size(max = 17)
+    @Pattern(regexp = Constants.MAC_ADDRESS_REGX, message = "Destination MAC address is invalid")
+    private String dstMacAddress;
+
+    @NotEmpty(message = "Destination ip address is mandatory")
     @Size(max = 15)
-    @Pattern(regexp = HOST_IP_REGX, message = "MEC host IP is invalid")
-    private String mecHost;
+    @Pattern(regexp = Constants.IP_CIRD_REGX, message = "Destination ip address is invalid")
+    private String dstIpAddress;
 }

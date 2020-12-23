@@ -14,33 +14,36 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.apihandler;
+package org.edgegallery.mecm.appo.model;
 
-import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
-import org.springframework.validation.annotation.Validated;
 
 /**
- * Create instance input schema.
+ * Dst interface schema.
  */
-@Validated
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public final class CreateParam extends AppInstanceParam {
 
-    @NotEmpty(message = "MEC host is mandatory")
-    @Size(max = 15)
-    @Pattern(regexp = HOST_IP_REGX, message = "MEC host IP is invalid")
-    private String mecHost;
+public final class DstInterface {
+
+    private String dstInterfaceId;
+
+    private TunnelInfo tunnelInfo;
+
+    private String interfaceType;
+
+    private String srcMacAddress;
+
+    private String dstMacAddress;
+
+    private String dstIpAddress;
+
+    private String tenantId;
+
+
 }

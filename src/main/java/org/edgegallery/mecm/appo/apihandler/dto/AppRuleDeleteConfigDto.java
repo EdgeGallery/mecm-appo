@@ -14,12 +14,11 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.apihandler;
+package org.edgegallery.mecm.appo.apihandler.dto;
 
-import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,18 +28,19 @@ import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Create instance input schema.
+ * Application Rule delete input request schema.
  */
 @Validated
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
-public final class CreateParam extends AppInstanceParam {
+@NoArgsConstructor
+public final class AppRuleDeleteConfigDto {
 
-    @NotEmpty(message = "MEC host is mandatory")
-    @Size(max = 15)
-    @Pattern(regexp = HOST_IP_REGX, message = "MEC host IP is invalid")
-    private String mecHost;
+    @Size(max = 16)
+    private Set<@Size(max = 128) String> appTrafficRule = new LinkedHashSet<>();
+
+    @Size(max = 32)
+    private Set<@Valid String> appDNSRule = new LinkedHashSet<>();
 }

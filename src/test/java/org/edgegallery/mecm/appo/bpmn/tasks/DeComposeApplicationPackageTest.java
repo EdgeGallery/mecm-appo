@@ -101,7 +101,7 @@ public class DeComposeApplicationPackageTest {
     @Test
     public void testRequiredAndDeploySuccess() throws Exception {
         AppInstanceInfo appInstanceInfo = new AppInstanceInfo();
-        appInstanceInfo.setOperationalStatus("Instantiated");
+        appInstanceInfo.setOperationalStatus(Constants.OPER_STATUS_INSTANTIATED);
         appInstanceInfo.setAppId("abc123");
         appInstanceInfo.setAppPackageId("abc123");
         appInstanceInfo.setAppName("test_gw");

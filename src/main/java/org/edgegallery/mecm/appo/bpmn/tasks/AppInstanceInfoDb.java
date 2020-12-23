@@ -16,9 +16,13 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+import java.util.NoSuchElementException;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.model.AppRuleTask;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
@@ -45,21 +49,30 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
     }
 
     /**
-     * Executes DB operations.
+     * Executes DB operations on app instance info table.
      */
     public void execute() {
         switch (operationType) {
             case "insert":
-                insert(execution);
+                insertAppInstanceinfo(execution);
                 break;
             case "update":
-                update(execution);
+                updateAppInstanceinfo(execution);
                 break;
             case "get":
-                get(execution);
+                getAppInstanceinfo(execution);
                 break;
             case "delete":
-                delete(execution);
+                deleteAppInstanceinfo(execution);
+                break;
+            case "updateAppRuleTask":
+                updateAppRuleTask(execution);
+                break;
+            case "getAppRuleTask":
+                getAppRuleTask(execution);
+                break;
+            case "deleteAppRuleTask":
+                deleteAppRuleTask(execution);
                 break;
             default:
                 LOGGER.info("Invalid DB action...{}", operationType);
@@ -75,7 +88,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * @return app instance info record
      * @throws AppoException exception
      */
-    private AppInstanceInfo insert(DelegateExecution delegateExecution) {
+    private AppInstanceInfo insertAppInstanceinfo(DelegateExecution delegateExecution) {
         AppInstanceInfo appInstanceInfo = new AppInstanceInfo();
         try {
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
@@ -86,7 +99,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo.setAppName((String) delegateExecution.getVariable(Constants.APP_NAME));
             appInstanceInfo.setAppId((String) delegateExecution.getVariable(Constants.APP_ID));
             appInstanceInfo.setAppDescriptor((String) delegateExecution.getVariable(Constants.APP_DESCR));
-            appInstanceInfo.setOperationalStatus("Creating");
+            appInstanceInfo.setOperationalStatus(Constants.OPER_STATUS_CREATING);
             appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
             LOGGER.info("App instance info record added ");
@@ -105,7 +118,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * @return app instance info record
      * @throws AppoException exception
      */
-    private AppInstanceInfo get(DelegateExecution delegateExecution) {
+    private AppInstanceInfo getAppInstanceinfo(DelegateExecution delegateExecution) {
         AppInstanceInfo appInstanceInfo = null;
         try {
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
@@ -132,7 +145,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * @return application instance info
      * @throws AppoException exception
      */
-    private AppInstanceInfo update(DelegateExecution delegateExecution) {
+    private AppInstanceInfo updateAppInstanceinfo(DelegateExecution delegateExecution) {
         AppInstanceInfo appInstanceInfo = null;
         try {
 
@@ -181,7 +194,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * @param delegateExecution delegate execution
      * @throws AppoException exception
      */
-    private void delete(DelegateExecution delegateExecution) {
+    private void deleteAppInstanceinfo(DelegateExecution delegateExecution) {
         try {
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
@@ -193,6 +206,127 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
         } catch (AppoException e) {
             LOGGER.info("Failed to delete app instance info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to delete app instance info record",
+                    Constants.PROCESS_FLOW_ERROR);
+        }
+    }
+
+    /**
+     * Updates application rule task info in DB.
+     *
+     * @param delegateExecution delegate execution
+     * @return application rule task info
+     * @throws AppoException exception
+     */
+    private AppRuleTask updateAppRuleTask(DelegateExecution delegateExecution) {
+        AppRuleTask appRuleTaskInfo = null;
+        try {
+
+            String appRuleTaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
+            LOGGER.info("Update application rule task id {}", appRuleTaskId);
+
+            String responseCode = (String) delegateExecution.getVariable(RESPONSE_CODE);
+            if (responseCode == null || responseCode.isEmpty()) {
+                String appRules = (String) delegateExecution.getVariable(Constants.APP_RULES);
+                appRuleTaskInfo = new AppRuleTask();
+                appRuleTaskInfo.setAppRules(appRules);
+            } else {
+                int statusCode = Integer.parseInt(responseCode);
+                if (statusCode < Constants.HTTP_STATUS_CODE_200 || statusCode > Constants.HTTP_STATUS_CODE_299) {
+                    String response = (String) delegateExecution.getVariable(ERROR_RESPONSE);
+                    appRuleTaskInfo = convertRspStrToAppRuleTaskObj(response, true);
+                } else {
+                    String response = (String) delegateExecution.getVariable(RESPONSE);
+                    appRuleTaskInfo = convertRspStrToAppRuleTaskObj(response, false);
+                }
+            }
+            String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
+
+            appRuleTaskInfo.setTenant(tenantId);
+            appRuleTaskInfo.setAppRuleTaskId(appRuleTaskId);
+
+            appInstanceInfoService.updateAppRuleTaskInfo(tenantId, appRuleTaskInfo);
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+        } catch (AppoException | NumberFormatException e) {
+            LOGGER.info("Failed to update app rule task info record {}", e.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app rule task info record",
+                    Constants.PROCESS_FLOW_ERROR);
+        }
+        return appRuleTaskInfo;
+    }
+
+    private AppRuleTask convertRspStrToAppRuleTaskObj(String jsonString, boolean isErrResp) {
+        Gson gson = new Gson();
+        AppRuleTask appRuleTask;
+        try {
+            appRuleTask = gson.fromJson(jsonString, AppRuleTask.class);
+        } catch (JsonParseException ex) {
+            appRuleTask = new AppRuleTask();
+            appRuleTask.setDetailed(jsonString);
+        }
+
+        if (isErrResp) {
+            appRuleTask.setConfigResult("FAILURE");
+        } else {
+            appRuleTask.setConfigResult("SUCCESS");
+        }
+        return appRuleTask;
+    }
+
+    /**
+     * Retrieves application rule task info from DB.
+     *
+     * @param delegateExecution delegate execution
+     * @return application rule task info
+     * @throws AppoException exception
+     */
+    private AppRuleTask getAppRuleTask(DelegateExecution delegateExecution) {
+
+        AppRuleTask appRuleTaskInfo = null;
+        try {
+            String appRuleTaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
+            String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
+
+            LOGGER.info("Get application rule task {} ", appRuleTaskId);
+
+            appRuleTaskInfo = appInstanceInfoService.getAppRuleTaskInfo(tenantId, appRuleTaskId);
+            delegateExecution.setVariable(Constants.APP_RULES, appRuleTaskInfo.getAppRules());
+
+            delegateExecution.setVariable(Constants.APP_RULE_CFG_STATUS, appRuleTaskInfo.getConfigResult());
+
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+        } catch (NoSuchElementException ex) {
+            setProcessflowExceptionResponseAttributes(delegateExecution, ex.getMessage(),
+                    Constants.PROCESS_RECORD_NOT_FOUND);
+        } catch (AppoException | NumberFormatException e) {
+            LOGGER.info("Failed to get app rule task info {}", e.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to get app rule task info",
+                    Constants.PROCESS_FLOW_ERROR);
+        }
+        return appRuleTaskInfo;
+    }
+
+    /**
+     * Deletes application rule task info from DB.
+     *
+     * @param delegateExecution delegate execution
+     * @return application rule task info
+     * @throws AppoException exception
+     */
+    private void deleteAppRuleTask(DelegateExecution delegateExecution) {
+        try {
+            String appRuleTaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
+            String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
+
+            LOGGER.info("Get application rule task {} ", appRuleTaskId);
+
+            appInstanceInfoService.deleteAppRuleTaskInfo(tenantId, appRuleTaskId);
+
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+        } catch (NoSuchElementException ex) {
+            setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+        } catch (AppoException | NumberFormatException e) {
+            LOGGER.info("Failed to update app rule task info record {}", e.getMessage());
+            setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app rule task info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
     }

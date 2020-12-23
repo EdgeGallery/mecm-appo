@@ -14,9 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.apihandler;
-
-import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
+package org.edgegallery.mecm.appo.apihandler.dto;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
@@ -26,21 +24,36 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Create instance input schema.
+ * DnsRule input request schema.
  */
 @Validated
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
 @AllArgsConstructor
-public final class CreateParam extends AppInstanceParam {
+@NoArgsConstructor
+public class DnsRuleDto {
 
-    @NotEmpty(message = "MEC host is mandatory")
-    @Size(max = 15)
-    @Pattern(regexp = HOST_IP_REGX, message = "MEC host IP is invalid")
-    private String mecHost;
+    @Size(max = 128)
+    @NotEmpty(message = "DNS rule id is mandatory")
+    private String dnsRuleId;
+
+    @Size(max = 256)
+    @NotEmpty(message = "Domain name is mandatory")
+    private String domainName;
+
+    @Size(max = 8)
+    @NotEmpty(message = "ip address is mandatory")
+    private String ipAddressType;
+
+    @NotEmpty(message = "IP address is mandatory")
+    @Size(max = 18)
+    @Pattern(regexp = Constants.IP_CIRD_REGX, message = "IP address is invalid")
+    private String ipAddress;
+
+    private int ttl;
 }

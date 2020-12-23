@@ -16,16 +16,12 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DeComposeApplicationPackage implements JavaDelegate {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeComposeApplicationPackage.class);
 
     @Autowired
     private AppInstanceInfoService appInstanceInfoService;
@@ -36,7 +32,7 @@ public class DeComposeApplicationPackage implements JavaDelegate {
     @Override
     public void execute(DelegateExecution delegateExecution) throws Exception {
         DeComposeAppPkgTask deComposeAppPkgTask = new DeComposeAppPkgTask(delegateExecution, appPkgBasesPath,
-            appInstanceInfoService);
+                appInstanceInfoService);
         deComposeAppPkgTask.execute();
 
     }
