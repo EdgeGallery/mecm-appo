@@ -110,6 +110,15 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
 
     @Override
     @Transactional
+    public AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo, List<AppInstanceDependency> dependencies) {
+        if (!dependencies.isEmpty()) {
+            appInstanceDependencyRepository.saveAll(dependencies);
+        }
+        return createAppInstanceInfo(tenantId, appInstanceInfo);
+    }
+
+    @Override
+    @Transactional
     public void deleteAppInstanceInfo(String tenantId, String appInstanceId) {
         LOGGER.debug("Delete application instance {}... from DB", appInstanceId);
 
@@ -184,15 +193,6 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         }
         LOGGER.debug("Update application instance {}", info);
         return appInstanceInfoRepository.save(info);
-    }
-
-    @Override
-    public void createAppInstanceDependencies(String tenantId, List<AppInstanceDependency> appInstanceDependencies) {
-        appInstanceDependencies.forEach(item -> {
-            item.setTenant(tenantId);
-            item.setId(UUID.randomUUID().toString());
-        });
-        appInstanceDependencyRepository.saveAll(appInstanceDependencies);
     }
 
     @Override

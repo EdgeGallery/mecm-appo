@@ -42,6 +42,8 @@ public interface AppInstanceInfoService {
      */
     AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo);
 
+    AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo, List<AppInstanceDependency> dependencies);
+
     /**
      * Deletes application instance information.
      *
@@ -58,14 +60,6 @@ public interface AppInstanceInfoService {
      * @return application information
      */
     AppInstanceInfo updateAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo);
-
-    /**
-     * Creates application instance dependencies information.
-     *
-     * @param tenantId                tenant ID
-     * @param appInstanceDependencies application dependencies information
-     */
-    void createAppInstanceDependencies(String tenantId, List<AppInstanceDependency> appInstanceDependencies);
 
     /**
      * Retrieves application instance dependencies information.

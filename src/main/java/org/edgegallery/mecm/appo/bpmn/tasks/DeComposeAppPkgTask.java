@@ -17,6 +17,7 @@ import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.model.AppRule;
+import org.edgegallery.mecm.appo.model.AppServiceRequired;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.modelmapper.ModelMapper;
@@ -33,13 +34,10 @@ import org.yaml.snakeyaml.Yaml;
 public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
 
     private static final String OPERATIONAL_STATUS_INSTANTIATED = "Instantiated";
-    private static final String YAML_KEY_DEPENDENCIES = "dependencies";
     private static final String YAML_KEY_TOPOLOGY = "topology_template";
     private static final String YAML_KEY_NODES = "node_templates";
     private static final String YAML_KEY_APP_CONFIG = "app_configuration";
     private static final String YAML_KEY_PROPERTIES = "properties";
-    private static final String YAML_KEY_PACKAGE_ID = "packageId";
-    private static final String YAML_KEY_NAME = "name";
     private static final Logger LOGGER = LoggerFactory.getLogger(DeComposeAppPkgTask.class);
     private final DelegateExecution execution;
     private final String appPkgBasePath;
@@ -77,90 +75,21 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         final String appPackagePath = appPkgBasePath + appInstanceId + Constants.SLASH + appPackageId
                 + Constants.APP_PKG_EXT;
 
-        try {
-            LOGGER.info("check application {} dependency", appId);
-            List<AppInstanceInfo> dependencies = getDependenciesAppInstance(appPackagePath, tenantId, mecHost);
-
-            if (!dependencies.isEmpty()) {
-                List<AppInstanceDependency> dependencyReqList = new ArrayList<>(dependencies.size());
-                dependencies.forEach(item -> {
-                    AppInstanceDependency appInstanceDependency = new AppInstanceDependency();
-                    appInstanceDependency.setAppInstanceId(appInstanceId);
-                    appInstanceDependency.setDependencyAppInstanceId(item.getAppInstanceId());
-                    dependencyReqList.add(appInstanceDependency);
-                });
-                appInstanceInfoService.createAppInstanceDependencies(tenantId, dependencyReqList);
-            }
-
-            setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-        } catch (AppoException e) {
-            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
-        }
-    }
-
-    /**
-     * 获取依赖的app实例列表.
-     *
-     * @param appPackagePath app package path
-     * @param tenantId       tenant ID
-     * @param mecHost        mec host
-     * @return app实例列表
-     */
-    private List<AppInstanceInfo> getDependenciesAppInstance(String appPackagePath, String tenantId, String mecHost) {
-        // 根据mec host筛选实例列表，按照appPkgId转化为map，过滤掉状态非active的实例
-        List<AppInstanceInfo> appInstanceInfoListInHost = appInstanceInfoService
-                .getAppInstanceInfoByMecHost(tenantId, mecHost);
-
-        LOGGER.debug("app instance in mec host: {}, number:{}", mecHost, appInstanceInfoListInHost.size());
-
-        Map<String, AppInstanceInfo> appInstanceInfoMapWithPkg = appInstanceInfoListInHost.stream()
-                .filter(appInstanceInfo -> OPERATIONAL_STATUS_INSTANTIATED
-                        .equals(appInstanceInfo.getOperationalStatus()))
-                .collect(Collectors.toMap(AppInstanceInfo::getAppPackageId, appInstanceInfo -> appInstanceInfo));
-
-        // 从csar中读取MainServiceTemplate.yaml
-        List<Map<String, String>> dependencies = null;
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(appPackagePath))) {
+            LOGGER.info("check application {} dependency", appId);
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.getName().contains("/MainServiceTemplate.yaml")) {
                     Map<String, Object> mainTemplateMap = loadMainServiceTemplateYaml(zis);
-                    dependencies = (List<Map<String, String>>) mainTemplateMap.get(YAML_KEY_DEPENDENCIES);
                     updateApplicationDescriptor(mainTemplateMap);
                     break;
                 }
             }
-        } catch (IOException | IllegalArgumentException e) {
+
+            setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+        } catch (AppoException | IOException | IllegalArgumentException e) {
             LOGGER.error(FAILED_TO_UNZIP_CSAR);
-            throw new AppoException(FAILED_TO_UNZIP_CSAR);
-        }
-
-        List<AppInstanceInfo> returnList = new ArrayList<>(10);
-
-        if (dependencies == null) {
-            return returnList;
-        }
-
-        // 解析MainServiceTemplate.yaml，确认依赖的APP是否被部署
-        boolean dependencyExisted = true;
-        StringBuilder noExistDependencyList = new StringBuilder();
-        for (Map<String, String> dependency : dependencies) {
-            String appPkgId = dependency.get(YAML_KEY_PACKAGE_ID);
-            AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(appPkgId);
-            if (appInstanceInfo == null) {
-                dependencyExisted = false;
-                noExistDependencyList.append(dependency.get(YAML_KEY_NAME));
-                noExistDependencyList.append(" ");
-            } else {
-                returnList.add(appInstanceInfo);
-            }
-        }
-
-        if (dependencyExisted) {
-            return returnList;
-        } else {
-            LOGGER.debug("dependency app {}not exist", noExistDependencyList.toString());
-            throw new AppoException("dependency APP not deployed");
+            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
         }
     }
 
@@ -207,6 +136,8 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         ModelMapper mapper = new ModelMapper();
         AppRule appRule = mapper.map(properties, AppRule.class);
 
+        checkMainTemplate(appRule);
+
         if (appRule.getAppTrafficRule() == null && appRule.getAppDNSRule() == null) {
             return;
         }
@@ -220,5 +151,52 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         execution.setVariable(Constants.APP_RULES, appRulejson);
 
         LOGGER.info("Set app rules : {}", appRulejson);
+    }
+
+    /**
+     * 从appRule中获取依赖列表，如果非空，检查依赖是否被部署
+     * @param appRule 包含依赖列表
+     */
+    public void checkMainTemplate(AppRule appRule) {
+        if (appRule.getAppServiceRequired() != null) {
+            String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
+            String appInstanceId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
+            String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
+
+            // 根据mec host筛选实例列表，按照appPkgId转化为map，过滤掉状态非active的实例
+            List<AppInstanceInfo> appInstanceInfoListInHost = appInstanceInfoService
+                    .getAppInstanceInfoByMecHost(tenantId, mecHost);
+
+            LOGGER.debug("app instance in mec host: {}, number:{}", mecHost, appInstanceInfoListInHost.size());
+
+            Map<String, AppInstanceInfo> appInstanceInfoMapWithPkg = appInstanceInfoListInHost.stream()
+                    .filter(appInstanceInfo -> OPERATIONAL_STATUS_INSTANTIATED
+                            .equals(appInstanceInfo.getOperationalStatus()))
+                    .collect(Collectors.toMap(AppInstanceInfo::getAppPackageId, appInstanceInfo -> appInstanceInfo));
+
+            Gson gson = new Gson();
+            List<AppInstanceDependency> dependencies = new ArrayList<>();
+
+            // 解析MainServiceTemplate.yaml，确认依赖的APP是否被部署
+            for (AppServiceRequired required: appRule.getAppServiceRequired()) {
+                AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(required.getPackageId());
+
+                if (appInstanceInfo == null) {
+                    LOGGER.debug("dependency app {}not exist", required.getSerName());
+                    throw new AppoException("dependency APP not deployed");
+                }
+
+                AppInstanceDependency dependency = new AppInstanceDependency();
+                dependency.setTenant(tenantId);
+                dependency.setAppInstanceId(appInstanceId);
+                dependency.setDependencyAppInstanceId(appInstanceInfo.getAppInstanceId());
+                dependencies.add(dependency);
+            }
+
+            String appRequiredJson = gson.toJson(dependencies);
+            execution.setVariable(Constants.APP_REQUIRED, appRequiredJson);
+            LOGGER.info("Set app dependencies : {}", appRequiredJson);
+            appRule.setAppServiceRequired(null);
+        }
     }
 }

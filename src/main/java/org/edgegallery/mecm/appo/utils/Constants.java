@@ -57,6 +57,7 @@ public final class Constants {
     public static final String MEP_CAPABILITY_ID = "capability_id";
     public static final String HW_CAPABILITIES = "hw_capabilities";
     public static final String APP_RULES = "app_rules";
+    public static final String APP_REQUIRED = "app_requireds";
     public static final String APP_RULE_CFG_STATUS = "app_rule_status";
     public static final String INVENTORY_APP_RULES = "inventory_app_rules";
     public static final String UPDATED_APP_RULES = "updated_app_rules";
