@@ -159,7 +159,8 @@ public class AppRulesConfigurationTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
         String getAllResponse = getAllMvcResult.getResponse().getContentAsString();
-        Assert.assertEquals("{\"response\":[{\"appInstanceId\":\"" + appInstanceId + "\","
+        Assert.assertEquals("{\"response\":[{\"appInstanceId\":\"test-required\",\"appPackageId\":\"b1bb0ce7-ebca-4fa7-95ed-4840d70a1177\",\"appName\":\"face-recognize\",\"appId\":\"ea8ebc1a-db88-11ea-87d0-0242ac130003\",\"appDescriptor\":\"aaa\",\"mecHost\":\"1.1.1.1\",\"applcmHost\":\"1.1.1.1\",\"operationalStatus\":\"Instantiated\",\"operationInfo\":\"success\"},"
+                        + "{\"appInstanceId\":\"" + appInstanceId + "\","
                         + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognition\",\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognition\",\"mecHost\":\"1.1.1.1\",\"applcmHost\":\"1.1.1.1\",\"operationalStatus\":\"Created\",\"operationInfo\":\"success\"}]}",
                 getAllResponse);
 
