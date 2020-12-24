@@ -27,7 +27,9 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,49 +70,161 @@ public class AppoBatchDeployTest {
     private static final String SAMPLE_TOKEN = "SampleToken";
 
     private String appInstanceId;
+    private File deleteDir;
+    private MockRestServiceServer server;
 
-    @Test
-    @WithMockUser(roles = "MECM_TENANT")
-    public void instantiateTerminateTest() throws Exception {
+    @Before
+    public void setUp() {
+        server = MockRestServiceServer.createServer(restTemplate);
+    }
 
+    private MockRestServiceServer resetServer(MockRestServiceServer server) {
+        server.reset();
+        server = MockRestServiceServer.createServer(restTemplate);
+        return server;
+    }
+
+    @After
+    public void clear() {
+        FileSystemUtils.deleteRecursively(deleteDir);
+        server.reset();
+    }
+
+    private void createAppInstanceFlowUrls(MockRestServiceServer server)  throws Exception {
         // Mocking get MEC host from inventory
-        String url1 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
-                + ".1";
-        MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
-        server.expect(requestTo(url1))
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/3.3.3"
+                + ".3";
+        server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"mechostIp\":\"1.1.1.1\",\"mechostName\":\"TestHost\","
+                .andRespond(withSuccess("{\"mechostIp\":\"3.3.3.3\",\"mechostName\":\"TestHost\","
                                 + "\"zipCode\":null,"
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
-                                + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"1.1.1.1\"}",
+                                + "\"edgerepoIp\":\"3.3.3.3\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
+                                + "\"applcmIp\":\"3.3.3.3\"}",
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        String url2 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
-                + ".1";
-        server.expect(requestTo(url2))
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/3.3.3"
+                + ".3";
+        server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
+                .andRespond(withSuccess("{\"applcmIp\":\"3.3.3.3\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
                         MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
 
         // Mocking download package from APM
         File file = ResourceUtils.getFile("classpath:22406fba-fd5d-4f55-b3fa-89a45fee913a.csar");
         InputStream ins = new BufferedInputStream(new FileInputStream(file.getPath()));
         InputStreamResource inputStreamResource = new InputStreamResource(ins);
-        String url3 = "http://10.9.9.2:11112/apm/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/packages"
+        url = "http://10.9.9.2:11112/apm/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/packages"
                 + "/f20358433cf8eb4719a62a49ed118c9b/download";
-        server.expect(requestTo(url3))
+        server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(inputStreamResource, MediaType.APPLICATION_OCTET_STREAM));
 
         // Mocking get applcm API
-        String url4 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
-                "1.1.1.1" + "/apps";
-        server.expect(requestTo(url4))
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
+                "3.3.3.3" + "/apps";
+        server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess());
+    }
+
+    private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId)  throws Exception {
+        // Mocking get MEC host from inventory
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/3.3.3"
+                + ".3";
+        server = MockRestServiceServer.createServer(restTemplate);
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"mechostIp\":\"3.3.3.3\",\"mechostName\":\"TestHost\","
+                                + "\"zipCode\":null,"
+                                + "\"city\":\"TestCity\","
+                                + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
+                                + "\"edgerepoIp\":\"3.3.3.3\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
+                                + "\"applcmIp\":\"3.3.3.3\",\"appRuleIp\":\"3.3.3.3\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+
+        // Mocking get applcm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/3.3.3"
+                + ".3";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"applcmIp\":\"3.3.3.3\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+
+        // Mocking get applcm API
+        url = "http://3.3.3.3:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/instantiate";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess());
+
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
+                "3.3.3.3" + "/apps/" + appInstanceId;
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"appInstanceId\":\"7c948939-983c-4a3a-bd68-2bdff2a86ecd\","
+                        + "\"appName\":\"face_recognitionBatch\",\"packageId\":\"f20358433cf8eb4719a62a49ed118c9b\","
+                        + "\"status\":\"Created\"}", MediaType.APPLICATION_JSON));
+
+        // Mocking get applcm API
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
+                "3.3.3.3" + "/apps/" + appInstanceId;
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.PUT))
+                .andRespond(withSuccess());
+    }
+
+    private void deleteAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId)  throws Exception {
+        // Mocking get MEC host from inventory
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/3.3.3"
+                + ".3";
+        server = MockRestServiceServer.createServer(restTemplate);
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"mechostIp\":\"3.3.3.3\",\"mechostName\":\"TestHost\","
+                                + "\"zipCode\":null,"
+                                + "\"city\":\"TestCity\","
+                                + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
+                                + "\"edgerepoIp\":\"3.3.3.3\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
+                                + "\"applcmIp\":\"3.3.3.3\",\"appRuleIp\":\"3.3.3.3\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+
+        // Mocking get applcm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/3.3.3"
+                + ".3";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"applcmIp\":\"3.3.3.3\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+
+        // Mocking get applcm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances/"
+                + appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND)); /// validate response , use this query , // applcm port ,
+
+        // Mocking get applcm API
+        url = "http://3.3.3.3:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/terminate";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess());
+
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
+                "3.3.3.3" + "/apps/" + appInstanceId;
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.DELETE))
+                .andRespond(withSuccess());
+    }
+
+    @Test
+    @WithMockUser(roles = "MECM_TENANT")
+    public void instantiateTerminateTest() throws Exception {
+
+        createAppInstanceFlowUrls(server);
 
         // Create a app instance
         ResultActions postResult =
@@ -118,10 +232,11 @@ public class AppoBatchDeployTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(
-                                "{ \"appPackageId\": \"f20358433cf8eb4719a62a49ed118c9b\", \"appName\": \"face_recognition\", "
+                                "{ \"appPackageId\": \"f20358433cf8eb4719a62a49ed118c9b\", \"appName\": "
+                                        + "\"face_recognitionBatch\", "
                                         + "\"appId\": \"f50358433cf8eb4719a62a49ed118c9b\", "
                                         + "\"appInstanceDescription\": \"face_recognition\", "
-                                        + "\"mecHost\": [\"1.1.1.1\"] }")
+                                        + "\"mecHost\": [\"3.3.3.3\"] }")
                         .header(ACCESS_TOKEN, SAMPLE_TOKEN));
         MvcResult postMvcResult = postResult.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
@@ -145,7 +260,7 @@ public class AppoBatchDeployTest {
                 .andReturn();
         String getAllResponse = getAllMvcResult.getResponse().getContentAsString();
         Assert.assertEquals("{\"response\":[{\"appInstanceId\":\"" + appInstanceId + "\","
-                        + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognition\",\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognition\",\"mecHost\":\"1.1.1.1\",\"applcmHost\":\"1.1.1.1\",\"operationalStatus\":\"Created\",\"operationInfo\":\"success\"}]}",
+                        + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognitionBatch\",\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognition\",\"mecHost\":\"3.3.3.3\",\"applcmHost\":\"3.3.3.3\",\"operationalStatus\":\"Created\",\"operationInfo\":\"success\"}]}",
                 getAllResponse);
 
         // Get application instance id
@@ -159,51 +274,10 @@ public class AppoBatchDeployTest {
                 .andReturn();
         String getResponse = getMvcResult.getResponse().getContentAsString();
         Assert.assertEquals("{\"response\":{\"appInstanceId\":\"" + appInstanceId + "\","
-                        + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognition\",\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognition\",\"mecHost\":\"1.1.1.1\",\"applcmHost\":\"1.1.1.1\",\"operationalStatus\":\"Created\",\"operationInfo\":\"success\"}}",
+                        + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognitionBatch\",\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognition\",\"mecHost\":\"3.3.3.3\",\"applcmHost\":\"3.3.3.3\",\"operationalStatus\":\"Created\",\"operationInfo\":\"success\"}}",
                 getResponse);
         /***********************************************************************************************/
-
-        // Mocking get MEC host from inventory
-        String url6 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
-                + ".1";
-        server = MockRestServiceServer.createServer(restTemplate);
-        server.expect(requestTo(url6))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"mechostIp\":\"1.1.1.1\",\"mechostName\":\"TestHost\","
-                                + "\"zipCode\":null,"
-                                + "\"city\":\"TestCity\","
-                                + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
-                                + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"1.1.1.1\",\"appRuleIp\":\"1.1.1.1\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
-
-        // Mocking get applcm from inventory
-        String url7 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
-                + ".1";
-        server.expect(requestTo(url7))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
-
-        // Mocking get applcm API
-        String url8 = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
-                appInstanceId + "/instantiate";
-        server.expect(requestTo(url8))
-                .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess());
-
-        String url9 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
-                "1.1.1.1" + "/apps/" + appInstanceId;
-        server.expect(requestTo(url9))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
-
-        // Mocking get applcm API
-        String url10 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
-                "1.1.1.1" + "/apps/" + appInstanceId;
-        server.expect(requestTo(url10))
-                .andExpect(method(HttpMethod.PUT))
-                .andRespond(withSuccess());
+        instantiateAppInstanceFlowUrls(resetServer(server), appInstanceId);
 
         // Test instantiate
         ResultActions postInstantiateResult =
@@ -219,47 +293,7 @@ public class AppoBatchDeployTest {
         Thread.sleep(5000);
 
         /***********************************************************************************************/
-
-        // Mocking get MEC host from inventory
-        String url11 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
-                + ".1";
-        server = MockRestServiceServer.createServer(restTemplate);
-        server.expect(requestTo(url11))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"mechostIp\":\"1.1.1.1\",\"mechostName\":\"TestHost\","
-                                + "\"zipCode\":null,"
-                                + "\"city\":\"TestCity\","
-                                + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
-                                + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"1.1.1.1\",\"appRuleIp\":\"1.1.1.1\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
-
-        // Mocking get applcm from inventory
-        String url12 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
-                + ".1";
-        server.expect(requestTo(url12))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
-
-        // Mocking get applcm from inventory
-        String url13 = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances/"+ appInstanceId + "/appd_configuration";
-        server.expect(requestTo(url13))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.NOT_FOUND)); /// validate response , use this query , // applcm port ,
-
-        // Mocking get applcm API
-        String url14 = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
-                appInstanceId + "/terminate";
-        server.expect(requestTo(url14))
-                .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess());
-
-        String url15 = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
-                "1.1.1.1" + "/apps/" + appInstanceId;
-        server.expect(requestTo(url15))
-                .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withSuccess());
+        deleteAppInstanceFlowUrls(resetServer(server), appInstanceId);
 
         // delete
         ResultActions deleteResult =
@@ -274,6 +308,5 @@ public class AppoBatchDeployTest {
                 .andReturn();
 
         File deleteDir = new File("src/test/resources/packages/" + appInstanceId);
-        FileSystemUtils.deleteRecursively(deleteDir);
     }
 }
