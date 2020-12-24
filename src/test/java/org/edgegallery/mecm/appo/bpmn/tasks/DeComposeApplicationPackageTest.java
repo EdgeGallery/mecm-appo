@@ -56,16 +56,16 @@ public class DeComposeApplicationPackageTest {
     public void setUp() throws Exception {
         Field field = deComposeApplicationPackage.getClass().getDeclaredField("appPkgBasesPath");
         field.setAccessible(true);
-        field.set(deComposeApplicationPackage, "src/test/resources/packages/");
+        field.set(deComposeApplicationPackage, "src/test/");
     }
 
     @Test
     public void testNoRequire() throws Exception {
         Mockito.when(execution.getVariable(Constants.APP_PACKAGE_ID))
-                .thenReturn("test_package_id");
+                .thenReturn("22406fba-fd5d-4f55-b3fa-89a45fee913a");
         Mockito.when(execution.getVariable(Constants.MEC_HOST)).thenReturn(AppoConstantsTest.MEC_HOST);
         Mockito.when(execution.getVariable(Constants.APP_INSTANCE_ID))
-                .thenReturn("test_instance_id");
+                .thenReturn("resources");
         Mockito.when(execution.getVariable(Constants.APP_ID))
                 .thenReturn(AppoConstantsTest.APP_ID);
         Mockito.when(execution.getVariable(Constants.TENANT_ID)).thenReturn(AppoConstantsTest.TENANT);
@@ -80,10 +80,10 @@ public class DeComposeApplicationPackageTest {
     @Test
     public void testRequiredAndDeployFailure() throws Exception {
         Mockito.when(execution.getVariable(Constants.APP_PACKAGE_ID))
-                .thenReturn("test_require_package_id");
+                .thenReturn("22406fba-fd5d-4f55-b3fa-89a45fee913a-apprules");
         Mockito.when(execution.getVariable(Constants.MEC_HOST)).thenReturn(AppoConstantsTest.MEC_HOST);
         Mockito.when(execution.getVariable(Constants.APP_INSTANCE_ID))
-                .thenReturn("test_instance_id");
+                .thenReturn("resources");
         Mockito.when(execution.getVariable(Constants.APP_ID))
                 .thenReturn(AppoConstantsTest.APP_ID);
         Mockito.when(execution.getVariable(Constants.TENANT_ID)).thenReturn(AppoConstantsTest.TENANT);
@@ -99,18 +99,19 @@ public class DeComposeApplicationPackageTest {
     public void testRequiredAndDeploySuccess() throws Exception {
         AppInstanceInfo appInstanceInfo = new AppInstanceInfo();
         appInstanceInfo.setOperationalStatus(Constants.OPER_STATUS_INSTANTIATED);
-        appInstanceInfo.setAppId("abc123");
-        appInstanceInfo.setAppPackageId("abc123");
-        appInstanceInfo.setAppName("test_gw");
+        appInstanceInfo.setAppId("ea8ebc1a-db88-11ea-87d0-0242ac130003");
+        appInstanceInfo.setAppPackageId("b1bb0ce7-ebca-4fa7-95ed-4840d70a1177");
+        appInstanceInfo.setAppName("face-recognize");
+        appInstanceInfo.setAppInstanceId("required_instance");
         appInstanceInfo.setMecHost(AppoConstantsTest.MEC_HOST);
         List<AppInstanceInfo> deployList = new ArrayList<>();
         deployList.add(appInstanceInfo);
 
         Mockito.when(execution.getVariable(Constants.APP_PACKAGE_ID))
-                .thenReturn("test_require_package_id");
+                .thenReturn("22406fba-fd5d-4f55-b3fa-89a45fee913a-apprules");
         Mockito.when(execution.getVariable(Constants.MEC_HOST)).thenReturn(AppoConstantsTest.MEC_HOST);
         Mockito.when(execution.getVariable(Constants.APP_INSTANCE_ID))
-                .thenReturn("test_instance_id");
+                .thenReturn("resources");
         Mockito.when(execution.getVariable(Constants.APP_ID))
                 .thenReturn(AppoConstantsTest.APP_ID);
         Mockito.when(execution.getVariable(Constants.TENANT_ID)).thenReturn(AppoConstantsTest.TENANT_ID);

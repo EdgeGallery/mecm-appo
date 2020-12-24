@@ -87,8 +87,11 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
             }
 
             setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-        } catch (AppoException | IOException | IllegalArgumentException e) {
+        } catch (IOException | IllegalArgumentException e) {
             LOGGER.error(FAILED_TO_UNZIP_CSAR);
+            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+        } catch (AppoException e) {
+            LOGGER.error(e.getMessage());
             setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
         }
     }
@@ -182,8 +185,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
                 AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(required.getPackageId());
 
                 if (appInstanceInfo == null) {
-                    LOGGER.debug("dependency app {}not exist", required.getSerName());
-                    throw new AppoException("dependency APP not deployed");
+                    throw new AppoException("dependency app " + required.getSerName() + " not deployed");
                 }
 
                 AppInstanceDependency dependency = new AppInstanceDependency();
