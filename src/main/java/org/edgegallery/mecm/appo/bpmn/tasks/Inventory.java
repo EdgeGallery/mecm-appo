@@ -581,24 +581,23 @@ public class Inventory extends ProcessflowAbstractTask {
      *
      * @param execution delegate execution
      */
-    private String deleteAllAppRules(DelegateExecution execution) {
+    private void deleteAllAppRules(DelegateExecution execution) {
 
         LOGGER.info("Delete App rules from inventory");
         String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
         String appInstId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
 
-        UrlUtil urlUtil = new UrlUtil();
-        urlUtil.addParams(Constants.TENANT_ID, tenantId);
-        urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstId);
-
         try {
+            UrlUtil urlUtil = new UrlUtil();
+            urlUtil.addParams(Constants.TENANT_ID, tenantId);
+            urlUtil.addParams(Constants.APP_INSTANCE_ID, appInstId);
+
             String appRuleUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPRULE_URI);
 
-            return sendRequest(execution, restTemplate, appRuleUrl, HttpMethod.DELETE);
+            sendRequest(execution, restTemplate, appRuleUrl, HttpMethod.DELETE);
         } catch (AppoException | IllegalArgumentException e) {
             setProcessflowExceptionResponseAttributes(execution,
                     Constants.INTERNAL_ERROR, Constants.PROCESS_FLOW_ERROR);
         }
-        return null;
     }
 }

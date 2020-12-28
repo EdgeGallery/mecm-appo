@@ -19,6 +19,7 @@ package org.edgegallery.mecm.appo.apihandler.dto;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,7 @@ public class TrafficRuleDto {
     @Size(max = 6)
     private String filterType;
 
+    @Max(255)
     private Integer priority;
 
     @NotEmpty(message = "Action is mandatory")

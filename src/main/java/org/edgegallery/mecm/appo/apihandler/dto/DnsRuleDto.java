@@ -16,6 +16,7 @@
 
 package org.edgegallery.mecm.appo.apihandler.dto;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -55,5 +56,6 @@ public class DnsRuleDto {
     @Pattern(regexp = Constants.IP_CIRD_REGX, message = "IP address is invalid")
     private String ipAddress;
 
+    @Min(1)
     private int ttl;
 }

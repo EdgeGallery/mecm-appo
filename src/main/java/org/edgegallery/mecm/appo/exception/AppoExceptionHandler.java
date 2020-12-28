@@ -129,7 +129,7 @@ public class AppoExceptionHandler {
     public ResponseEntity<AppoExceptionResponse> handleAccessDeniedException(AccessDeniedException ex) {
         AppoExceptionResponse response = new AppoExceptionResponse(LocalDateTime.now(),
                 "Forbidden", Collections.singletonList("User is not authorized to perform this operation"));
-        LOGGER.info("User is not authorized to perform this operation", response);
+        LOGGER.info("User is not authorized to perform this operation {}", response.getMessage());
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 

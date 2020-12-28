@@ -118,18 +118,12 @@ public final class Constants {
 
     public static final String FAILED_TO_CONNECT = "failed to connect: ";
     public static final String FAILED_TO_CONNECT_INVENTORY = "failed to connect to inventory {}";
-    public static final String FAILED_TO_CONNECT_APPLCM = "failed to connect to applcm {}";
-    public static final String FAILED_TO_CONNECT_APPRULE = "failed to connect to apprule {}";
-    public static final String APPLCM_RETURN_FAILURE = "applcm return failure {}";
-    public static final String APPRULE_RETURN_FAILURE = "apprule return failure {}";
-    public static final String INVENTORY_RETURN_FAILURE = "inventory return failure {}";
     public static final String APM_RETURN_FAILURE = "apm return failure {}";
 
     public static final String OPER_STATUS_CREATING = "Creating";
     public static final String OPER_STATUS_CREATED = "Created";
     public static final String OPER_STATUS_CREATE_FAILED = "Create failed";
     public static final String OPER_STATUS_INSTANTIATED = "Instantiated";
-    public static final String OPER_STATUS_INSTANTIATED_FAILED = "Instantiation failed";
 
     private Constants() {
     }
