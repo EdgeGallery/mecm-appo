@@ -21,12 +21,14 @@ import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.edgegallery.mecm.appo.utils.Constants;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -44,16 +46,14 @@ public class TrafficRuleDto {
     @Size(max = 128)
     private String trafficRuleId;
 
-    @NotEmpty(message = "Filter type is mandatory")
-    @Size(max = 6)
-    private String filterType;
+    @NotNull(message = "Filter type is mandatory")
+    private Constants.TrafficRuleFilterType filterType;
 
     @Max(255)
     private Integer priority;
 
-    @NotEmpty(message = "Action is mandatory")
-    @Size(max = 24)
-    private String action;
+    @NotNull(message = "Action is mandatory")
+    private Constants.TrafficRuleAction action;
 
     @Size(max = 16)
     private Set<@Valid TrafficFilterDto> trafficFilter = new LinkedHashSet<>();

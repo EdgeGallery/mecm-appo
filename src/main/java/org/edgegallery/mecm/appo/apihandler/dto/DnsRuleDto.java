@@ -18,6 +18,7 @@ package org.edgegallery.mecm.appo.apihandler.dto;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -47,9 +48,8 @@ public class DnsRuleDto {
     @NotEmpty(message = "Domain name is mandatory")
     private String domainName;
 
-    @Size(max = 8)
-    @NotEmpty(message = "ip address is mandatory")
-    private String ipAddressType;
+    @NotNull(message = "ip address type is mandatory")
+    private Constants.DnsRuleIpAddressType ipAddressType;
 
     @NotEmpty(message = "IP address is mandatory")
     @Size(max = 18)
