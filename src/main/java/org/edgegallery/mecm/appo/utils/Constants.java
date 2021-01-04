@@ -125,25 +125,6 @@ public final class Constants {
     public static final String OPER_STATUS_CREATE_FAILED = "Create failed";
     public static final String OPER_STATUS_INSTANTIATED = "Instantiated";
 
-    public enum TrafficRuleFilterType {
-        FLOW,
-        PACKET
-    }
-
-    public enum TrafficRuleAction {
-        DROP,
-        FORWARD_DECAPSULATED,
-        FORWARD_AS_IS,
-        PASSTHROUGH,
-        DUPLICATED_DECAPSULATED,
-        DUPLICATE_AS_IS
-    }
-
-    public enum DnsRuleIpAddressType {
-        IP_V4,
-        IP_V6
-    }
-
     private Constants() {
     }
 }

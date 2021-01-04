@@ -28,7 +28,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.edgegallery.mecm.appo.utils.Constants;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -47,17 +46,31 @@ public class TrafficRuleDto {
     private String trafficRuleId;
 
     @NotNull(message = "Filter type is mandatory")
-    private Constants.TrafficRuleFilterType filterType;
+    private TrafficRuleFilterType filterType;
 
     @Max(255)
     private Integer priority;
 
     @NotNull(message = "Action is mandatory")
-    private Constants.TrafficRuleAction action;
+    private TrafficRuleAction action;
 
     @Size(max = 16)
     private Set<@Valid TrafficFilterDto> trafficFilter = new LinkedHashSet<>();
 
     @Size(max = 2)
     private Set<@Valid DstInterfaceDto> dstInterface = new LinkedHashSet<>();
+
+    public enum TrafficRuleFilterType {
+        FLOW,
+        PACKET
+    }
+
+    public enum TrafficRuleAction {
+        DROP,
+        FORWARD_DECAPSULATED,
+        FORWARD_AS_IS,
+        PASSTHROUGH,
+        DUPLICATED_DECAPSULATED,
+        DUPLICATE_AS_IS
+    }
 }
