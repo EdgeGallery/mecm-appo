@@ -132,8 +132,7 @@ public final class Constants {
 
     public enum TrafficRuleAction {
         DROP,
-        FORWARD,
-        DECAPSULATED,
+        FORWARD_DECAPSULATED,
         FORWARD_AS_IS,
         PASSTHROUGH,
         DUPLICATED_DECAPSULATED,
