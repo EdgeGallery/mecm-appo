@@ -84,11 +84,10 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
     /**
      * Adds record into application instance info DB.
      *
-     * @param delegateExecution delegate execution
-     * @return app instance info record
+     * @param delegateExecution delegate execution*
      * @throws AppoException exception
      */
-    private AppInstanceInfo insertAppInstanceinfo(DelegateExecution delegateExecution) {
+    private void insertAppInstanceinfo(DelegateExecution delegateExecution) {
         AppInstanceInfo appInstanceInfo = new AppInstanceInfo();
         try {
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
@@ -100,15 +99,17 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo.setAppId((String) delegateExecution.getVariable(Constants.APP_ID));
             appInstanceInfo.setAppDescriptor((String) delegateExecution.getVariable(Constants.APP_DESCR));
             appInstanceInfo.setOperationalStatus(Constants.OPER_STATUS_CREATING);
-            appInstanceInfo = appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
+
+            appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
+
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
+
             LOGGER.info("App instance info record added ");
         } catch (AppoException e) {
             LOGGER.info("Failed to add app instance info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to add app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
-        return appInstanceInfo;
     }
 
     /**
@@ -309,7 +310,6 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * Deletes application rule task info from DB.
      *
      * @param delegateExecution delegate execution
-     * @return application rule task info
      * @throws AppoException exception
      */
     private void deleteAppRuleTask(DelegateExecution delegateExecution) {

@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Application Rule API handler.
  */
-@Api(value = "Appo application eule api system")
+@Api(value = "Appo application rule api system")
 @Validated
 @RequestMapping("/appo/v1")
 @RestController

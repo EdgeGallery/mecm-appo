@@ -19,7 +19,9 @@ package org.edgegallery.mecm.appo.apihandler.dto;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,19 +45,32 @@ public class TrafficRuleDto {
     @Size(max = 128)
     private String trafficRuleId;
 
-    @NotEmpty(message = "Filter type is mandatory")
-    @Size(max = 6)
-    private String filterType;
+    @NotNull(message = "Filter type is mandatory")
+    private TrafficRuleFilterType filterType;
 
+    @Max(255)
     private Integer priority;
 
-    @NotEmpty(message = "Action is mandatory")
-    @Size(max = 24)
-    private String action;
+    @NotNull(message = "Action is mandatory")
+    private TrafficRuleAction action;
 
     @Size(max = 16)
     private Set<@Valid TrafficFilterDto> trafficFilter = new LinkedHashSet<>();
 
     @Size(max = 2)
     private Set<@Valid DstInterfaceDto> dstInterface = new LinkedHashSet<>();
+
+    public enum TrafficRuleFilterType {
+        FLOW,
+        PACKET
+    }
+
+    public enum TrafficRuleAction {
+        DROP,
+        FORWARD_DECAPSULATED,
+        FORWARD_AS_IS,
+        PASSTHROUGH,
+        DUPLICATED_DECAPSULATED,
+        DUPLICATE_AS_IS
+    }
 }
