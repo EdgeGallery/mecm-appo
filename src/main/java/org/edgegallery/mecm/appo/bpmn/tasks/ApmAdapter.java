@@ -42,7 +42,7 @@ public class ApmAdapter implements JavaDelegate {
     private RestTemplate restTemplate;
 
     @Override
-    public void execute(DelegateExecution delegateExecution) throws Exception {
+    public void execute(DelegateExecution delegateExecution) {
 
         String servicePort = apmService + ":" + apmServicePort;
         Apm apm = new Apm(delegateExecution, Boolean.parseBoolean(isSslEnabled), appPkgsBasePath, servicePort,

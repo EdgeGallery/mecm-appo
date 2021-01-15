@@ -69,7 +69,6 @@ public class AppRulesConfigurationTest {
     private static final String ACCESS_TOKEN = "access_token";
     private static final String SAMPLE_TOKEN = "SampleToken";
 
-    private String appInstanceId;
     private File deleteDir;
     private MockRestServiceServer server;
 
@@ -138,7 +137,7 @@ public class AppRulesConfigurationTest {
                 .andRespond(withSuccess());
     }
 
-    private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId)  throws Exception {
+    private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
         String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/2.2.2"
                 + ".2";
@@ -242,7 +241,7 @@ public class AppRulesConfigurationTest {
                 .andRespond(withSuccess());
     }
 
-    private void deleteAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId)  throws Exception {
+    private void deleteAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
         String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/2.2.2"
                 + ".2";
@@ -310,10 +309,172 @@ public class AppRulesConfigurationTest {
                 .andRespond(withSuccess());
     }
 
+    private void appRulesUpdateFlowUrls(MockRestServiceServer server, String appInstanceId) {
+        // Mocking get MEC host from inventory
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/2.2.2"
+                + ".2";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"mechostIp\":\"2.2.2.2\",\"mechostName\":\"TestHost\","
+                                + "\"zipCode\":null,"
+                                + "\"city\":\"TestCity\","
+                                + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
+                                + "\"edgerepoIp\":\"2.2.2.2\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
+                                + "\"applcmIp\":\"2.2.2.2\",\"appRuleIp\":\"2.2.2.2\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+
+        // Mocking get apprule from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
+                + "/2.2.2.2";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"appRuleIp\":\"2.2.2.2\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON));
+
+        // Mocking get applcm from inventory
+        /*url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances/"
+                + appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));*/
+
+        // Mocking get applcm API
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\n"
+                                + "  \"appTrafficRule\": [\n"
+                                + "    {\n"
+                                + "      \"trafficRuleId\": \"trafficRule1\",\n"
+                                + "      \"filterType\": \"FLOW\",\n"
+                                + "      \"priority\": 1,\n"
+                                + "      \"action\": \"PASSTHROUGH\",\n"
+                                + "      \"trafficFilter\": [\n"
+                                + "        {\n"
+                                + "          \"srcAddress\": [\n"
+                                + "            \"0.0.0.0/0\"\n"
+                                + "          ],\n"
+                                + "          \"srcPort\": [\n"
+                                + "            \"8080\"\n"
+                                + "          ],\n"
+                                + "          \"dstAddress\": [\n"
+                                + "            \"172.30.2.0/28\"\n"
+                                + "          ],\n"
+                                + "          \"dstPort\": [\n"
+                                + "            \"8080\"\n"
+                                + "          ],\n"
+                                + "          \"protocol\": [\n"
+                                + "            \"ANY\"\n"
+                                + "          ],\n"
+                                + "          \"tag\": [\n"
+                                + "            \"1234\"\n"
+                                + "          ],\n"
+                                + "          \"srcTunnelAddress\": [\n"
+                                + "            \"10.10.10.10\"\n"
+                                + "          ],\n"
+                                + "          \"srcTunnelPort\": [\n"
+                                + "            \"8080\"\n"
+                                + "          ],\n"
+                                + "          \"dstTunnelPort\": [\n"
+                                + "            \"8080\"\n"
+                                + "          ],\n"
+                                + "          \"qCI\": 1,\n"
+                                + "          \"dSCP\": 0,\n"
+                                + "          \"tC\": 1\n"
+                                + "        }\n"
+                                + "      ]\n"
+                                + "    }\n"
+                                + "  ],\n"
+                                + "  \"appDNSRule\": [\n"
+                                + "    {\n"
+                                + "      \"dnsRuleId\": \"dnsRule1\",\n"
+                                + "      \"domainName\": \"positioningservice.org\",\n"
+                                + "      \"ipAddressType\": \"IP_V4\",\n"
+                                + "      \"ipAddress\": \"172.30.2.17\",\n"
+                                + "      \"ttl\": 100\n"
+                                + "    }\n"
+                                + "  ],\n"
+                                + "  \"appSupportMp1\": true,\n"
+                                + "  \"appName\": \"face_recognitionRule\"\n"
+                                + "}",
+                        MediaType.APPLICATION_JSON));
+
+        // Mocking get applcm API
+        url = "http://2.2.2.2:10000/apprulemgr/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess("{\"taskId\": \"\",\"appInstanceId\": \"40519ee1-fb9d-4a61-855c-1b5c2a41da9f\","
+                                + "\"detailed\": \"duplicate dns entry\",\"configResult\": \"SUCCESS\"}",
+                        MediaType.APPLICATION_JSON));
+
+        // Mocking get applcm API
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\n"
+                                + "  \"appTrafficRule\": [\n"
+                                + "    {\n"
+                                + "      \"trafficRuleId\": \"TrafficRule1\",\n"
+                                + "      \"filterType\": \"FLOW\",\n"
+                                + "      \"priority\": 1,\n"
+                                + "      \"trafficFilter\": [\n"
+                                + "        {\n"
+                                + "          \"srcAddress\": [\n"
+                                + "            \"192.168.1.1/28\"\n"
+                                + "          ],\n"
+                                + "          \"dstAddress\": [\n"
+                                + "            \"192.168.1.1/28\"\n"
+                                + "          ],\n"
+                                + "          \"srcPort\": [\n"
+                                + "            \"8080\"\n"
+                                + "          ],\n"
+                                + "          \"dstPort\": [\n"
+                                + "            \"8080\"\n"
+                                + "          ],\n"
+                                + "          \"protocol\": [\n"
+                                + "            \"TCP\"\n"
+                                + "          ],\n"
+                                + "          \"qCI\": 1,\n"
+                                + "          \"dSCP\": 0,\n"
+                                + "          \"tC\": 1\n"
+                                + "        }\n"
+                                + "      ],\n"
+                                + "      \"action\": \"DROP\",\n"
+                                + "      \"state\": \"ACTIVE\"\n"
+                                + "    }\n"
+                                + "  ],\n"
+                                + "  \"appDNSRule\": [\n"
+                                + "    {\n"
+                                + "      \"dnsRuleId\": \"dnsRule1\",\n"
+                                + "      \"domainName\": \"www.example.com\",\n"
+                                + "      \"ipAddressType\": \"IP_V4\",\n"
+                                + "      \"ipAddress\": \"192.0.2.0\",\n"
+                                + "      \"ttl\": 30,\n"
+                                + "      \"state\": \"ACTIVE\"\n"
+                                + "    }\n"
+                                + "  ],\n"
+                                + "  \"appSupportMp1\": true,\n"
+                                + "  \"appName\": \"face_recognitionRule\"\n"
+                                + "}",
+                        MediaType.APPLICATION_JSON));
+
+        // Mocking get applcm API
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/appd_configuration";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.PUT))
+                .andRespond(withSuccess());
+    }
+
     @Test
     @WithMockUser(roles = "MECM_TENANT")
     public void instantiateTerminateTest() throws Exception {
+        String appInstanceId;
 
+        /*****Execute create app instance*****/
         createAppInstanceFlowUrls(server);
 
         // Create a app instance
@@ -355,7 +516,8 @@ public class AppRulesConfigurationTest {
                         + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognitionRule\","
                         + "\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognitionRule\",\"mecHost\":\"2.2.2.2\",\"applcmHost\":\"2.2.2.2\",\"operationalStatus\":\"Created\",\"operationInfo\":\"success\"}}",
                 getResponse);
-        /***********************************************************************************************/
+
+        /*****Execute Instantiate app instance*****/
         instantiateAppInstanceFlowUrls(resetServer(server), appInstanceId);
 
         // Test instantiate
@@ -370,7 +532,68 @@ public class AppRulesConfigurationTest {
                 .andReturn();
         Thread.sleep(5000);
 
-        /***********************************************************************************************/
+        /*****Execute app rule configuration to the app instance*****/
+        appRulesUpdateFlowUrls(resetServer(server), appInstanceId);
+        // Configure app rules
+        ResultActions postConfigAppRuleResult =
+                mvc.perform(MockMvcRequestBuilders
+                        .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId + "/appd_configuration")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .content("{\n"
+                                + "  \"appTrafficRule\": [\n"
+                                + "    {\n"
+                                + "      \"trafficRuleId\": \"TrafficRule1\",\n"
+                                + "      \"filterType\": \"FLOW\",\n"
+                                + "      \"priority\": 1,\n"
+                                + "      \"trafficFilter\": [\n"
+                                + "        {\n"
+                                + "          \"srcAddress\": [\n"
+                                + "            \"192.168.1.1/28\"\n"
+                                + "          ],\n"
+                                + "          \"dstAddress\": [\n"
+                                + "            \"192.168.1.1/28\"\n"
+                                + "          ],\n"
+                                + "          \"srcPort\": [\n"
+                                + "            \"8080\"\n"
+                                + "          ],\n"
+                                + "          \"dstPort\": [\n"
+                                + "            \"8080\"\n"
+                                + "          ],\n"
+                                + "          \"protocol\": [\n"
+                                + "            \"TCP\"\n"
+                                + "          ],\n"
+                                + "          \"qCI\": 1,\n"
+                                + "          \"dSCP\": 0,\n"
+                                + "          \"tC\": 1\n"
+                                + "        }\n"
+                                + "      ],\n"
+                                + "      \"action\": \"DROP\",\n"
+                                + "      \"state\": \"ACTIVE\"\n"
+                                + "    }\n"
+                                + "  ],\n"
+                                + "  \"appDNSRule\": [\n"
+                                + "    {\n"
+                                + "      \"dnsRuleId\": \"dnsRule1\",\n"
+                                + "      \"domainName\": \"www.example.com\",\n"
+                                + "      \"ipAddressType\": \"IP_V4\",\n"
+                                + "      \"ipAddress\": \"192.0.2.0\",\n"
+                                + "      \"ttl\": 30,\n"
+                                + "      \"state\": \"ACTIVE\"\n"
+                                + "    }\n"
+                                + "  ],\n"
+                                + "  \"appSupportMp1\": true,\n"
+                                + "  \"appName\": \"abc\"\n"
+                                + "}")
+                        .header(ACCESS_TOKEN, SAMPLE_TOKEN));
+        postMvcResult = postConfigAppRuleResult.andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
+        postResponse = postMvcResult.getResponse().getContentAsString();
+        assertThat(postResponse, containsString("apprule_task_id"));
+        Thread.sleep(5000);
+
+        /*****Execute terminate app instance*****/
         deleteAppInstanceFlowUrls(resetServer(server), appInstanceId);
 
         // delete

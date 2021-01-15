@@ -57,9 +57,8 @@ public interface AppInstanceInfoService {
      *
      * @param tenantId        tenant ID
      * @param appInstanceInfo application information
-     * @return application information
      */
-    AppInstanceInfo updateAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo);
+    void updateAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo);
 
     /**
      * Retrieves application instance dependencies information.

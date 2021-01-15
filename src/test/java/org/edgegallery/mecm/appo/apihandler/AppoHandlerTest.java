@@ -69,7 +69,6 @@ public class AppoHandlerTest {
     private static final String ACCESS_TOKEN = "access_token";
     private static final String SAMPLE_TOKEN = "SampleToken";
 
-    private String appInstanceId;
     private File deleteDir;
     private MockRestServiceServer server;
 
@@ -130,7 +129,7 @@ public class AppoHandlerTest {
                 .andRespond(withSuccess());
     }
 
-    private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId)  throws Exception {
+    private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
         String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
                 + ".1";
@@ -177,7 +176,7 @@ public class AppoHandlerTest {
     }
 
 
-    private void deleteAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId)  throws Exception {
+    private void deleteAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
         String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
                 + ".1";
@@ -223,7 +222,7 @@ public class AppoHandlerTest {
     @Test
     @WithMockUser(roles = "MECM_TENANT")
     public void instantiateTerminateTest() throws Exception {
-
+        String appInstanceId;
         createAppInstanceFlowUrls(server);
 
         // Create a app instance

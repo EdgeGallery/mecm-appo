@@ -29,11 +29,7 @@ RUN apk update &&\
 # Set the working directory.
 WORKDIR $APP_HOME
 
-# Copy the application & scripts
-COPY target/appo-0.0.1-SNAPSHOT.jar $APP_HOME/bin
-COPY configs/*.sh $APP_HOME/bin
-
-RUN chmod 750 $APP_HOME &&\
+RUN chmod -R 750 $APP_HOME &&\
     chmod -R 550 $APP_HOME/bin &&\
     mkdir -p -m 750 $APP_HOME/config &&\
     mkdir -p -m 750 $APP_HOME/log &&\
@@ -41,6 +37,10 @@ RUN chmod 750 $APP_HOME &&\
     mkdir -p -m 700 $APP_HOME/.postgresql &&\
     mkdir -p -m 750 $APP_HOME/packages &&\
     chown -R $USER_NAME:$GROUP_NAME $APP_HOME
+
+# Copy the application & scripts
+COPY --chown=$USER_NAME:$GROUP_NAME target/appo-0.0.1-SNAPSHOT.jar $APP_HOME/bin
+COPY --chown=$USER_NAME:$GROUP_NAME configs/*.sh $APP_HOME/bin
 
 # Exposed port
 EXPOSE 8091

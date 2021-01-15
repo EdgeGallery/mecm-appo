@@ -144,7 +144,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
 
     @Override
     @Transactional
-    public AppInstanceInfo updateAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo) {
+    public void updateAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo) {
 
         String appInstanceId = appInstanceInfo.getAppInstanceId();
 
@@ -192,7 +192,8 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             info.setOperationInfo(operInfo);
         }
         LOGGER.debug("Update application instance {}", info);
-        return appInstanceInfoRepository.save(info);
+
+        appInstanceInfoRepository.save(info);
     }
 
     @Override

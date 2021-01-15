@@ -157,10 +157,9 @@ public class Apm extends ProcessflowAbstractTask {
             InputStream ipStream = responseBody.getInputStream();
 
             String appPackage = copyApplicationPackage(appInstanceId, appPackageId, ipStream);
-            Boolean isValid = validateApplicationPackage(appPackage);
-            if (isValid.equals(true)) {
-                setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-            }
+
+            validateApplicationPackage(appPackage);
+
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT_APM);
             throw new AppoException(Constants.FAILED_TO_CONNECT_APM);
@@ -215,7 +214,7 @@ public class Apm extends ProcessflowAbstractTask {
                 entriesCount++;
                 if (entriesCount > TOO_MANY || entry.getSize() > TOO_BIG) {
                     LOGGER.info("Too many files to unzip or file size is too big");
-                    return Boolean.FALSE;
+                    throw new AppoException("Package validation failed, Too many or too big files");
                 }
             }
         } catch (IOException | IllegalArgumentException e) {
