@@ -161,44 +161,49 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
      * @param appRule 包含依赖列表
      */
     public void checkMainTemplate(AppRule appRule) {
-        if (appRule.getAppServiceRequired() != null) {
-            String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
-            String appInstanceId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
-            String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
+        if (appRule.getAppServiceRequired() == null) {
+            return;
+        }
+        String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
+        String appInstanceId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
+        String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
 
-            // 根据mec host筛选实例列表，按照appPkgId转化为map，过滤掉状态非active的实例
-            List<AppInstanceInfo> appInstanceInfoListInHost = appInstanceInfoService
-                    .getAppInstanceInfoByMecHost(tenantId, mecHost);
+        // 根据mec host筛选实例列表，按照appPkgId转化为map，过滤掉状态非active的实例
+        List<AppInstanceInfo> appInstanceInfoListInHost = appInstanceInfoService
+                .getAppInstanceInfoByMecHost(tenantId, mecHost);
 
-            LOGGER.debug("app instance in mec host: {}, number:{}", mecHost, appInstanceInfoListInHost.size());
+        LOGGER.debug("app instance in mec host: {}, number:{}", mecHost, appInstanceInfoListInHost.size());
 
-            Map<String, AppInstanceInfo> appInstanceInfoMapWithPkg = appInstanceInfoListInHost.stream()
-                    .filter(appInstanceInfo -> OPERATIONAL_STATUS_INSTANTIATED
-                            .equals(appInstanceInfo.getOperationalStatus()))
-                    .collect(Collectors.toMap(AppInstanceInfo::getAppPackageId, appInstanceInfo -> appInstanceInfo));
+        Map<String, AppInstanceInfo> appInstanceInfoMapWithPkg = appInstanceInfoListInHost.stream()
+                .filter(appInstanceInfo -> OPERATIONAL_STATUS_INSTANTIATED
+                        .equals(appInstanceInfo.getOperationalStatus()))
+                .collect(Collectors.toMap(AppInstanceInfo::getAppPackageId, appInstanceInfo -> appInstanceInfo));
 
-            Gson gson = new Gson();
-            List<AppInstanceDependency> dependencies = new ArrayList<>();
+        Gson gson = new Gson();
+        List<AppInstanceDependency> dependencies = new ArrayList<>();
 
-            // 解析MainServiceTemplate.yaml，确认依赖的APP是否被部署
-            for (AppServiceRequired required: appRule.getAppServiceRequired()) {
-                AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(required.getPackageId());
+        // 解析MainServiceTemplate.yaml，确认依赖的APP是否被部署
+        for (AppServiceRequired required: appRule.getAppServiceRequired()) {
+            AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(required.getPackageId());
 
-                if (appInstanceInfo == null) {
-                    throw new AppoException("dependency app " + required.getSerName() + " not deployed");
-                }
-
-                AppInstanceDependency dependency = new AppInstanceDependency();
-                dependency.setTenant(tenantId);
-                dependency.setAppInstanceId(appInstanceId);
-                dependency.setDependencyAppInstanceId(appInstanceInfo.getAppInstanceId());
-                dependencies.add(dependency);
+            if (appInstanceInfo == null) {
+                throw new AppoException("dependency app " + required.getSerName() + " not deployed");
             }
 
-            String appRequiredJson = gson.toJson(dependencies);
-            execution.setVariable(Constants.APP_REQUIRED, appRequiredJson);
-            LOGGER.info("Set app dependencies : {}", appRequiredJson);
-            appRule.setAppServiceRequired(null);
+            AppInstanceDependency dependency = new AppInstanceDependency();
+            dependency.setTenant(tenantId);
+            dependency.setAppInstanceId(appInstanceId);
+            dependency.setDependencyAppInstanceId(appInstanceInfo.getAppInstanceId());
+            dependencies.add(dependency);
         }
+
+        String appRequiredJson = gson.toJson(dependencies);
+        execution.setVariable(Constants.APP_REQUIRED, appRequiredJson);
+        LOGGER.info("Set app dependencies : {}", appRequiredJson);
+
+        // 因为appServiceRequired已被被序列化并存储到Constants.APP_REQUIRED了
+        // 而后面AppRule也会被序列化并存储到Constants.APP_RULES
+        // 因此把appServiceRequired设置为null
+        appRule.setAppServiceRequired(null);
     }
 }
