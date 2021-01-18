@@ -39,6 +39,8 @@ public class AppRule {
 
     private Set<DnsRule> appDNSRule;
 
+    private Set<AppServiceRequired> appServiceRequired;
+
     private Boolean appSupportMp1;
     private String appName;
 }

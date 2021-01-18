@@ -18,10 +18,17 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
+
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import com.google.gson.reflect.TypeToken;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
+import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.model.AppRuleTask;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.utils.Constants;
@@ -99,8 +106,15 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo.setAppId((String) delegateExecution.getVariable(Constants.APP_ID));
             appInstanceInfo.setAppDescriptor((String) delegateExecution.getVariable(Constants.APP_DESCR));
             appInstanceInfo.setOperationalStatus(Constants.OPER_STATUS_CREATING);
-
-            appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
+            String dependenciesJson = (String) delegateExecution.getVariable(Constants.APP_REQUIRED);
+            if (dependenciesJson == null) {
+                appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
+            } else {
+                Gson gson = new Gson();
+                List<AppInstanceDependency> dependencies = gson.fromJson(dependenciesJson,
+                        new TypeToken<List<AppInstanceDependency>>() {}.getType());
+                appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo, dependencies);
+            }
 
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
 
