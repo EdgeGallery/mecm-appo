@@ -1,14 +1,15 @@
 package org.edgegallery.mecm.appo.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
 /**
  * Application Service Required input request schema.
+ *
  * @author 21cn/cuijch
  * @date 2020.12.23
  */
@@ -19,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppServiceRequired {
+
     private String serName;
     private String version;
     private Boolean requestedPermissions;
