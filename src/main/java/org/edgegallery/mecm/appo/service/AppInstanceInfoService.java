@@ -42,7 +42,8 @@ public interface AppInstanceInfoService {
      */
     AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo);
 
-    AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo, List<AppInstanceDependency> dependencies);
+    AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo,
+                                          List<AppInstanceDependency> dependencies);
 
     /**
      * Deletes application instance information.

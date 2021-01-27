@@ -18,17 +18,13 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
-
+import com.google.gson.reflect.TypeToken;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
-import com.google.gson.reflect.TypeToken;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
-import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.model.AppRuleTask;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.utils.Constants;

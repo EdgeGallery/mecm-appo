@@ -157,7 +157,8 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
     }
 
     /**
-     * 从appRule中获取依赖列表，如果非空，检查依赖是否被部署
+     * 从appRule中获取依赖列表，如果非空，检查依赖是否被部署.
+     *
      * @param appRule 包含依赖列表
      */
     public void checkMainTemplate(AppRule appRule) {
@@ -183,7 +184,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         List<AppInstanceDependency> dependencies = new ArrayList<>();
 
         // 解析MainServiceTemplate.yaml，确认依赖的APP是否被部署
-        for (AppServiceRequired required: appRule.getAppServiceRequired()) {
+        for (AppServiceRequired required : appRule.getAppServiceRequired()) {
             AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(required.getPackageId());
 
             if (appInstanceInfo == null) {
