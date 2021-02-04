@@ -185,8 +185,11 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
 
         // 解析MainServiceTemplate.yaml，确认依赖的APP是否被部署
         for (AppServiceRequired required : appRule.getAppServiceRequired()) {
+            // 对于平台服务，不存在packageId，不需要检查			
+            if ( null == required.getPackageId() || "".equals(required.getPackageId()) {
+                continue;
+            }
             AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(required.getPackageId());
-
             if (appInstanceInfo == null) {
                 throw new AppoException("dependency app " + required.getSerName() + " not deployed");
             }
