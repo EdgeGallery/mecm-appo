@@ -3,6 +3,7 @@ package org.edgegallery.mecm.appo.service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import javax.transaction.Transactional;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
@@ -112,6 +113,10 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
     public AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo,
                                                  List<AppInstanceDependency> dependencies) {
         if (!dependencies.isEmpty()) {
+            dependencies.forEach(item -> {
+                item.setTenant(tenantId);
+                item.setId(UUID.randomUUID().toString());
+            });
             appInstanceDependencyRepository.saveAll(dependencies);
         }
         return createAppInstanceInfo(tenantId, appInstanceInfo);
