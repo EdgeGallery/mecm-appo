@@ -110,8 +110,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
 
     @Override
     @Transactional
-    public AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo,
-                                                 List<AppInstanceDependency> dependencies) {
+    public void createAppInstanceDependencyInfo(String tenantId, List<AppInstanceDependency> dependencies) {
         if (!dependencies.isEmpty()) {
             dependencies.forEach(item -> {
                 item.setTenant(tenantId);
@@ -119,7 +118,6 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             });
             appInstanceDependencyRepository.saveAll(dependencies);
         }
-        return createAppInstanceInfo(tenantId, appInstanceInfo);
     }
 
     @Override

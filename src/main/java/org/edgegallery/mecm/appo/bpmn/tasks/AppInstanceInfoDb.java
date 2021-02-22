@@ -102,14 +102,13 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfo.setAppId((String) delegateExecution.getVariable(Constants.APP_ID));
             appInstanceInfo.setAppDescriptor((String) delegateExecution.getVariable(Constants.APP_DESCR));
             appInstanceInfo.setOperationalStatus(Constants.OPER_STATUS_CREATING);
+            appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
             String dependenciesJson = (String) delegateExecution.getVariable(Constants.APP_REQUIRED);
-            if (dependenciesJson == null) {
-                appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo);
-            } else {
+            if (dependenciesJson != null) {
                 Gson gson = new Gson();
                 List<AppInstanceDependency> dependencies = gson.fromJson(dependenciesJson,
                         new TypeToken<List<AppInstanceDependency>>() {}.getType());
-                appInstanceInfoService.createAppInstanceInfo(tenantId, appInstanceInfo, dependencies);
+                appInstanceInfoService.createAppInstanceDependencyInfo(tenantId, dependencies);
             }
 
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
@@ -190,6 +189,15 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             String tenantId = (String) delegateExecution.getVariable("tenant_id");
 
             appInstanceInfoService.updateAppInstanceInfo(tenantId, appInstanceInfo);
+            //deal with the dependency for update instance in create flow
+            String dependenciesJson = (String) delegateExecution.getVariable(Constants.APP_REQUIRED);
+            if (dependenciesJson != null && Constants.OPER_STATUS_CREATED.equals(operationalStatus)) {
+                Gson gson = new Gson();
+                List<AppInstanceDependency> dependencies = gson.fromJson(dependenciesJson,
+                        new TypeToken<List<AppInstanceDependency>>() {}.getType());
+                appInstanceInfoService.createAppInstanceDependencyInfo(tenantId, dependencies);
+                LOGGER.info("Update the dependency {}", dependenciesJson);
+            }
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException | NumberFormatException e) {
             LOGGER.info("Failed to update app instance info record {}", e.getMessage());
