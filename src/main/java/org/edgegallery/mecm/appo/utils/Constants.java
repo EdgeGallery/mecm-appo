@@ -31,7 +31,7 @@ public final class Constants {
     public static final String PORT_REGEX = "^([1-9]|[1-9]\\d{1,3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d"
             + "|6553[0-5])$";
     public static final String APPD_ID_REGEX = "[0-9a-f]{32}";
-    public static final String APP_PKG_ID_REGX = APPD_ID_REGEX;
+    public static final String APP_PKG_ID_REGX = "[0-9a-f]{32,64}";
     public static final String TENENT_ID_REGEX = "[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}";
     public static final String APP_NAME_REGEX = "^[a-zA-Z0-9]*$|^[a-zA-Z0-9][a-zA-Z0-9_\\-]*[a-zA-Z0-9]$";
     public static final String RECORD_NOT_FOUND = "Record not found";
