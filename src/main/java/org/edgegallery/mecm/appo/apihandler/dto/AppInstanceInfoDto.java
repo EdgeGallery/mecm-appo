@@ -28,7 +28,7 @@ public final class AppInstanceInfoDto {
 
     @NotEmpty(message = "app package ID is empty")
     @Pattern(regexp = APP_PKG_ID_REGX, message = "app package ID is invalid. It must be lowercase letters or digits "
-            + "with length of 32 characters.")
+            + "with length of 32/64 characters.")
     @Size(max = 64)
     private String appPackageId;
 

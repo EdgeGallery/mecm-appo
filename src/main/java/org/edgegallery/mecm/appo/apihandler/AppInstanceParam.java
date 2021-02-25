@@ -47,7 +47,7 @@ public abstract class AppInstanceParam {
     @NotEmpty(message = "Package ID is mandatory")
     @Size(max = 64)
     @Pattern(regexp = APP_PKG_ID_REGX, message = "Package ID is invalid. It must be lowercase letters or digits with "
-            + "length of 32 characters.")
+            + "length of 32/64 characters.")
     private String appPackageId;
 
     @NotEmpty(message = "Application name is mandatory")
