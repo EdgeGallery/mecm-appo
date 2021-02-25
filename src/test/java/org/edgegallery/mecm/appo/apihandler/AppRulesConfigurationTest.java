@@ -91,7 +91,7 @@ public class AppRulesConfigurationTest {
 
     private void createAppInstanceFlowUrls(MockRestServiceServer server)  throws Exception {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/2.2.2"
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2"
                 + ".2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -104,7 +104,7 @@ public class AppRulesConfigurationTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/2.2.2"
+        url = "http://10.9.9.1:11111/inventory/v1/applcms/2.2.2"
                 + ".2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -122,8 +122,7 @@ public class AppRulesConfigurationTest {
                 .andRespond(withSuccess(inputStreamResource, MediaType.APPLICATION_OCTET_STREAM));
 
         // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
-                + "/2.2.2.2";
+        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"appRuleIp\":\"2.2.2.2\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
@@ -139,7 +138,7 @@ public class AppRulesConfigurationTest {
 
     private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/2.2.2"
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2"
                 + ".2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -152,7 +151,7 @@ public class AppRulesConfigurationTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/2.2.2"
+        url = "http://10.9.9.1:11111/inventory/v1/applcms/2.2.2"
                 + ".2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -160,7 +159,7 @@ public class AppRulesConfigurationTest {
                         MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
 
         // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
+        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers"
                 + "/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -174,8 +173,7 @@ public class AppRulesConfigurationTest {
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess());
 
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/2.2.2"
-                + ".2";
+        url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"mechostIp\":\"2.2.2.2\",\"mechostName\":\"TestHost\","
@@ -187,8 +185,7 @@ public class AppRulesConfigurationTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
-                + "/2.2.2.2";
+        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"appRuleIp\":\"2.2.2.2\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
@@ -243,8 +240,7 @@ public class AppRulesConfigurationTest {
 
     private void deleteAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/2.2.2"
-                + ".2";
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"mechostIp\":\"2.2.2.2\",\"mechostName\":\"TestHost\","
@@ -256,8 +252,7 @@ public class AppRulesConfigurationTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/2.2.2"
-                + ".2";
+        url = "http://10.9.9.1:11111/inventory/v1/applcms/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"applcmIp\":\"2.2.2.2\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
@@ -272,7 +267,7 @@ public class AppRulesConfigurationTest {
                         MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
 
         // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
+        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers"
                 + "/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -311,8 +306,7 @@ public class AppRulesConfigurationTest {
 
     private void appRulesUpdateFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/2.2.2"
-                + ".2";
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"mechostIp\":\"2.2.2.2\",\"mechostName\":\"TestHost\","
@@ -324,7 +318,7 @@ public class AppRulesConfigurationTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/apprulemanagers"
+        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers"
                 + "/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))

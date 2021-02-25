@@ -44,10 +44,9 @@ public class SoftwareCapabilityHandlerTest {
 
     MockRestServiceServer server;
 
-    String inventoryQuery = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts"
-            + "/1.1.1.1";
+    String inventoryQuery = "http://10.9.9.1:11111/inventory/v1/mechosts/1.1.1.1";
 
-    String applcmQuery = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1.1";
+    String applcmQuery = "http://10.9.9.1:11111/inventory/v1/applcms/1.1.1.1";
 
     String getMepCapablities = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + "/hosts/" + "1.1.1.1/" +
             "mep_capabilities";

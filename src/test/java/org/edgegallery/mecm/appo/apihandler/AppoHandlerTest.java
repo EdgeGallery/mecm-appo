@@ -91,8 +91,7 @@ public class AppoHandlerTest {
 
     private void createAppInstanceFlowUrls(MockRestServiceServer server)  throws Exception {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
-                + ".1";
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/1.1.1.1";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"mechostIp\":\"1.1.1.1\",\"mechostName\":\"TestHost\","
@@ -104,7 +103,7 @@ public class AppoHandlerTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
+        url = "http://10.9.9.1:11111/inventory/v1/applcms/1.1.1"
                 + ".1";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -131,7 +130,7 @@ public class AppoHandlerTest {
 
     private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/1.1.1"
                 + ".1";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -144,7 +143,7 @@ public class AppoHandlerTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
+        url = "http://10.9.9.1:11111/inventory/v1/applcms/1.1.1"
                 + ".1";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -178,7 +177,7 @@ public class AppoHandlerTest {
 
     private void deleteAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/1.1.1"
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/1.1.1"
                 + ".1";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -191,7 +190,7 @@ public class AppoHandlerTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/1.1.1"
+        url = "http://10.9.9.1:11111/inventory/v1/applcms/1.1.1"
                 + ".1";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
