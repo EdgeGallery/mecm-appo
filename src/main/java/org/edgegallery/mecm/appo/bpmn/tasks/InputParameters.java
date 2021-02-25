@@ -71,7 +71,7 @@ public class InputParameters {
         delegateExecution.setVariable(Constants.HW_CAPABILITIES, hwCapabilities);
         delegateExecution.setVariable(Constants.APPRULE_TASK_ID, appRuleTaskId);
 
-        if (action.equals("CreateAppInstance")) {
+        if ("CreateAppInstance".equals(action)) {
             String mecHost = (String) delegateExecution.getVariable(Constants.MEC_HOST);
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
             delegateExecution.setVariable(Constants.MEC_HOST, mecHost);
@@ -80,7 +80,7 @@ public class InputParameters {
             LOGGER.info("tenant_id: {},app_package_id: {},mec_host: {},app_instance_description: {},app_id: {},"
                             + "app_name: {},app_instance_id: {}, hw_capabilities: {}", tenantId, appPkgId, mecHost,
                     appDescr, appId, appName, appInstanceId, hwCapabilities);
-        } else if (action.equals("BatchCreateAppInstance")) {
+        } else if ("BatchCreateAppInstance".equals(action)) {
             String mecHosts = (String) delegateExecution.getVariable(Constants.MEC_HOSTS);
             String appInstanceIds = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_IDS);
             delegateExecution.setVariable(Constants.MEC_HOSTS, mecHosts);
