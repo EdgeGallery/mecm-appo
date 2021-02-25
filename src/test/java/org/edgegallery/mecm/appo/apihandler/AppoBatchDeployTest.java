@@ -91,8 +91,7 @@ public class AppoBatchDeployTest {
 
     private void createAppInstanceFlowUrls(MockRestServiceServer server)  throws Exception {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/3.3.3"
-                + ".3";
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/3.3.3.3";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"mechostIp\":\"3.3.3.3\",\"mechostName\":\"TestHost\","
@@ -104,8 +103,7 @@ public class AppoBatchDeployTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/3.3.3"
-                + ".3";
+        url = "http://10.9.9.1:11111/inventory/v1/applcms/3.3.3.3";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"applcmIp\":\"3.3.3.3\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
@@ -131,7 +129,7 @@ public class AppoBatchDeployTest {
 
     private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/3.3.3"
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/3.3.3"
                 + ".3";
         server = MockRestServiceServer.createServer(restTemplate);
         server.expect(requestTo(url))
@@ -145,7 +143,7 @@ public class AppoBatchDeployTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/3.3.3"
+        url = "http://10.9.9.1:11111/inventory/v1/applcms/3.3.3"
                 + ".3";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -177,8 +175,7 @@ public class AppoBatchDeployTest {
 
     private void deleteAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/mechosts/3.3.3"
-                + ".3";
+        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/3.3.3.3";
         server = MockRestServiceServer.createServer(restTemplate);
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
@@ -191,8 +188,7 @@ public class AppoBatchDeployTest {
                         MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
 
         // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/applcms/3.3.3"
-                + ".3";
+        url = "http://10.9.9.1:11111/inventory/v1/applcms/3.3.3.3";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"applcmIp\":\"3.3.3.3\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",

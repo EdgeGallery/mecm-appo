@@ -65,11 +65,11 @@ public final class Constants {
     public static final String APPRULE_TASK_ID = "apprule_task_id";
 
     public static final String APM_DOWNLOAD_URI = "/apm/v1/tenants/{tenant_id}/packages/{app_package_id}/download";
-    public static final String INVENTORY_MEC_HOST_URI = "/inventory/v1/tenants/{tenant_id}/mechosts/{mec_host}";
-    public static final String INVENTORY_APPLCM_URI = "/inventory/v1/tenants/{tenant_id}/applcms/{applcm_ip}";
+    public static final String INVENTORY_MEC_HOST_URI = "/inventory/v1/mechosts/{mec_host}";
+    public static final String INVENTORY_APPLCM_URI = "/inventory/v1/applcms/{applcm_ip}";
     public static final String INVENTORY_APPLICATIONS_URI = "/inventory/v1/tenants/{tenant_id}"
             + "/mechosts/{mec_host}/apps";
-    public static final String INVENTORY_APPRULECFG_URI = "/inventory/v1/tenants/{tenant_id}/apprulemanagers"
+    public static final String INVENTORY_APPRULECFG_URI = "/inventory/v1/apprulemanagers"
             + "/{app_rule_manager_ip}";
     public static final String INVENTORY_APPLICATION_URI = "/inventory/v1/tenants/{tenant_id}"
             + "/mechosts/{mec_host}/apps/{app_instance_id}";

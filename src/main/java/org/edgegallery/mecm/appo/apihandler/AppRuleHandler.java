@@ -58,7 +58,7 @@ public class AppRuleHandler {
     @ApiOperation(value = "Configure application rules", response = String.class)
     @PostMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}/appd_configuration", produces =
             MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT')")
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
     public ResponseEntity<AppoResponse> addAppRules(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant identifier") @PathVariable("tenant_id")
@@ -85,7 +85,7 @@ public class AppRuleHandler {
     @ApiOperation(value = "Updates application rules", response = String.class)
     @PutMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}/appd_configuration",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT')")
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
     public ResponseEntity<AppoResponse> updateApplicationRules(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant identifier") @PathVariable("tenant_id")
@@ -111,7 +111,7 @@ public class AppRuleHandler {
     @ApiOperation(value = "Deletes application rules", response = String.class)
     @DeleteMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}/appd_configuration",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT')")
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
     public ResponseEntity<AppoResponse> deleteApplicationRules(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant identifier") @PathVariable("tenant_id")

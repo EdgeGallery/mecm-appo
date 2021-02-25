@@ -77,7 +77,7 @@ public class AppoDbHandler {
     @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
     @GetMapping(path = "/tenants/{tenant_id}/app_instance_infos/{appInstance_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_GUEST')")
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
     public ResponseEntity<AppoResponse> getAppInstanceInfo(
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
@@ -102,7 +102,7 @@ public class AppoDbHandler {
      */
     @ApiOperation(value = "Retrieves application instance info", response = AppoResponse.class)
     @GetMapping(value = "/tenants/{tenant_id}/app_instance_infos", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_GUEST')")
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
     public ResponseEntity<AppoResponse> getAllAppInstanceInfo(
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
@@ -147,7 +147,7 @@ public class AppoDbHandler {
     @ApiOperation(value = "Retrieves application rule task info", response = AppoResponse.class)
     @GetMapping(path = "/tenants/{tenant_id}/apprule_task_infos/{apprule_task_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_GUEST')")
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
     public ResponseEntity<AppoResponse> getAppRuletaskInfo(
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
