@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
@@ -82,6 +83,28 @@ public abstract class ProcessflowAbstractTask {
         delegateExecution.setVariable(RESPONSE_CODE, responseCode);
         delegateExecution.setVariable(FLOW_EXCEPTION, response);
         delegateExecution.setVariable(ERROR_RESPONSE, response);
+    }
+
+    /**
+     * Send request to remote entity.
+     * @param execution execution
+     * @param restTemplate rest template
+     * @param url request url
+     * @param data data to send
+     * @param method method
+     * @return response data
+     */
+    public String sendRequest(DelegateExecution execution, RestTemplate restTemplate, String url,
+                              String data, Map<String, Object> headers, HttpMethod method) {
+
+        HttpHeaders header = getBaseHttpHeader(execution);
+        for (Map.Entry<String, Object> entry: headers.entrySet()) {
+            header.set(entry.getKey(), entry.getValue().toString());
+        }
+        HttpEntity<String> entity = new HttpEntity<>(data, header);
+
+        return sendRequest(execution, restTemplate, url, entity, method);
+
     }
 
     /**
