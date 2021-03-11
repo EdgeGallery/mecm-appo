@@ -16,15 +16,19 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import com.google.gson.Gson;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.model.AppInstantiateReq;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.UrlUtil;
 import org.slf4j.Logger;
@@ -39,6 +43,7 @@ public class Mepm extends ProcessflowAbstractTask {
 
     public static final String HOST_IP = "hostIp";
     public static final String APPLICATION_NAME = "appName";
+    public static final String APP_PACKAGE_ID = "packageId";
     private static final Logger LOGGER = LoggerFactory.getLogger(Mepm.class);
     private static final String URL_PARAM_ERROR = "Failed to resolve url path parameters";
     private static final String DELETE_APP_RULES = "deleteAppRules";
@@ -165,24 +170,21 @@ public class Mepm extends ProcessflowAbstractTask {
             return;
         }
 
-        String appPackagePath = appPkgBasePath + appInstanceInfo.getAppInstanceId()
-                + Constants.SLASH + appInstanceInfo.getAppPackageId() + Constants.APP_PKG_EXT;
-
         try {
-            FileSystemResource appPkgRes = new FileSystemResource(new File(appPackagePath));
 
-            // Preparing request parts.
-            LinkedMultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
-            parts.add("file", appPkgRes);
-            parts.add(HOST_IP, appInstanceInfo.getMecHost());
-            parts.add(APPLICATION_NAME, appInstanceInfo.getAppName());
+            // Preparing request headers.
+            Map<String, Object> headers = new HashMap<>();
+            headers.put("origin", "MEO");
+
+            AppInstantiateReq appInstReq = new AppInstantiateReq(appInstanceInfo.getMecHost(),
+                    appInstanceInfo.getAppPackageId(),
+                    appInstanceInfo.getAppName());
 
             LOGGER.info("hostIp {} and appName {}", appInstanceInfo.getMecHost(), appInstanceInfo.getAppName());
 
             String instantiateUrl = resolveUrlPathParameters(Constants.APPLCM_INSTANTIATE_URI);
-
-            String response = sendRequest(execution, restTemplate, instantiateUrl, parts,
-                    MediaType.MULTIPART_FORM_DATA, HttpMethod.POST);
+            String response = sendRequest(execution, restTemplate, instantiateUrl,
+                                          new Gson().toJson(appInstReq), headers, HttpMethod.POST);
             if (response != null) {
                 //Delete application package
                 String deletePackage = appPkgBasePath + appInstanceInfo.getAppInstanceId()
