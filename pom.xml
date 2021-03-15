@@ -278,7 +278,7 @@
             <plugin>
                 <configuration>
                     <configLocation>
-                        https://raw.githubusercontent.com/EdgeGallery/infra/master/configs/edgegallery_checks.xml
+                        https://raw.githubusercontent.com/EdgeGallery/docs/master/code-check-configs/edgegallery_checks.xml
                     </configLocation>
                     <consoleOutput>true</consoleOutput>
                     <failOnViolation>true</failOnViolation>
@@ -381,7 +381,7 @@
             <plugin>
                 <configuration>
                     <configLocation>
-                        https://raw.githubusercontent.com/EdgeGallery/infra/master/configs/edgegallery_checks.xml
+                        https://raw.githubusercontent.com/EdgeGallery/docs/master/code-check-configs/edgegallery_checks.xml
                     </configLocation>
                     <failOnViolation>true</failOnViolation>
                     <violationSeverity>warning</violationSeverity>
