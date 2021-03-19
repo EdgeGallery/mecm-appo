@@ -2,10 +2,10 @@
     create table appinstanceinfo (
        app_instance_id  varchar(64) not null,
         app_package_id varchar(64) not null,
-        app_id varchar(64) not null,
+        app_id varchar(64),
         tenant varchar(64) not null,
         app_name varchar(128) not null,
-        app_descriptor varchar(256) not null,
+        app_descriptor varchar(256),
         mec_host varchar(15) not null,
         applcm_host varchar(15),
         operational_status varchar(128) not null,
