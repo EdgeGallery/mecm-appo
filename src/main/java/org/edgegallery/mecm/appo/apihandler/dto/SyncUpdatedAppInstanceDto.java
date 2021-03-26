@@ -18,7 +18,6 @@ package org.edgegallery.mecm.appo.apihandler.dto;
 
 import java.util.LinkedList;
 import java.util.List;
-import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,7 +35,7 @@ import org.springframework.validation.annotation.Validated;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class SyncUpdatedAppInstanceDto extends SyncBaseDto {
+public class SyncUpdatedAppInstanceDto implements SyncBaseDto {
 
     @Size(max = 50, message = "App instance info updated records exceeds max limit 50")
     private List<AppInstanceInfoDto> appInstanceUpdatedRecs = new LinkedList<>();
