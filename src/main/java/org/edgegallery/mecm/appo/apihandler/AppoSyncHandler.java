@@ -30,7 +30,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import org.apache.coyote.ajp.AjpMessage;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceDeletedDto;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceInfoDto;
 import org.edgegallery.mecm.appo.apihandler.dto.SyncDeletedAppInstanceDto;
