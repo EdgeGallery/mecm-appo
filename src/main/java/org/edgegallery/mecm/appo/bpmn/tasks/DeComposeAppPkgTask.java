@@ -178,7 +178,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         Map<String, AppInstanceInfo> appInstanceInfoMapWithPkg = appInstanceInfoListInHost.stream()
                 .filter(appInstanceInfo -> OPERATIONAL_STATUS_INSTANTIATED
                         .equals(appInstanceInfo.getOperationalStatus()))
-                .collect(Collectors.toMap(AppInstanceInfo::getAppPackageId, appInstanceInfo -> appInstanceInfo));
+                .collect(Collectors.toMap(AppInstanceInfo::getAppId, appInstanceInfo -> appInstanceInfo));
 
         Gson gson = new Gson();
         List<AppInstanceDependency> dependencies = new ArrayList<>();
@@ -189,7 +189,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
             if (null == required.getPackageId() || "".equals(required.getPackageId())) {
                 continue;
             }
-            AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(required.getPackageId());
+            AppInstanceInfo appInstanceInfo = appInstanceInfoMapWithPkg.get(required.getAppId());
             if (appInstanceInfo == null) {
                 throw new AppoException("dependency app " + required.getSerName() + " not deployed");
             }
