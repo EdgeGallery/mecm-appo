@@ -98,7 +98,7 @@ public class RestServiceImpl implements RestService {
         HttpEntity<String> httpEntity = null;
         if (method == HttpMethod.POST || method == HttpMethod.PUT) {
             httpEntity = new HttpEntity<>(data, httpHeaders);
-        } else if (method == HttpMethod.DELETE) {
+        } else if (method == HttpMethod.DELETE || method == HttpMethod.GET) {
             httpEntity = new HttpEntity<>(httpHeaders);
         }
 
