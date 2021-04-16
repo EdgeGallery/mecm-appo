@@ -107,20 +107,6 @@ public class AppOrchestratorApplication {
         }
     }
 
-    // /**
-    //  * Returns new instance of restTemplate with required configuration.
-    //  *
-    //  * @return restTemplate with required configuration
-    //  */
-    // @Bean
-    // public RestTemplate restTemplate() {
-    //     RestClientHelper builder =
-    //             new RestClientHelper(Boolean.parseBoolean(isSslEnabled), trustStorePath, trustStorePasswd);
-    //     CloseableHttpClient client = builder.buildHttpClient();
-    //     HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(client);
-    //     factory.setBufferRequestBody(false);
-    //     return new RestTemplate(factory);
-    // }
 
     /**
      * Asychronous configurations.
