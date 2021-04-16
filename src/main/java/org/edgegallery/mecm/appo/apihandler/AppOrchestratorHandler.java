@@ -24,6 +24,7 @@ import io.swagger.annotations.ApiResponses;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.edgegallery.mecm.appo.service.AppoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.Constants;
@@ -47,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Application orchestrator API handler.
  */
+@RestSchema(schemaId = "appo-appInstance")
 @Api(value = "Application orchestrator api system")
 @Validated
 @RequestMapping("/appo/v1")

@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.edgegallery.mecm.appo.apihandler.dto.AppRuleConfigDto;
 import org.edgegallery.mecm.appo.apihandler.dto.AppRuleDeleteConfigDto;
 import org.edgegallery.mecm.appo.model.AppRule;
@@ -51,6 +52,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Application Rule API handler.
  */
+@RestSchema(schemaId = "appo-appRule")
 @Api(value = "Appo application rule api system")
 @Validated
 @RequestMapping("/appo/v1")

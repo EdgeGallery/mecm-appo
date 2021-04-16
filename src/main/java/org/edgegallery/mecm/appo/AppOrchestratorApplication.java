@@ -26,6 +26,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.edgegallery.mecm.appo.service.RestClientHelper;
 import org.slf4j.Logger;
@@ -46,8 +47,7 @@ import org.springframework.web.client.RestTemplate;
  * Edge application orchestrator.
  */
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
-@EnableAsync
-@EnableProcessApplication
+@EnableServiceComb
 public class AppOrchestratorApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppOrchestratorApplication.class);
@@ -107,20 +107,20 @@ public class AppOrchestratorApplication {
         }
     }
 
-    /**
-     * Returns new instance of restTemplate with required configuration.
-     *
-     * @return restTemplate with required configuration
-     */
-    @Bean
-    public RestTemplate restTemplate() {
-        RestClientHelper builder =
-                new RestClientHelper(Boolean.parseBoolean(isSslEnabled), trustStorePath, trustStorePasswd);
-        CloseableHttpClient client = builder.buildHttpClient();
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(client);
-        factory.setBufferRequestBody(false);
-        return new RestTemplate(factory);
-    }
+    // /**
+    //  * Returns new instance of restTemplate with required configuration.
+    //  *
+    //  * @return restTemplate with required configuration
+    //  */
+    // @Bean
+    // public RestTemplate restTemplate() {
+    //     RestClientHelper builder =
+    //             new RestClientHelper(Boolean.parseBoolean(isSslEnabled), trustStorePath, trustStorePasswd);
+    //     CloseableHttpClient client = builder.buildHttpClient();
+    //     HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(client);
+    //     factory.setBufferRequestBody(false);
+    //     return new RestTemplate(factory);
+    // }
 
     /**
      * Asychronous configurations.
