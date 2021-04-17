@@ -47,6 +47,8 @@ import org.springframework.web.client.RestTemplate;
  * Edge application orchestrator.
  */
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
+@EnableAsync
+@EnableProcessApplication
 @EnableServiceComb
 public class AppOrchestratorApplication {
 
