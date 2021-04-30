@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceInfoDto;
 import org.edgegallery.mecm.appo.apihandler.dto.AppRuleTaskDto;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
@@ -52,6 +53,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Appo database API handler.
  */
+@RestSchema(schemaId = "appo-db")
 @Api(value = "Application instance info api system")
 @Validated
 @RequestMapping("/appo/v1")

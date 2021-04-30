@@ -14,27 +14,41 @@
 # limitations under the License.
 #
 
+### ServiceComb config #########
+servicecomb-config-order: 1
+APPLICATION_ID: edgegallery
+service_description:
+  name: mecm-appo
+  version: 1.1.1
+  environment: development
+servicecomb:
+  service:
+    registry:
+      address: ${SC_ADDRESS}
+  rest:
+    address: ${LISTEN_IP:}:8091
+    servlet:
+      urlPattern: /cse/*
+
 ### Server port #########
 server:
   port: 8091
-  address: ${LISTEN_IP:}
-  contextPath: /home
   tomcat:
     max-threads: 200
 
   ssl:
-    enabled: true
+    enabled: ${SSL_ENABLED:false}
     protocol: TLS
     enabled-Protocols: [TLSv1.2]
     ciphers: [TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
               TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384]
 
     # Keystore
-    key-store: /usr/app/ssl/keystore.p12
+    key-store: ${SSL_KEY_STORE_PATH:/usr/app/ssl/keystore.p12}
     key-store-password: ${SSL_KEY_STORE_PASSWORD:}
     key-store-type: ${SSL_KEY_STORE_TYPE:PKCS12}
     key-alias: ${SSL_KEY_ALIAS:edgegallery}
-    trust-store: /usr/app/ssl/keystore.jks
+    trust-store: ${SSL_KEY_STORE_JKS_PATH:/usr/app/ssl/keystore.jks}
     trust-store-password: ${SSL_TRUST_PASSWORD:}
 
 spring:

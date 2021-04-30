@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceDeletedDto;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceInfoDto;
 import org.edgegallery.mecm.appo.apihandler.dto.SyncDeletedAppInstanceDto;
@@ -60,6 +61,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Appo database API handler.
  */
+@RestSchema(schemaId = "appo-sync")
 @Api(value = "Application instance info api system")
 @Validated
 @RequestMapping("/appo/v1")

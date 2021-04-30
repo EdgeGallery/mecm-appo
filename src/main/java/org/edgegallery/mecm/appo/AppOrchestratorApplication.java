@@ -26,6 +26,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.edgegallery.mecm.appo.service.RestClientHelper;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class})
 @EnableAsync
 @EnableProcessApplication
+@EnableServiceComb
 public class AppOrchestratorApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppOrchestratorApplication.class);
@@ -60,15 +62,6 @@ public class AppOrchestratorApplication {
 
     @Value("${appo.async.queue-capacity}")
     private int queueCapacity;
-
-    @Value("${server.ssl.enabled:}")
-    private String isSslEnabled;
-
-    @Value("${server.ssl.trust-store:}")
-    private String trustStorePath;
-
-    @Value("${server.ssl.trust-store-password:}")
-    private String trustStorePasswd;
 
     /**
      * Edge application orchestrator entry function.
@@ -107,20 +100,6 @@ public class AppOrchestratorApplication {
         }
     }
 
-    /**
-     * Returns new instance of restTemplate with required configuration.
-     *
-     * @return restTemplate with required configuration
-     */
-    @Bean
-    public RestTemplate restTemplate() {
-        RestClientHelper builder =
-                new RestClientHelper(Boolean.parseBoolean(isSslEnabled), trustStorePath, trustStorePasswd);
-        CloseableHttpClient client = builder.buildHttpClient();
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(client);
-        factory.setBufferRequestBody(false);
-        return new RestTemplate(factory);
-    }
 
     /**
      * Asychronous configurations.
