@@ -18,6 +18,7 @@ package org.edgegallery.mecm.appo.apihandler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -90,6 +91,8 @@ public class AppRulesConfigurationTest {
     }
 
     private void createAppInstanceFlowUrls(MockRestServiceServer server)  throws Exception {
+
+
         // Mocking get MEC host from inventory
         String url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2"
                 + ".2";
@@ -475,7 +478,7 @@ public class AppRulesConfigurationTest {
         ResultActions postResult =
                 mvc.perform(MockMvcRequestBuilders.post(APPO_TENANT + TENANT_ID + "/app_instances")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON).with(csrf())
                         .content(
                                 "{ \"appPackageId\": \"f20358433cf8eb4719a62a49ed118c9b\", \"appName\": "
                                         + "\"face_recognitionRule\", "
@@ -500,7 +503,7 @@ public class AppRulesConfigurationTest {
         ResultActions getResult =
                 mvc.perform(MockMvcRequestBuilders.get(APPO_TENANT + TENANT_ID
                         + "/app_instance_infos/" + appInstanceId)
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult getMvcResult = getResult.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -518,7 +521,7 @@ public class AppRulesConfigurationTest {
         ResultActions postInstantiateResult =
                 mvc.perform(MockMvcRequestBuilders
                         .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId)
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .header(ACCESS_TOKEN, SAMPLE_TOKEN));
         postInstantiateResult.andDo(MockMvcResultHandlers.print())
@@ -532,7 +535,7 @@ public class AppRulesConfigurationTest {
         ResultActions postConfigAppRuleResult =
                 mvc.perform(MockMvcRequestBuilders
                         .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId + "/appd_configuration")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .content("{\n"
                                 + "  \"appTrafficRule\": [\n"
@@ -594,7 +597,7 @@ public class AppRulesConfigurationTest {
         ResultActions deleteResult =
                 mvc.perform(MockMvcRequestBuilders
                         .delete(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId)
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
                         .accept(MediaType.APPLICATION_JSON)
                         .header(ACCESS_TOKEN, SAMPLE_TOKEN));
         deleteResult.andDo(MockMvcResultHandlers.print())

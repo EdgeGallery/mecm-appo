@@ -18,6 +18,7 @@ package org.edgegallery.mecm.appo.apihandler;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -279,7 +280,7 @@ public class AppoBatchDeployTest {
         ResultActions postInstantiateResult =
                 mvc.perform(MockMvcRequestBuilders
                         .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + "batch_instantiate")
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .content("{ \"appInstanceIds\": [\"" + appInstanceId + "\"] }")
                         .header(ACCESS_TOKEN, SAMPLE_TOKEN));
