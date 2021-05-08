@@ -107,6 +107,12 @@
             <artifactId>spring-core</artifactId>
             <version>5.2.8.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>5.2.8.RELEASE</version>
+        </dependency>
+
         <!-- jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
