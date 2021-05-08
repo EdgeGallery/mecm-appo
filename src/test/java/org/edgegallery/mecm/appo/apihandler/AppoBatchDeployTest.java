@@ -227,7 +227,7 @@ public class AppoBatchDeployTest {
         ResultActions postResult =
                 mvc.perform(MockMvcRequestBuilders.post(APPO_TENANT + TENANT_ID + "/app_instances/batch_create")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON).with(csrf())
                         .content(
                                 "{ \"appPackageId\": \"f20358433cf8eb4719a62a49ed118c9b\", \"appName\": "
                                         + "\"face_recognitionBatch\", "
@@ -250,7 +250,7 @@ public class AppoBatchDeployTest {
         ResultActions getAllResult =
                 mvc.perform(MockMvcRequestBuilders.get(APPO_TENANT + TENANT_ID
                         + "/app_instance_infos?appinstanceids=" + appInstanceId)
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult getAllMvcResult = getAllResult.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -264,7 +264,7 @@ public class AppoBatchDeployTest {
         ResultActions getResult =
                 mvc.perform(MockMvcRequestBuilders.get(APPO_TENANT + TENANT_ID
                         + "/app_instance_infos/" + appInstanceId)
-                        .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
                         .accept(MediaType.APPLICATION_JSON_VALUE));
         MvcResult getMvcResult = getResult.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -297,7 +297,7 @@ public class AppoBatchDeployTest {
                 mvc.perform(MockMvcRequestBuilders
                         .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + "batch_terminate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON).with(csrf())
                         .content("{ \"appInstanceIds\": [\"" + appInstanceId + "\"] }")
                         .header(ACCESS_TOKEN, SAMPLE_TOKEN));
         deleteResult.andDo(MockMvcResultHandlers.print())

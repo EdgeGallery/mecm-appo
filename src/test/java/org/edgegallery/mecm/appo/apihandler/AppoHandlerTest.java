@@ -252,7 +252,7 @@ public class AppoHandlerTest {
                 mvc.perform(MockMvcRequestBuilders.get(APPO_TENANT + TENANT_ID
                         + "/app_instance_infos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE));
+                        .accept(MediaType.APPLICATION_JSON_VALUE).with(csrf()));
         MvcResult getAllMvcResult = getAllResult.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
@@ -267,7 +267,7 @@ public class AppoHandlerTest {
                 mvc.perform(MockMvcRequestBuilders.get(APPO_TENANT + TENANT_ID
                         + "/app_instance_infos/" + appInstanceId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE));
+                        .accept(MediaType.APPLICATION_JSON_VALUE).with(csrf()));
         MvcResult getMvcResult = getResult.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
@@ -284,7 +284,7 @@ public class AppoHandlerTest {
                 mvc.perform(MockMvcRequestBuilders
                         .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE).with(csrf())
                         .header(ACCESS_TOKEN, SAMPLE_TOKEN));
         postInstantiateResult.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
@@ -299,7 +299,7 @@ public class AppoHandlerTest {
                 mvc.perform(MockMvcRequestBuilders
                         .delete(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON).with(csrf())
                         .header(ACCESS_TOKEN, SAMPLE_TOKEN));
         deleteResult.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
