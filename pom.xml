@@ -97,22 +97,22 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.6.2</version>
-        </dependency>
+        </dependency-->
         <!-- spring-core-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>5.1.13.RELEASE</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>5.1.13.RELEASE</version>
-        </dependency>
+        </dependency-->
 
         <!-- jackson -->
         <dependency>
@@ -124,6 +124,21 @@
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.26</version>
+        </dependency>
+        <dependency>
+          <artifactId>spring-web</artifactId>
+          <groupId>org.springframework</groupId>
+          <version>5.1.13.RELEASE</version>
+        </dependency>
+        <dependency>
+          <artifactId>spring-aop</artifactId>
+          <groupId>org.springframework</groupId>
+          <version>5.1.13.RELEASE</version>
+        </dependency>
+        <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter-api</artifactId>
+          <version>5.6.2</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -338,7 +353,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>6.4.4</version>
+            <version>5.2.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
