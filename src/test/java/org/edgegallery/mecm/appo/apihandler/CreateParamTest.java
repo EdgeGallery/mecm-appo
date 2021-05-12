@@ -16,6 +16,7 @@
 
 package org.edgegallery.mecm.appo.apihandler;
 
+import org.edgegallery.mecm.appo.apihandler.dto.CreateParam;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.junit.Assert;
 import org.junit.Before;

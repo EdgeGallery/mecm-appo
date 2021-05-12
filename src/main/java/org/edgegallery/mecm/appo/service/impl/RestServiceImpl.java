@@ -14,13 +14,14 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.service;
+package org.edgegallery.mecm.appo.service.impl;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.edgegallery.mecm.appo.apihandler.dto.SyncBaseDto;
 import org.edgegallery.mecm.appo.exception.AppoException;
+import org.edgegallery.mecm.appo.service.RestService;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +117,7 @@ public class RestServiceImpl implements RestService {
                 responseEntity.getBody());
 
         HttpStatus statusCode = responseEntity.getStatusCode();
-        if (statusCode.toString().equals(Constants.PROCESS_RECORD_NOT_FOUND)) {
+        if (Constants.PROCESS_RECORD_NOT_FOUND.equals(statusCode.toString())) {
             throw new NoSuchElementException("Record not found status code: " + statusCode);
         }
 

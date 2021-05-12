@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.error.YAMLException;
 
 /**
  * 部署前检查app包的依赖是否有对应实例.
@@ -119,7 +120,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         Yaml yaml = new Yaml(new SafeConstructor());
         try {
             mainTemplateMap = yaml.load(zis);
-        } catch (Exception e) {
+        } catch (YAMLException e) {
             LOGGER.error(FAILED_TO_LOAD_YAML);
             throw new AppoException(FAILED_TO_LOAD_YAML);
         }

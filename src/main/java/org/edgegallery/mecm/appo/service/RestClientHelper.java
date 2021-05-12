@@ -16,6 +16,8 @@
 
 package org.edgegallery.mecm.appo.service;
 
+import static org.edgegallery.mecm.appo.utils.Constants.TLS_VER;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -108,7 +110,7 @@ public class RestClientHelper {
             if (isSslEnabled) {
                 KeyStore ks = getKeyStore(trustStorePath, trustStorePasswd);
                 SSLContext sslctx = SSLContexts.custom().loadTrustMaterial(ks, new TrustSelfSignedStrategy())
-                        .setProtocol("TLSv1.2").build();
+                        .setProtocol(TLS_VER).build();
                 SSLConnectionSocketFactory sslFactory =
                         new SSLConnectionSocketFactory(sslctx, (s, sslSession) -> true);
 

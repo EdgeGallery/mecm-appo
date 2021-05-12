@@ -17,9 +17,9 @@
 
 package org.edgegallery.mecm.appo.service;
 
-import org.edgegallery.mecm.appo.apihandler.BatchCreateParam;
-import org.edgegallery.mecm.appo.apihandler.BatchInstancesParam;
-import org.edgegallery.mecm.appo.apihandler.CreateParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchCreateParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchInstancesParam;
+import org.edgegallery.mecm.appo.apihandler.dto.CreateParam;
 import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.springframework.http.ResponseEntity;

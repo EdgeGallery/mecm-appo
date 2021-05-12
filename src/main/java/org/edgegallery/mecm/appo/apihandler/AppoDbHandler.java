@@ -60,7 +60,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AppoDbHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppoDbHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppoDbHandler.class);
 
     private final AppInstanceInfoService appInstanceInfoService;
 
@@ -86,7 +86,7 @@ public class AppoDbHandler {
             @ApiParam(value = "application instance id") @PathVariable("appInstance_id")
             @Pattern(regexp = APP_INST_ID_REGX) @Size(max = 64) String appInstanceId) {
 
-        logger.info("Retrieve application instance info: {}", appInstanceId);
+        LOGGER.info("Retrieve application instance info: {}", appInstanceId);
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
         ModelMapper mapper = new ModelMapper();
@@ -111,11 +111,12 @@ public class AppoDbHandler {
             @RequestParam(required = false) @Size(max = 50)
                     List<@Pattern(regexp = APP_INST_ID_REGX) String> appinstanceids) {
 
-        logger.info("Retrieve application instance infos");
+        LOGGER.info("Retrieve application instance infos");
 
         List<AppInstanceInfoDto> appInstanceInfosDto = new LinkedList<>();
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
         if (appInstanceInfos == null || appInstanceInfos.isEmpty()) {
+            LOGGER.error("app instance info does not exist");
             throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);
         }
 
@@ -134,6 +135,7 @@ public class AppoDbHandler {
             }
         }
         if (appInstanceInfosDto.isEmpty()) {
+            LOGGER.error("app instance info does not exist");
             throw new NoSuchElementException(Constants.RECORD_NOT_FOUND);
         }
         return new ResponseEntity<>(new AppoResponse(appInstanceInfosDto), HttpStatus.OK);
@@ -156,7 +158,7 @@ public class AppoDbHandler {
             @ApiParam(value = "application instance id") @PathVariable("apprule_task_id")
             @Pattern(regexp = APP_INST_ID_REGX) @Size(max = 64) String appRuleTaskId) {
 
-        logger.info("Retrieve application rule task info: {}", appRuleTaskId);
+        LOGGER.info("Retrieve application rule task info: {}", appRuleTaskId);
 
         AppRuleTask appRuletaskInfo = appInstanceInfoService.getAppRuleTaskInfo(tenantId, appRuleTaskId);
         ModelMapper mapper = new ModelMapper();

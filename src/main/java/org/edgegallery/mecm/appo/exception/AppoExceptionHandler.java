@@ -51,7 +51,7 @@ public class AppoExceptionHandler {
      */
     @ExceptionHandler(value = AppoProcessflowException.class)
     public ResponseEntity<String> exception(AppoProcessflowException exception) {
-        if (exception.getMessage().equals(RECORD_NOT_FOUND)) {
+        if (RECORD_NOT_FOUND.equals(exception.getMessage())) {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

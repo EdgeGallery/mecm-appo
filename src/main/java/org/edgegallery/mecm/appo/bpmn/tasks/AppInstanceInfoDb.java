@@ -107,7 +107,8 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             if (dependenciesJson != null) {
                 Gson gson = new Gson();
                 List<AppInstanceDependency> dependencies = gson.fromJson(dependenciesJson,
-                        new TypeToken<List<AppInstanceDependency>>() {}.getType());
+                        new TypeToken<List<AppInstanceDependency>>() {
+                        }.getType());
                 appInstanceInfoService.createAppInstanceDependencyInfo(tenantId, dependencies);
             }
 
@@ -115,7 +116,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
 
             LOGGER.info("App instance info record added ");
         } catch (AppoException e) {
-            LOGGER.info("Failed to add app instance info record {}", e.getMessage());
+            LOGGER.error("Failed to add app instance info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to add app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
@@ -141,7 +142,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             delegateExecution.setVariable("app_instance_info", appInstanceInfo);
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
-            LOGGER.info("Failed to get app instance info record {}", e.getMessage());
+            LOGGER.error("Failed to get app instance info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to get app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
@@ -194,13 +195,14 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             if (dependenciesJson != null && Constants.OPER_STATUS_CREATED.equals(operationalStatus)) {
                 Gson gson = new Gson();
                 List<AppInstanceDependency> dependencies = gson.fromJson(dependenciesJson,
-                        new TypeToken<List<AppInstanceDependency>>() {}.getType());
+                        new TypeToken<List<AppInstanceDependency>>() {
+                        }.getType());
                 appInstanceInfoService.createAppInstanceDependencyInfo(tenantId, dependencies);
                 LOGGER.info("Update the dependency {}", dependenciesJson);
             }
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException | NumberFormatException e) {
-            LOGGER.info("Failed to update app instance info record {}", e.getMessage());
+            LOGGER.error("Failed to update app instance info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
@@ -223,7 +225,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfoService.deleteAppInstanceInfo(tenantId, appInstanceId);
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException e) {
-            LOGGER.info("Failed to delete app instance info record {}", e.getMessage());
+            LOGGER.error("Failed to delete app instance info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to delete app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
@@ -266,7 +268,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             appInstanceInfoService.updateAppRuleTaskInfo(tenantId, appRuleTaskInfo);
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException | NumberFormatException e) {
-            LOGGER.info("Failed to update app rule task info record {}", e.getMessage());
+            LOGGER.error("Failed to update app rule task info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app rule task info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
@@ -317,7 +319,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             setProcessflowExceptionResponseAttributes(delegateExecution, ex.getMessage(),
                     Constants.PROCESS_RECORD_NOT_FOUND);
         } catch (AppoException | NumberFormatException e) {
-            LOGGER.info("Failed to get app rule task info {}", e.getMessage());
+            LOGGER.error("Failed to get app rule task info {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to get app rule task info",
                     Constants.PROCESS_FLOW_ERROR);
         }

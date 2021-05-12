@@ -15,7 +15,7 @@
  */
 
 
-package org.edgegallery.mecm.appo.service;
+package org.edgegallery.mecm.appo.service.impl;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,6 +31,7 @@ import org.edgegallery.mecm.appo.repository.AppInstanceDependencyRepository;
 import org.edgegallery.mecm.appo.repository.AppInstanceInfoRepository;
 import org.edgegallery.mecm.appo.repository.AppRuleTaskRepository;
 import org.edgegallery.mecm.appo.repository.AppoTenantRepository;
+import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

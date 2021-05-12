@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.apihandler;
+package org.edgegallery.mecm.appo.apihandler.dto;
 
 import static org.edgegallery.mecm.appo.utils.Constants.HOST_IP_REGX;
 

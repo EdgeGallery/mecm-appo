@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
-import org.edgegallery.mecm.appo.service.AppInstanceInfoServiceImpl;
+import org.edgegallery.mecm.appo.service.impl.AppInstanceInfoServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
