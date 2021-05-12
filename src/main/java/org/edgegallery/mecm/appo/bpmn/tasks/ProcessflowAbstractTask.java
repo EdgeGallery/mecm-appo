@@ -231,7 +231,7 @@ public abstract class ProcessflowAbstractTask {
                     uri + Constants.FAILED_TO_CONNECT + ex.getMessage(), Constants.PROCESS_FLOW_ERROR);
         } catch (HttpServerErrorException | HttpClientErrorException ex) {
             LOGGER.error("failure response from remote entity: {}", ex.getResponseBodyAsString());
-            if (method.equals(HttpMethod.DELETE)
+            if (HttpMethod.DELETE.equals(method)
                     && Constants.PROCESS_RECORD_NOT_FOUND.equals(String.valueOf(ex.getRawStatusCode()))) {
                 setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
             } else {

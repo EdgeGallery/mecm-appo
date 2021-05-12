@@ -11,7 +11,7 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.service;
+package org.edgegallery.mecm.appo.service.impl;
 
 import com.google.gson.Gson;
 import java.util.HashMap;
@@ -21,15 +21,19 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.edgegallery.mecm.appo.apihandler.BatchCreateParam;
-import org.edgegallery.mecm.appo.apihandler.BatchInstancesParam;
-import org.edgegallery.mecm.appo.apihandler.CreateParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchCreateParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchInstancesParam;
 import org.edgegallery.mecm.appo.apihandler.dto.BatchResponseDto;
+import org.edgegallery.mecm.appo.apihandler.dto.CreateParam;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.model.AppRuleTask;
+import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
+import org.edgegallery.mecm.appo.service.AppoProcessFlowResponse;
+import org.edgegallery.mecm.appo.service.AppoProcessflowService;
+import org.edgegallery.mecm.appo.service.AppoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
@@ -43,12 +47,10 @@ import org.springframework.stereotype.Service;
 public class AppoServiceImpl implements AppoService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AppoServiceImpl.class);
-
-    private AppoProcessflowService processflowService;
-    private AppInstanceInfoService appInstanceInfoService;
-
     private static final String APP_RULE_PROCESSING = "PROCESSING";
     private static final String REQUEST_ACCEPTED = "Accepted";
+    private AppoProcessflowService processflowService;
+    private AppInstanceInfoService appInstanceInfoService;
 
     @Autowired
     public AppoServiceImpl(AppoProcessflowService processflowService, AppInstanceInfoService appInstanceInfoService) {
@@ -63,7 +65,7 @@ public class AppoServiceImpl implements AppoService {
 
         List<AppInstanceInfo> appInstanceInfos = appInstanceInfoService.getAllAppInstanceInfo(tenantId);
         for (AppInstanceInfo instInfo : appInstanceInfos) {
-            if (instInfo.getOperationalStatus().equals(Constants.OPER_STATUS_INSTANTIATED)
+            if (Constants.OPER_STATUS_INSTANTIATED.equals(instInfo.getOperationalStatus())
                     && createParam.getMecHost().equals(instInfo.getMecHost())
                     && instInfo.getAppName().equals(createParam.getAppName())) {
                 LOGGER.error("cannot re-use app name... {}", createParam.getAppName());
@@ -145,7 +147,7 @@ public class AppoServiceImpl implements AppoService {
             String appInstanceID = UUID.randomUUID().toString();
             boolean isAppNameReused = false;
             for (AppInstanceInfo instInfo : dbAppInstanceInfos) {
-                if (instInfo.getOperationalStatus().equals(Constants.OPER_STATUS_INSTANTIATED)
+                if (Constants.OPER_STATUS_INSTANTIATED.equals(instInfo.getOperationalStatus())
                         && host.equals(instInfo.getMecHost())
                         && instInfo.getAppName().equals(createParam.getAppName())) {
                     LOGGER.error("cannot re-use app name... {}", createParam.getAppName());
@@ -157,6 +159,7 @@ public class AppoServiceImpl implements AppoService {
                 }
             }
             if (isAppNameReused) {
+                LOGGER.debug("application name reused, skip create app instance");
                 continue;
             }
 
@@ -241,7 +244,8 @@ public class AppoServiceImpl implements AppoService {
                 if (Constants.OPER_STATUS_INSTANTIATED.equals(operationalStatus)
                         || Constants.OPER_STATUS_CREATING.equals(operationalStatus)
                         || Constants.OPER_STATUS_CREATE_FAILED.equals(operationalStatus)) {
-                    LOGGER.error("Application instance operational status is : {}", instInfo.getOperationalStatus());
+                    LOGGER.error("failed, application instance operational status is : {}",
+                            instInfo.getOperationalStatus());
                     BatchResponseDto batchResp = new BatchResponseDto(appInstanceId, instInfo.getMecHost(),
                             "Precondition failed, app instance operational state: " + instInfo.getOperationalStatus());
                     response.add(batchResp);
@@ -251,6 +255,7 @@ public class AppoServiceImpl implements AppoService {
                     appInstanceIds.add(appInstanceId);
                 }
             } catch (NoSuchElementException ex) {
+                LOGGER.error("app instance id does not exist: {}", appInstanceId);
                 instantiateResp = new BatchResponseDto(appInstanceId, null, ex.getMessage());
                 response.add(instantiateResp);
             }
@@ -279,6 +284,8 @@ public class AppoServiceImpl implements AppoService {
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
         String operationalStatus = appInstanceInfo.getOperationalStatus();
         if (!Constants.OPER_STATUS_INSTANTIATED.equals(operationalStatus)) {
+            LOGGER.error("query failed, application instance operational status is : {}",
+                    appInstanceInfo.getOperationalStatus());
             return new ResponseEntity<>(
                     new AppoResponse(
                             "Application instance operational status is : " + appInstanceInfo.getOperationalStatus()),
@@ -353,7 +360,7 @@ public class AppoServiceImpl implements AppoService {
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
         if (appInstanceInfo == null) {
-            LOGGER.debug(Constants.APP_INSTANCE_NOT_FOUND);
+            LOGGER.error(Constants.APP_INSTANCE_NOT_FOUND);
             throw new NoSuchElementException(Constants.APP_INSTANCE_NOT_FOUND + appInstanceId);
         }
 
@@ -398,7 +405,10 @@ public class AppoServiceImpl implements AppoService {
         Map<String, String> requestBodyParam = new HashMap<>();
         requestBodyParam.put(Constants.TENANT_ID, tenantId);
         requestBodyParam.put(Constants.MEC_HOST, hostIp);
-        requestBodyParam.put(Constants.MEP_CAPABILITY_ID, capabilityId);
+        if (capabilityId != null) {
+            requestBodyParam.put(Constants.MEP_CAPABILITY_ID, capabilityId);
+        }
+
         LOGGER.debug("Request input: {}", requestBodyParam);
 
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
@@ -418,13 +428,6 @@ public class AppoServiceImpl implements AppoService {
     public ResponseEntity<AppoResponse> configureAppRules(String accessToken, String tenantId, String appInstanceId,
                                                           AppRule appRule, String action) {
         LOGGER.debug("Application configuration rule request received... action {}", action);
-        return configureAppRule(accessToken, tenantId, appInstanceId, appRule, action);
-    }
-
-    private ResponseEntity<AppoResponse> configureAppRule(String accessToken, String tenantId, String appInstanceId,
-                                                          AppRule appRule, String action) {
-        LOGGER.debug("Configure application rule request received...");
-
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
         String operationalStatus = appInstanceInfo.getOperationalStatus();
         if (!Constants.OPER_STATUS_INSTANTIATED.equals(operationalStatus)

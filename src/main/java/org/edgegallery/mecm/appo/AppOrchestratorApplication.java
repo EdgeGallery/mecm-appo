@@ -16,6 +16,8 @@
 
 package org.edgegallery.mecm.appo;
 
+import static org.edgegallery.mecm.appo.utils.Constants.TLS_VER;
+
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -89,14 +91,14 @@ public class AppOrchestratorApplication {
         };
         SSLContext sc;
         try {
-            sc = SSLContext.getInstance("TLSv1.2");
+            sc = SSLContext.getInstance(TLS_VER);
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
             HttpsURLConnection.setDefaultHostnameVerifier(NoopHostnameVerifier.INSTANCE);
 
             SpringApplication.run(AppOrchestratorApplication.class, args);
         } catch (KeyManagementException | NoSuchAlgorithmException e) {
-            LOGGER.info("SSL context init error... exiting system {}", e.getMessage());
+            LOGGER.error("SSL context init error... exiting system {}", e.getMessage());
         }
     }
 

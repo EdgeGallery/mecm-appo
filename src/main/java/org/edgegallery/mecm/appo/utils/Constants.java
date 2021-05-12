@@ -36,6 +36,7 @@ public final class Constants {
     public static final String APP_NAME_REGEX = "^[a-zA-Z0-9]*$|^[a-zA-Z0-9][a-zA-Z0-9_\\-]*[a-zA-Z0-9]$";
     public static final String RECORD_NOT_FOUND = "Record not found";
     public static final String APP_INSTANCE_NOT_FOUND = "Application instance id does not exist ";
+    public static final String TLS_VER = "TLSv1.2";
 
     public static final String TENANT_ID = "tenant_id";
     public static final String APP_PACKAGE_ID = "app_package_id";

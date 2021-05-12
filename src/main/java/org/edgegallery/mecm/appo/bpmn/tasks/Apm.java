@@ -101,7 +101,7 @@ public class Apm extends ProcessflowAbstractTask {
      * Retrieves specified inventory.
      */
     public void execute() {
-        if (operation.equals("download")) {
+        if ("download".equals(operation)) {
             download(execution);
         } else {
             LOGGER.info("Invalid APM action...{}", operation);

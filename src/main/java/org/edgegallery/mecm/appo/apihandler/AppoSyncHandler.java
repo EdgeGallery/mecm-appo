@@ -38,7 +38,7 @@ import org.edgegallery.mecm.appo.apihandler.dto.SyncUpdatedAppInstanceDto;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
-import org.edgegallery.mecm.appo.service.RestServiceImpl;
+import org.edgegallery.mecm.appo.service.impl.RestServiceImpl;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -118,7 +118,9 @@ public class AppoSyncHandler {
 
     private void getSyncAppInstanceUpdateRecords(String appLcmEndPoint, String tenantId, String accessToken) {
         try {
-            String uri = appLcmEndPoint + "/lcmcontroller/v1" + "/tenants/" + tenantId + "/app_instances/sync_updated";
+            StringBuilder sb = new StringBuilder(appLcmEndPoint);
+            String uri = sb.append("/lcmcontroller/v1/tenants/").append(tenantId)
+                            .append("/app_instances/sync_updated").toString();
 
             ResponseEntity<SyncUpdatedAppInstanceDto> updateResponse = syncService.syncRecords(uri,
                     SyncUpdatedAppInstanceDto.class, accessToken);
@@ -137,7 +139,9 @@ public class AppoSyncHandler {
 
     private void getSyncAppInstanceStaleRecords(String appLcmEndPoint, String tenantId, String accessToken) {
         try {
-            String uri = appLcmEndPoint + "/lcmcontroller/v1" + "/tenants/" + tenantId + "/app_instances/sync_deleted";
+            StringBuilder sb = new StringBuilder(appLcmEndPoint);
+            String uri = sb.append("/lcmcontroller/v1/tenants/").append(tenantId).append("/app_instances"
+                    + "/sync_deleted").toString();
 
             ResponseEntity<SyncDeletedAppInstanceDto> updateResponse = syncService.syncRecords(uri,
                     SyncDeletedAppInstanceDto.class, accessToken);

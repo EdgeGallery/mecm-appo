@@ -35,14 +35,14 @@ public class ProcessflowResponse implements JavaDelegate {
 
         String responseCode = (String) delegateExecution.getVariable(ProcessflowAbstractTask.RESPONSE_CODE);
 
-        if (responseType.equals("success")) {
+        if ("success".equals(responseType)) {
             String response = (String) delegateExecution.getVariable(ProcessflowAbstractTask.RESPONSE);
 
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP, response);
             LOGGER.info("Return process flow response, response: {}, response code: {} ", response,
                     responseCode);
-        } else if (responseType.equals("failure")) {
+        } else if ("failure".equals(responseType)) {
             String response = (String) delegateExecution.getVariable(ProcessflowAbstractTask.ERROR_RESPONSE);
 
             delegateExecution.setVariable(Constants.PROCESS_FLOW_RESP_CODE, responseCode);

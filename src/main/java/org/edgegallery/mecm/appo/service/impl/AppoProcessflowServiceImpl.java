@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.service;
+package org.edgegallery.mecm.appo.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,12 +28,18 @@ import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.exception.AppoProcessflowException;
+import org.edgegallery.mecm.appo.service.AppoProcessEngineService;
+import org.edgegallery.mecm.appo.service.AppoProcessFlowResponse;
+import org.edgegallery.mecm.appo.service.AppoProcessflowService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+/**
+ * Application orchestrator process flow service implementation.
+ */
 @Service
 public class AppoProcessflowServiceImpl extends AppoProcessEngineService implements AppoProcessflowService {
 
@@ -71,6 +77,12 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
         return variables;
     }
 
+    /**
+     * Executes process flow asynchronously.
+     *
+     * @param processKey   process key
+     * @param requestInput input parameters
+     */
     @Override
     @Async
     public void executeProcessAsync(String processKey, Map<String, String> requestInput) {
@@ -91,6 +103,14 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
         }
     }
 
+    /**
+     * Executes process flow synchronously.
+     *
+     * @param processKey   process key
+     * @param requestInput input parameters
+     *
+     * @return process flow response
+     */
     @Override
     public AppoProcessFlowResponse executeProcessSync(String processKey, Map<String, String> requestInput) {
         LOGGER.debug("Received Application orchestration request: processKey: {}", processKey);
@@ -160,6 +180,7 @@ public class AppoProcessflowServiceImpl extends AppoProcessEngineService impleme
 
         AppoProcessFlowResponse appoProcessExceptionResponse = processflowException(processInstanceId, responseCode);
         if (appoProcessExceptionResponse != null) {
+            LOGGER.error("process flow exception: {}", appoProcessExceptionResponse);
             return appoProcessExceptionResponse;
         }
 

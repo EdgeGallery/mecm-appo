@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
-import org.edgegallery.mecm.appo.service.AppInstanceInfoServiceImpl;
+import org.edgegallery.mecm.appo.service.impl.AppInstanceInfoServiceImpl;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.junit.Before;
 import org.junit.Test;

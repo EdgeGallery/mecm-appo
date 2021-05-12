@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.apihandler;
+package org.edgegallery.mecm.appo.apihandler.dto;
 
 import static org.edgegallery.mecm.appo.utils.Constants.APPD_ID_REGEX;
 import static org.edgegallery.mecm.appo.utils.Constants.APP_NAME_REGEX;
