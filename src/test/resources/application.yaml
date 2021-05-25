@@ -14,6 +14,12 @@
 #    limitations under the License.
 #
 
+### ServiceComb config #########
+servicecomb:
+  boot:
+    waitUp.timeoutInMilliseconds: 200
+  request:
+    timeout: 30000
 
 ###spring config######
 server:

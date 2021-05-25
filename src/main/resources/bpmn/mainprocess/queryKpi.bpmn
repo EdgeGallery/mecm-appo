@@ -10,10 +10,10 @@
       <bpmn:incoming>SequenceFlow_012bhc6</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0zzjic2</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="ServiceTask_0htpknl" name="Get APPLCM configuration from inventory" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.InventoryAdapter">
+    <bpmn:serviceTask id="ServiceTask_0htpknl" name="Get MEPM configuration from inventory" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.InventoryAdapter">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="inventory">applcm</camunda:inputParameter>
+          <camunda:inputParameter name="inventory">mepm</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1e63un7</bpmn:incoming>
@@ -41,7 +41,7 @@
       <bpmn:outgoing>SequenceFlow_15r09p9</bpmn:outgoing>
       <bpmn:linkEventDefinition id="LinkEventDefinition_0ehcmyz" name="querykpi" />
     </bpmn:intermediateCatchEvent>
-    <bpmn:serviceTask id="ServiceTask_1odvu36" name="Send request to applcm" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.MepmAdapter">
+    <bpmn:serviceTask id="ServiceTask_1odvu36" name="Send request to mepm" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.MepmAdapter">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="action">querykpi</camunda:inputParameter>
@@ -124,8 +124,7 @@
     <bpmn:serviceTask id="ServiceTask_10k8ff5" name="Get input parameters" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.GetRequestInputs">
       <bpmn:extensionElements>
         <camunda:inputOutput>
-          <camunda:inputParameter name="requestAction">QueryKPI
-</camunda:inputParameter>
+          <camunda:inputParameter name="requestAction">QueryKPI</camunda:inputParameter>
         </camunda:inputOutput>
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_0jqlcqf</bpmn:incoming>

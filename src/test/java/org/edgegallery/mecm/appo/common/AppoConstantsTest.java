@@ -30,11 +30,11 @@ public class AppoConstantsTest {
 
     public static final String ACTION = "action";
 
-    public static final String APPLCM_IP = "applcm_ip";
+    public static final String MEPM_IP = "mepm_ip";
 
-    public static final String APPLCM_LCM_HOST = "applcm_lcm_host";
+    public static final String APPLCM_MEPM_HOST = "applcm_lcm_host";
 
-    public static final String APPLCM_PORT = "applcm_port";
+    public static final String MEPM_PORT = "mepm_port";
 
     public static final String APP_INSTANCE_DESCRIPTION = "app_instance_description";
 

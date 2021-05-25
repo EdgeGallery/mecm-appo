@@ -50,10 +50,8 @@ public final class Constants {
     public static final String APP_ID = "app_id";
     public static final String ACCESS_TOKEN = "access_token";
     public static final String MEC_HOST_IP = "host_ip";
-    public static final String APPLCM_IP = "applcm_ip";
-    public static final String APPRULE_IP = "app_rule_manager_ip";
-    public static final String APPLCM_PORT = "applcm_port";
-    public static final String APPRULE_PORT = "apprule_port";
+    public static final String MEPM_IP = "mepm_ip";
+    public static final String MEPM_PORT = "mepm_port";
     public static final String APP_INSTANCE_INFO = "app_instance_info";
     public static final String MEP_CAPABILITY_ID = "capability_id";
     public static final String HW_CAPABILITIES = "hw_capabilities";
@@ -67,11 +65,9 @@ public final class Constants {
 
     public static final String APM_DOWNLOAD_URI = "/apm/v1/tenants/{tenant_id}/packages/{app_package_id}/download";
     public static final String INVENTORY_MEC_HOST_URI = "/inventory/v1/mechosts/{mec_host}";
-    public static final String INVENTORY_APPLCM_URI = "/inventory/v1/applcms/{applcm_ip}";
+    public static final String INVENTORY_MEPM_URI = "/inventory/v1/mepms/{mepm_ip}";
     public static final String INVENTORY_APPLICATIONS_URI = "/inventory/v1/tenants/{tenant_id}"
             + "/mechosts/{mec_host}/apps";
-    public static final String INVENTORY_APPRULECFG_URI = "/inventory/v1/apprulemanagers"
-            + "/{app_rule_manager_ip}";
     public static final String INVENTORY_APPLICATION_URI = "/inventory/v1/tenants/{tenant_id}"
             + "/mechosts/{mec_host}/apps/{app_instance_id}";
 

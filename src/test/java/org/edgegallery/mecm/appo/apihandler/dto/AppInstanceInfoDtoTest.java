@@ -32,7 +32,7 @@ public class AppInstanceInfoDtoTest {
         appInstanceInfoDto.setAppId(AppoConstantsTest.APP_ID);
         appInstanceInfoDto.setAppDescriptor(AppoConstantsTest.APP_DESCRIPTOR);
         appInstanceInfoDto.setAppInstanceId(AppoConstantsTest.APP_INSTANCE_ID);
-        appInstanceInfoDto.setApplcmHost(AppoConstantsTest.APPLCM_LCM_HOST);
+        appInstanceInfoDto.setMepmHost(AppoConstantsTest.APPLCM_MEPM_HOST);
         appInstanceInfoDto.setAppName(AppoConstantsTest.APP_NAME);
         appInstanceInfoDto.setAppPackageId(AppoConstantsTest.APP_PACKAGE_ID);
         appInstanceInfoDto.setMecHost(AppoConstantsTest.MEC_HOST);
@@ -45,7 +45,7 @@ public class AppInstanceInfoDtoTest {
         Assert.assertEquals(AppoConstantsTest.APP_ID, appInstanceInfoDto.getAppId());
         Assert.assertEquals(AppoConstantsTest.APP_DESCRIPTOR, appInstanceInfoDto.getAppDescriptor());
         Assert.assertEquals(AppoConstantsTest.APP_INSTANCE_ID, appInstanceInfoDto.getAppInstanceId());
-        Assert.assertEquals(AppoConstantsTest.APPLCM_LCM_HOST, appInstanceInfoDto.getApplcmHost());
+        Assert.assertEquals(AppoConstantsTest.APPLCM_MEPM_HOST, appInstanceInfoDto.getMepmHost());
         Assert.assertEquals(AppoConstantsTest.APP_PACKAGE_ID, appInstanceInfoDto.getAppPackageId());
         Assert.assertEquals(AppoConstantsTest.APP_NAME, appInstanceInfoDto.getAppName());
         Assert.assertEquals(AppoConstantsTest.MEC_HOST, appInstanceInfoDto.getMecHost());

@@ -65,9 +65,9 @@ public final class AppInstanceInfoDto {
     @Size(max = 15)
     private String mecHost;
 
-    @NotEmpty(message = "applcm host is empty")
+    @NotEmpty(message = "mepm host is empty")
     @Size(max = 15)
-    private String applcmHost;
+    private String mepmHost;
 
     @NotEmpty(message = "operational status is empty")
     @Size(max = 128)

@@ -39,15 +39,15 @@ public class ProcessflowResponseTest {
     @Test
     public void testExecuteSuccess() throws Exception {
         Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_TYPE)).thenReturn("success");
-        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE)).thenReturn(AppoConstantsTest.APPLCM_IP);
-        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_CODE)).thenReturn(AppoConstantsTest.APPLCM_PORT);
+        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE)).thenReturn(AppoConstantsTest.MEPM_IP);
+        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_CODE)).thenReturn(AppoConstantsTest.MEPM_PORT);
         assertDoesNotThrow(() -> processflowResponse.execute(execution));
     }
 
     @Test
     public void testExecuteFailure() throws Exception {
         Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_TYPE)).thenReturn("failure");
-        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_CODE)).thenReturn(AppoConstantsTest.APPLCM_PORT);
+        Mockito.when(execution.getVariable(AppoConstantsTest.RESPONSE_CODE)).thenReturn(AppoConstantsTest.MEPM_PORT);
         assertDoesNotThrow(() -> processflowResponse.execute(execution));
     }
 }

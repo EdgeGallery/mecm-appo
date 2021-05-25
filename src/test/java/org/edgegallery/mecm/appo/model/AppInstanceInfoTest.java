@@ -33,7 +33,7 @@ public class AppInstanceInfoTest {
         appInstanceInfo.setAppId(AppoConstantsTest.APP_ID);
         appInstanceInfo.setAppInstanceId(AppoConstantsTest.APP_INSTANCE_ID);
         appInstanceInfo.setAppName(AppoConstantsTest.APP_NAME);
-        appInstanceInfo.setApplcmHost(AppoConstantsTest.APPLCM_LCM_HOST);
+        appInstanceInfo.setMepmHost(AppoConstantsTest.APPLCM_MEPM_HOST);
         appInstanceInfo.setAppPackageId(AppoConstantsTest.APP_PACKAGE_ID);
         appInstanceInfo.setMecHost(AppoConstantsTest.MEC_HOST);
         appInstanceInfo.setTenant(AppoConstantsTest.TENANT);
@@ -47,7 +47,7 @@ public class AppInstanceInfoTest {
         Assert.assertEquals(AppoConstantsTest.APP_ID, appInstanceInfo.getAppId());
         Assert.assertEquals(AppoConstantsTest.APP_INSTANCE_ID, appInstanceInfo.getAppInstanceId());
         Assert.assertEquals(AppoConstantsTest.APP_NAME, appInstanceInfo.getAppName());
-        Assert.assertEquals(AppoConstantsTest.APPLCM_LCM_HOST, appInstanceInfo.getApplcmHost());
+        Assert.assertEquals(AppoConstantsTest.APPLCM_MEPM_HOST, appInstanceInfo.getMepmHost());
         Assert.assertEquals(AppoConstantsTest.APP_PACKAGE_ID, appInstanceInfo.getAppPackageId());
         Assert.assertEquals(AppoConstantsTest.MEC_HOST, appInstanceInfo.getMecHost());
         Assert.assertEquals(AppoConstantsTest.TENANT, appInstanceInfo.getTenant());

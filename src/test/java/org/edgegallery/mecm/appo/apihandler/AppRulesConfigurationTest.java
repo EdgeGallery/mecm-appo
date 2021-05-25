@@ -103,16 +103,16 @@ public class AppRulesConfigurationTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"2.2.2.2\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"2.2.2.2\", \"appRuleIp\":\"2.2.2.2\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+                                + "\"mepmIp\":\"2.2.2.2\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, mepm ip ... use mepm url
 
-        // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/applcms/2.2.2"
+        // Mocking get mepm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/mepms/2.2.2"
                 + ".2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"2.2.2.2\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+                .andRespond(withSuccess("{\"mepmIp\":\"2.2.2.2\",\"mepmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // mepm port ,
 
         // Mocking download package from APM
         File file = ResourceUtils.getFile("classpath:22406fba-fd5d-4f55-b3fa-89a45fee913a-apprules.csar");
@@ -124,14 +124,7 @@ public class AppRulesConfigurationTest {
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(inputStreamResource, MediaType.APPLICATION_OCTET_STREAM));
 
-        // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers/2.2.2.2";
-        server.expect(requestTo(url))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"appRuleIp\":\"2.2.2.2\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON));
-
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "2.2.2.2" + "/apps";
         server.expect(requestTo(url))
@@ -150,26 +143,18 @@ public class AppRulesConfigurationTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"2.2.2.2\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"2.2.2.2\",\"appRuleIp\":\"2.2.2.2\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+                                + "\"mepmIp\":\"2.2.2.2\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, mepm ip ... use mepm url
 
-        // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/applcms/2.2.2"
+        // Mocking get mepm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/mepms/2.2.2"
                 + ".2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"2.2.2.2\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+                .andRespond(withSuccess("{\"mepmIp\":\"2.2.2.2\",\"mepmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // mepm port ,
 
-        // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers"
-                + "/2.2.2.2";
-        server.expect(requestTo(url))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"appRuleIp\":\"2.2.2.2\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON));
-
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://2.2.2.2:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/instantiate";
         server.expect(requestTo(url))
@@ -184,24 +169,17 @@ public class AppRulesConfigurationTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"2.2.2.2\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"2.2.2.2\",\"appRuleIp\":\"2.2.2.2\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+                                + "\"mepmIp\":\"2.2.2.2\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, mepm ip ... use mepm url
 
-        // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers/2.2.2.2";
-        server.expect(requestTo(url))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"appRuleIp\":\"2.2.2.2\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON));
-
-        // Mocking get applcm from inventory
+        // Mocking get mepm from inventory
         url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances/"
                 + appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.NOT_FOUND)); /// validate response , use this query , // applcm port ,
+                .andRespond(withStatus(HttpStatus.NOT_FOUND)); /// validate response , use this query , // mepm port ,
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://2.2.2.2:10000/apprulemgr/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
@@ -210,21 +188,21 @@ public class AppRulesConfigurationTest {
                                 + "\"detailed\": \"duplicate dns entry\",\"configResult\": \"FAILURE\"}",
                         MediaType.APPLICATION_JSON));
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess());
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "2.2.2.2" + "/apps/" + appInstanceId;
         server.expect(requestTo(url))
@@ -233,7 +211,7 @@ public class AppRulesConfigurationTest {
                         + "\"appName\":\"face_recognitionRule\",\"packageId\":\"f20358433cf8eb4719a62a49ed118c9b\","
                         + "\"status\":\"Created\"}", MediaType.APPLICATION_JSON));
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "2.2.2.2" + "/apps/" + appInstanceId;
         server.expect(requestTo(url))
@@ -251,33 +229,25 @@ public class AppRulesConfigurationTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"2.2.2.2\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"2.2.2.2\",\"appRuleIp\":\"2.2.2.2\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+                                + "\"mepmIp\":\"2.2.2.2\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, mepm ip ... use mepm url
 
-        // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/applcms/2.2.2.2";
+        // Mocking get mepm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/mepms/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"2.2.2.2\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+                .andRespond(withSuccess("{\"mepmIp\":\"2.2.2.2\",\"mepmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // mepm port ,
 
-        // Mocking get applcm from inventory
+        // Mocking get mepm from inventory
         url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances"
                 + "/" + appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"2.2.2.2\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+                .andRespond(withSuccess("{\"mepmIp\":\"2.2.2.2\",\"mepmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // mepm port ,
 
-        // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers"
-                + "/2.2.2.2";
-        server.expect(requestTo(url))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"appRuleIp\":\"2.2.2.2\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON));
-
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://2.2.2.2:10000/apprulemgr/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
@@ -286,14 +256,14 @@ public class AppRulesConfigurationTest {
                                 + "\"detailed\": \"duplicate dns entry\",\"configResult\": \"FAILURE\"}",
                         MediaType.APPLICATION_JSON));
 
-        // Mocking get applcm from inventory
+        // Mocking get mepm from inventory
         url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances"
                 + "/" + appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withStatus(HttpStatus.OK)); /// validate response , use this query , // applcm port ,
+                .andRespond(withStatus(HttpStatus.OK)); /// validate response , use this query , // mepm port ,
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://2.2.2.2:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/terminate";
         server.expect(requestTo(url))
@@ -317,25 +287,17 @@ public class AppRulesConfigurationTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"2.2.2.2\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"2.2.2.2\",\"appRuleIp\":\"2.2.2.2\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+                                + "\"mepmIp\":\"2.2.2.2\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, mepm ip ... use mepm url
 
-        // Mocking get apprule from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/apprulemanagers"
-                + "/2.2.2.2";
-        server.expect(requestTo(url))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"appRuleIp\":\"2.2.2.2\",\"appRulePort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON));
-
-        // Mocking get applcm from inventory
+        // Mocking get mepm from inventory
         /*url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances/"
                 + appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));*/
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
@@ -397,7 +359,7 @@ public class AppRulesConfigurationTest {
                                 + "}",
                         MediaType.APPLICATION_JSON));
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://2.2.2.2:10000/apprulemgr/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
@@ -406,7 +368,7 @@ public class AppRulesConfigurationTest {
                                 + "\"detailed\": \"duplicate dns entry\",\"configResult\": \"SUCCESS\"}",
                         MediaType.APPLICATION_JSON));
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
@@ -458,7 +420,7 @@ public class AppRulesConfigurationTest {
                                 + "}",
                         MediaType.APPLICATION_JSON));
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
@@ -511,7 +473,9 @@ public class AppRulesConfigurationTest {
         String getResponse = getMvcResult.getResponse().getContentAsString();
         Assert.assertEquals("{\"response\":{\"appInstanceId\":\"" + appInstanceId + "\","
                         + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognitionRule\","
-                        + "\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognitionRule\",\"mecHost\":\"2.2.2.2\",\"applcmHost\":\"2.2.2.2\",\"operationalStatus\":\"Created\",\"operationInfo\":\"success\"}}",
+                        + "\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognitionRule\","
+                        + "\"mecHost\":\"2.2.2.2\",\"mepmHost\":\"2.2.2.2\",\"operationalStatus\":\"Created\","
+                        + "\"operationInfo\":\"success\"}}",
                 getResponse);
 
         /*****Execute Instantiate app instance*****/
