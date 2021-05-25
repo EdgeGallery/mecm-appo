@@ -167,9 +167,9 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
 
             LOGGER.info("Update application instance info {}", appInstanceId);
 
-            String applcmIp = (String) delegateExecution.getVariable(Constants.APPLCM_IP);
-            if (applcmIp != null) {
-                appInstanceInfo.setApplcmHost(applcmIp);
+            String mepmIp = (String) delegateExecution.getVariable(Constants.MEPM_IP);
+            if (mepmIp != null) {
+                appInstanceInfo.setMepmHost(mepmIp);
             }
 
             String operationalStatus = (String) delegateExecution.getVariable("operational_status");

@@ -70,11 +70,8 @@ public class Inventory extends ProcessflowAbstractTask {
             case "mecHost":
                 getMecHost(execution);
                 break;
-            case "applcm":
-                getApplcm(execution);
-                break;
-            case "appruleCfg":
-                getAppRuleCfg(execution);
+            case "mepm":
+                getMepm(execution);
                 break;
             case "application":
                 application(execution);
@@ -90,81 +87,41 @@ public class Inventory extends ProcessflowAbstractTask {
     }
 
     /**
-     * Retrieves applcm record from inventory.
+     * Retrieves MEPM record from inventory.
      *
      * @param execution delegate execution
      */
-    private void getApplcm(DelegateExecution execution) {
-        LOGGER.info("Query applcm from inventory");
+    private void getMepm(DelegateExecution execution) {
+        LOGGER.info("Query MEPM from inventory");
 
         String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
-        String applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
+        String mepmIp = (String) execution.getVariable(Constants.MEPM_IP);
 
         UrlUtil urlUtil = new UrlUtil();
         urlUtil.addParams(Constants.TENANT_ID, tenantId);
-        urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
+        urlUtil.addParams(Constants.MEPM_IP, mepmIp);
 
         try {
-            String applcmUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPLCM_URI);
-            String response = sendRequest(execution, restTemplate, applcmUrl, HttpMethod.GET);
+            String mepmUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_MEPM_URI);
+            String response = sendRequest(execution, restTemplate, mepmUrl, HttpMethod.GET);
             if (response == null) {
                 return;
             }
 
             JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
-            JsonElement applcmPort = jsonObject.get("applcmPort");
-            if (applcmPort == null) {
+            JsonElement mepmPort = jsonObject.get("mepmPort");
+            if (mepmPort == null) {
                 setProcessflowErrorResponseAttributes(execution,
-                        "applcm port not found", Constants.PROCESS_FLOW_ERROR);
-                LOGGER.info("applcm port not found... in response");
+                        "MEPM port not found", Constants.PROCESS_FLOW_ERROR);
+                LOGGER.info("MEPM port not found... in response");
                 return;
             }
-            execution.setVariable(Constants.APPLCM_PORT, applcmPort.getAsString());
+            execution.setVariable(Constants.MEPM_PORT, mepmPort.getAsString());
             setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
 
         } catch (AppoException | IllegalArgumentException e) {
             setProcessflowExceptionResponseAttributes(execution, Constants.INTERNAL_ERROR,
                     Constants.PROCESS_FLOW_ERROR);
-        }
-    }
-
-    /**
-     * Retrieves applcm record from inventory.
-     *
-     * @param execution delegate execution
-     */
-    private void getAppRuleCfg(DelegateExecution execution) {
-        LOGGER.info("Query apprule module configuration from inventory");
-
-        String tenantId = (String) execution.getVariable(Constants.TENANT_ID);
-
-        UrlUtil urlUtil = new UrlUtil();
-        urlUtil.addParams(Constants.TENANT_ID, tenantId);
-
-        String appruleIp = (String) execution.getVariable(Constants.APPRULE_IP);
-        urlUtil.addParams(Constants.APPRULE_IP, appruleIp);
-
-        try {
-            String appruleUrl = protocol + baseUrl + urlUtil.getUrl(Constants.INVENTORY_APPRULECFG_URI);
-            String response = sendRequest(execution, restTemplate, appruleUrl, HttpMethod.GET);
-            if (response == null) {
-                return;
-            }
-
-            JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
-            JsonElement appRulePort = jsonObject.get("appRulePort");
-            if (appRulePort == null) {
-                setProcessflowErrorResponseAttributes(execution,
-                        "apprule port not found", Constants.PROCESS_FLOW_ERROR);
-                LOGGER.info("apprule port not found... in response");
-                return;
-            }
-            execution.setVariable(Constants.APPRULE_PORT, appRulePort.getAsString());
-            setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-
-        } catch (AppoException | IllegalArgumentException e) {
-            setProcessflowExceptionResponseAttributes(execution,
-                    Constants.INTERNAL_ERROR, Constants.PROCESS_FLOW_ERROR);
         }
     }
 
@@ -196,21 +153,14 @@ public class Inventory extends ProcessflowAbstractTask {
             }
             
             JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
-            JsonElement applcmIp = jsonObject.get("applcmIp");
-            if (applcmIp == null) {
+            JsonElement mepmIp = jsonObject.get("mepmIp");
+            if (mepmIp == null) {
                 setProcessflowErrorResponseAttributes(execution,
-                        "applcm IP not configured in host", Constants.PROCESS_FLOW_ERROR);
-                LOGGER.info("applcm IP not configured in host");
+                        "MEPM IP not configured in host", Constants.PROCESS_FLOW_ERROR);
+                LOGGER.info("MEPM IP not configured in host");
                 return;
             }
-            execution.setVariable(Constants.APPLCM_IP, applcmIp.getAsString());
-
-            JsonElement appRuleIp = jsonObject.get("appRuleIp");
-            if (appRuleIp == null) {
-                LOGGER.info("apprule IP not configured for the host");
-            } else {
-                execution.setVariable(Constants.APPRULE_IP, appRuleIp.getAsString());
-            }
+            execution.setVariable(Constants.MEPM_IP, mepmIp.getAsString());
 
             JsonArray hwCapabilities = jsonObject.getAsJsonArray("hwcapabilities");
             List<String> hwTypeList = new LinkedList<>();

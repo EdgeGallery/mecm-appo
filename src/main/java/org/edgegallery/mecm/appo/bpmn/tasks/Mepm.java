@@ -103,36 +103,15 @@ public class Mepm extends ProcessflowAbstractTask {
     private String resolveUrlPathParameters(String uri) {
         LOGGER.info("Resolve url path parameters...");
         UrlUtil urlUtil;
-        String applcmIp;
-        String applcmPort;
-        String appRuleIp;
-        String appRulePort;
-        String mecmIp = null;
-        String mecmPort = null;
+        String mepmIp = null;
+        String mepmPort = null;
 
         try {
             urlUtil = new UrlUtil();
 
-            applcmIp = (String) execution.getVariable(Constants.APPLCM_IP);
-            applcmPort = (String) execution.getVariable(Constants.APPLCM_PORT);
-            appRuleIp = (String) execution.getVariable(Constants.APPRULE_IP);
-            appRulePort = (String) execution.getVariable(Constants.APPRULE_PORT);
+            mepmIp = (String) execution.getVariable(Constants.MEPM_IP);
+            mepmPort = (String) execution.getVariable(Constants.MEPM_PORT);
             String tenant = (String) execution.getVariable(Constants.TENANT_ID);
-
-            if (applcmIp != null && applcmPort != null) {
-                urlUtil.addParams(Constants.APPLCM_IP, applcmIp);
-                mecmIp = applcmIp;
-
-                urlUtil.addParams(Constants.APPLCM_PORT, applcmPort);
-                mecmPort = applcmPort;
-            }
-
-            if (uri.contains("apprulemgr") && appRuleIp != null && appRulePort != null) {
-                urlUtil.addParams(Constants.APPRULE_IP, appRuleIp);
-                mecmIp = appRuleIp;
-                urlUtil.addParams(Constants.APPRULE_PORT, appRulePort);
-                mecmPort = appRulePort;
-            }
 
             urlUtil.addParams(Constants.TENANT_ID, tenant);
 
@@ -154,11 +133,11 @@ public class Mepm extends ProcessflowAbstractTask {
             throw new AppoException(e.getMessage());
         }
         String resolvedUri = urlUtil.getUrl(uri);
-        return protocol + mecmIp + ":" + mecmPort + resolvedUri;
+        return protocol + mepmIp + ":" + mepmPort + resolvedUri;
     }
 
     private void instantiate(DelegateExecution execution) {
-        LOGGER.info("Send Instantiate request to applcm");
+        LOGGER.info("Send Instantiate request to mepm");
 
         AppInstanceInfo appInstanceInfo = (AppInstanceInfo) execution.getVariable(Constants.APP_INSTANCE_INFO);
         if (appInstanceInfo == null) {
@@ -243,27 +222,27 @@ public class Mepm extends ProcessflowAbstractTask {
                     Constants.PROCESS_FLOW_SUCCESS);
             return;
         }
-        sendQueryRequestToApplcm(execution, Constants.APPLCM_QUERY_URI);
+        sendQueryRequestToMepm(execution, Constants.APPLCM_QUERY_URI);
     }
 
     private void querykpi(DelegateExecution execution) {
-        LOGGER.info("Send query kpi request to applcm");
+        LOGGER.info("Send query kpi request to mepm");
 
-        sendQueryRequestToApplcm(execution, Constants.APPLCM_QUERY_KPI_URI);
+        sendQueryRequestToMepm(execution, Constants.APPLCM_QUERY_KPI_URI);
     }
 
     private void queryEdgeCapabilities(DelegateExecution execution) {
-        LOGGER.info("Send query capabilities request to applcm");
+        LOGGER.info("Send query capabilities request to mepm");
 
         String uri = Constants.APPLCM_QUERY_CAPABILITIES_URI;
         if (null != execution.getVariable(Constants.MEP_CAPABILITY_ID)) {
             uri = Constants.APPLCM_QUERY_CAPABILITY_URI;
         }
-        sendQueryRequestToApplcm(execution, uri);
+        sendQueryRequestToMepm(execution, uri);
     }
 
-    private void sendQueryRequestToApplcm(DelegateExecution execution, String uri) {
-        LOGGER.info("Send query request to applcm");
+    private void sendQueryRequestToMepm(DelegateExecution execution, String uri) {
+        LOGGER.info("Send query request to mepm");
         
         try {
             String url = resolveUrlPathParameters(uri);
