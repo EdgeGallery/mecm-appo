@@ -58,8 +58,8 @@ public final class AppInstanceInfo {
     @Column(name = "mec_host")
     private String mecHost;
 
-    @Column(name = "applcm_host")
-    private String applcmHost;
+    @Column(name = "mepm_host")
+    private String mepmHost;
 
     @Column(name = "operational_status")
     private String operationalStatus;
