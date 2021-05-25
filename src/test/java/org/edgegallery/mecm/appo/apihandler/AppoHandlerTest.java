@@ -100,16 +100,16 @@ public class AppoHandlerTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"1.1.1.1\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+                                + "\"mepmIp\":\"1.1.1.1\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, mepm ip ... use mepm url
 
-        // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/applcms/1.1.1"
+        // Mocking get mepm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/mepms/1.1.1"
                 + ".1";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+                .andRespond(withSuccess("{\"mepmIp\":\"1.1.1.1\",\"mepmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // mepm port ,
 
         // Mocking download package from APM
         File file = ResourceUtils.getFile("classpath:22406fba-fd5d-4f55-b3fa-89a45fee913a.csar");
@@ -121,7 +121,7 @@ public class AppoHandlerTest {
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(inputStreamResource, MediaType.APPLICATION_OCTET_STREAM));
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "1.1.1.1" + "/apps";
         server.expect(requestTo(url))
@@ -140,25 +140,25 @@ public class AppoHandlerTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"1.1.1.1\",\"appRuleIp\":\"1.1.1.1\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+                                + "\"mepmIp\":\"1.1.1.1\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, mepm ip ... use mepm url
 
-        // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/applcms/1.1.1"
+        // Mocking get mepm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/mepms/1.1.1"
                 + ".1";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+                .andRespond(withSuccess("{\"mepmIp\":\"1.1.1.1\",\"mepmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // mepm port ,
 
-        // Mocking get applcm API
+        // Mocking get mepms API
         url = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/instantiate";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(withSuccess());
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "1.1.1.1" + "/apps/" + appInstanceId;
         server.expect(requestTo(url))
@@ -167,7 +167,7 @@ public class AppoHandlerTest {
                         + "\"appName\":\"face_recognitionRule\",\"packageId\":\"f20358433cf8eb4719a62a49ed118c9b\","
                         + "\"status\":\"Created\"}", MediaType.APPLICATION_JSON));
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/" +
                 "1.1.1.1" + "/apps/" + appInstanceId;
         server.expect(requestTo(url))
@@ -187,25 +187,25 @@ public class AppoHandlerTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"1.1.1.1\",\"appRuleIp\":\"1.1.1.1\"}",
-                        MediaType.APPLICATION_JSON)); // host response , json response, applcm ip ... use applcm url
+                                + "\"mepmIp\":\"1.1.1.1\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, mepm ip ... use mepm url
 
-        // Mocking get applcm from inventory
-        url = "http://10.9.9.1:11111/inventory/v1/applcms/1.1.1"
+        // Mocking get mepm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/mepms/1.1.1"
                 + ".1";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
-                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // applcm port ,
+                .andRespond(withSuccess("{\"mepmIp\":\"1.1.1.1\",\"mepmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // mepm port ,
 
-        // Mocking get applcm from inventory
+        // Mocking get mepm from inventory
         url = "http://10.9.9.1:11111/inventory/v1/tenants/12db0288-3c67-4042-a708-a8e4a10c6b31/app_instances/"
                 + appInstanceId + "/appd_configuration";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.NOT_FOUND)); /// validate response , use this query , // applcm port ,
+                .andRespond(withStatus(HttpStatus.NOT_FOUND)); /// validate response , use this query , // mepm port ,
 
-        // Mocking get applcm API
+        // Mocking get mepm API
         url = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/terminate";
         server.expect(requestTo(url))
@@ -257,9 +257,16 @@ public class AppoHandlerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
         String getAllResponse = getAllMvcResult.getResponse().getContentAsString();
-        Assert.assertEquals("{\"response\":[{\"appInstanceId\":\"test-required\",\"appPackageId\":\"b1bb0ce7-ebca-4fa7-95ed-4840d70a1177\",\"appName\":\"face-recognize\",\"appId\":\"ea8ebc1a-db88-11ea-87d0-0242ac130003\",\"appDescriptor\":\"aaa\",\"mecHost\":\"2.2.2.2\",\"applcmHost\":\"2.2.2.2\",\"operationalStatus\":\"Instantiated\",\"operationInfo\":\"success\"},"
+        Assert.assertEquals("{\"response\":[{\"appInstanceId\":\"test-required\","
+                        + "\"appPackageId\":\"b1bb0ce7-ebca-4fa7-95ed-4840d70a1177\",\"appName\":\"face-recognize\","
+                        + "\"appId\":\"ea8ebc1a-db88-11ea-87d0-0242ac130003\",\"appDescriptor\":\"aaa\","
+                        + "\"mecHost\":\"2.2.2.2\",\"mepmHost\":\"2.2.2.2\",\"operationalStatus\":\"Instantiated\","
+                        + "\"operationInfo\":\"success\"},"
                         + "{\"appInstanceId\":\"" + appInstanceId + "\","
-                        + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognition\",\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognition\",\"mecHost\":\"1.1.1.1\",\"applcmHost\":\"1.1.1.1\",\"operationalStatus\":\"Created\",\"operationInfo\":\"success\"}]}",
+                        + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognition\","
+                        + "\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognition\","
+                        + "\"mecHost\":\"1.1.1.1\",\"mepmHost\":\"1.1.1.1\",\"operationalStatus\":\"Created\","
+                        + "\"operationInfo\":\"success\"}]}",
                 getAllResponse);
 
         // Get application instance id
@@ -273,7 +280,10 @@ public class AppoHandlerTest {
                 .andReturn();
         String getResponse = getMvcResult.getResponse().getContentAsString();
         Assert.assertEquals("{\"response\":{\"appInstanceId\":\"" + appInstanceId + "\","
-                        + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognition\",\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognition\",\"mecHost\":\"1.1.1.1\",\"applcmHost\":\"1.1.1.1\",\"operationalStatus\":\"Created\",\"operationInfo\":\"success\"}}",
+                        + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognition\","
+                        + "\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognition\","
+                        + "\"mecHost\":\"1.1.1.1\",\"mepmHost\":\"1.1.1.1\",\"operationalStatus\":\"Created\","
+                        + "\"operationInfo\":\"success\"}}",
                 getResponse);
 
         /***********************************************************************************************/

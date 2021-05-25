@@ -62,7 +62,7 @@ public class SoftwareCapabilityHandlerTest {
 
     String inventoryQuery = "http://10.9.9.1:11111/inventory/v1/mechosts/1.1.1.1";
 
-    String applcmQuery = "http://10.9.9.1:11111/inventory/v1/applcms/1.1.1.1";
+    String mepmQuery = "http://10.9.9.1:11111/inventory/v1/mepms/1.1.1.1";
 
     String getMepCapablities = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + "/hosts/" + "1.1.1.1/" +
             "mep_capabilities";
@@ -82,12 +82,12 @@ public class SoftwareCapabilityHandlerTest {
                                 + "\"city\":\"TestCity\","
                                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
                                 + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
-                                + "\"applcmIp\":\"1.1.1.1\"}",
+                                + "\"mepmIp\":\"1.1.1.1\"}",
                         MediaType.APPLICATION_JSON));
 
-        server.expect(requestTo(applcmQuery))
+        server.expect(requestTo(mepmQuery))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"applcmIp\":\"1.1.1.1\",\"applcmPort\":\"10000\",\"userName\":\"Test\"}",
+                .andRespond(withSuccess("{\"mepmIp\":\"1.1.1.1\",\"mepmPort\":\"10000\",\"userName\":\"Test\"}",
                         MediaType.APPLICATION_JSON));
 
     }

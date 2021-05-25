@@ -197,8 +197,8 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             info.setMecHost(appInstanceInfo.getMecHost());
         }
 
-        if (appInstanceInfo.getApplcmHost() != null) {
-            info.setApplcmHost(appInstanceInfo.getApplcmHost());
+        if (appInstanceInfo.getMepmHost() != null) {
+            info.setMepmHost(appInstanceInfo.getMepmHost());
         }
 
         if (appInstanceInfo.getOperationalStatus() != null) {

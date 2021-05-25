@@ -7,7 +7,7 @@
         app_name varchar(128) not null,
         app_descriptor varchar(256) not null,
         mec_host varchar(15) not null,
-        applcm_host varchar(15),
+        mepm_host varchar(15),
         operational_status varchar(128) not null,
         operation_info varchar(256),
         create_time timestamp default current_timestamp,
