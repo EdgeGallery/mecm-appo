@@ -16,6 +16,7 @@
  
 package org.edgegallery.mecm.appo.model;
 
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,4 +39,5 @@ public class AppInstantiateReq {
     private String hostIp;
     private String packageId;
     private String appName;
+    private Map<String, Object> parameters;
 }
