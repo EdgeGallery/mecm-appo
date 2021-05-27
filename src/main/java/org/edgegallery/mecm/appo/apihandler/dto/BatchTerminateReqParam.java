@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 Huawei Technologies Co., Ltd.
+ *  Copyright 2021 Huawei Technologies Co., Ltd.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.edgegallery.mecm.appo.apihandler.dto;
 import static org.edgegallery.mecm.appo.utils.Constants.APP_INST_ID_REGX;
 
 import java.util.List;
-import java.util.Map;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -31,7 +30,7 @@ import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Batch instance input schema.
+ * Batch terminate input parameters.
  */
 @Validated
 @Getter
@@ -39,13 +38,9 @@ import org.springframework.validation.annotation.Validated;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public final class BatchInstancesParam {
+public final class BatchTerminateReqParam {
 
-    @NotEmpty(message = "Application instance ID mandatory")
-    private String appInstanceId;
-
+    @NotEmpty(message = "Application instance IDs mandatory")
     @Size(max = 20)
-    private Map<@Size(max = 256) String, @Size(max = 256) String> parameters;
-
-
+    private List<@Pattern(regexp = APP_INST_ID_REGX) String> appInstanceIds;
 }

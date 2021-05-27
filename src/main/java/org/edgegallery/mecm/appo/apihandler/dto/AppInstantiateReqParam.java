@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 Huawei Technologies Co., Ltd.
+ *  Copyright 2021 Huawei Technologies Co., Ltd.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import static org.edgegallery.mecm.appo.utils.Constants.APP_INST_ID_REGX;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,7 @@ import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Batch instance input schema.
+ * Application instantiatione input parameters.
  */
 @Validated
 @Getter
@@ -39,13 +40,8 @@ import org.springframework.validation.annotation.Validated;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public final class BatchInstancesParam {
-
-    @NotEmpty(message = "Application instance ID mandatory")
-    private String appInstanceId;
+public final class AppInstantiateReqParam {
 
     @Size(max = 20)
     private Map<@Size(max = 256) String, @Size(max = 256) String> parameters;
-
-
 }
