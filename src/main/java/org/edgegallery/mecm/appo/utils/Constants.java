@@ -49,6 +49,8 @@ public final class Constants {
     public static final String APP_INSTANCE_IDS = "app_instance_ids";
     public static final String APP_ID = "app_id";
     public static final String ACCESS_TOKEN = "access_token";
+    public static final String INSTANTIATION_PARAMS = "instantiation_params";
+    public static final String BATCH_INSTANTIATION_PARAMS = "batch_instantiation_params";
     public static final String MEC_HOST_IP = "host_ip";
     public static final String MEPM_IP = "mepm_ip";
     public static final String MEPM_PORT = "mepm_port";

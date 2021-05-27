@@ -23,7 +23,7 @@
     <bpmn:endEvent id="EndEvent_1oraveb">
       <bpmn:incoming>SequenceFlow_1ctgupp</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:serviceTask id="ServiceTask_0qij8bj" name="Set params for create app instance" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.BatchProcessParameters">
+    <bpmn:serviceTask id="ServiceTask_0qij8bj" name="Set params for instantiate app instance" camunda:class="org.edgegallery.mecm.appo.bpmn.tasks.BatchProcessParameters">
       <bpmn:extensionElements>
         <camunda:inputOutput>
           <camunda:inputParameter name="requestAction">SetAppInstantiateParams</camunda:inputParameter>
@@ -56,6 +56,7 @@
         <camunda:in source="hw_capabilities" target="hw_capabilities" />
         <camunda:in source="mec_host" target="mec_host" />
         <camunda:in source="app_instance_id" target="apprule_task_id" />
+        <camunda:in source="instantiation_params" target="instantiation_params" />
       </bpmn:extensionElements>
       <bpmn:incoming>SequenceFlow_1fcxj16</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_045pcl5</bpmn:outgoing>

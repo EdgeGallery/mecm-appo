@@ -21,9 +21,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.edgegallery.mecm.appo.apihandler.dto.AppInstantiateReqParam;
 import org.edgegallery.mecm.appo.apihandler.dto.BatchCreateParam;
 import org.edgegallery.mecm.appo.apihandler.dto.BatchInstancesParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchInstancesReqParam;
 import org.edgegallery.mecm.appo.apihandler.dto.BatchResponseDto;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchTerminateReqParam;
 import org.edgegallery.mecm.appo.apihandler.dto.CreateParam;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
@@ -200,7 +203,8 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId,
-                                                               String appInstanceId) {
+                                                               String appInstanceId,
+                                                               AppInstantiateReqParam instantiationParams) {
         LOGGER.debug("Application instantiation request received...");
 
         AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
@@ -223,6 +227,11 @@ public class AppoServiceImpl implements AppoService {
         requestBodyParam.put(Constants.APPRULE_TASK_ID, appInstanceId);
         requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
 
+        if (instantiationParams != null && !instantiationParams.getParameters().isEmpty()) {
+            requestBodyParam.put(Constants.INSTANTIATION_PARAMS,
+                    new Gson().toJson(instantiationParams.getParameters()));
+        }
+
         processflowService.executeProcessAsync("instantiateApplicationInstance", requestBodyParam);
 
         return new ResponseEntity<>(new AppoResponse(HttpStatus.ACCEPTED), HttpStatus.ACCEPTED);
@@ -230,13 +239,14 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId,
-                                                               BatchInstancesParam batchInstsParam) {
+                                                               BatchInstancesReqParam batchInstsParam) {
         LOGGER.debug("Batch application instantiation request received...");
 
-        List<String> appInstanceIds = new LinkedList<>();
         List<BatchResponseDto> response = new LinkedList<>();
         BatchResponseDto instantiateResp;
-        for (String appInstanceId : batchInstsParam.getAppInstanceIds()) {
+        List<BatchInstancesParam> instantiationParameters = new LinkedList<>();
+        for (BatchInstancesParam batchInstParam : batchInstsParam.getInstantiationParameters()) {
+            String appInstanceId =  batchInstParam.getAppInstanceId();
             try {
                 AppInstanceInfo instInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
                 String operationalStatus = instInfo.getOperationalStatus();
@@ -252,7 +262,7 @@ public class AppoServiceImpl implements AppoService {
                 } else {
                     instantiateResp = new BatchResponseDto(appInstanceId, instInfo.getMecHost(), REQUEST_ACCEPTED);
                     response.add(instantiateResp);
-                    appInstanceIds.add(appInstanceId);
+                    instantiationParameters.add(batchInstParam);
                 }
             } catch (NoSuchElementException ex) {
                 LOGGER.error("app instance id does not exist: {}", appInstanceId);
@@ -261,19 +271,20 @@ public class AppoServiceImpl implements AppoService {
             }
         }
 
-        Map<String, String> batchAppInstsParam = new HashMap<>();
-        batchAppInstsParam.put(Constants.TENANT_ID, tenantId);
+        if (!instantiationParameters.isEmpty()) {
+            Map<String, String> batchAppInstsParam = new HashMap<>();
+            batchAppInstsParam.put(Constants.TENANT_ID, tenantId);
 
-        String batchAppInstsStr = appInstanceIds.stream().map(Object::toString)
-                .collect(Collectors.joining(","));
-        batchAppInstsParam.put(Constants.APP_INSTANCE_IDS, batchAppInstsStr);
+            String batchInstParams = new Gson().toJson(new BatchInstancesReqParam(instantiationParameters));
+            batchAppInstsParam.put(Constants.BATCH_INSTANTIATION_PARAMS, batchInstParams);
 
-        LOGGER.debug("Batch instantiate input params: {}", batchAppInstsParam);
+            LOGGER.debug("Batch instantiate input params: {}", batchAppInstsParam);
 
-        batchAppInstsParam.put(Constants.ACCESS_TOKEN, accessToken);
+            batchAppInstsParam.put(Constants.BATCH_INSTANTIATION_PARAMS, new Gson().toJson(batchInstsParam));
+            batchAppInstsParam.put(Constants.ACCESS_TOKEN, accessToken);
 
-        processflowService.executeProcessAsync("batchInstantiateApplicationInstance", batchAppInstsParam);
-
+            processflowService.executeProcessAsync("batchInstantiateApplicationInstance", batchAppInstsParam);
+        }
         return new ResponseEntity<>(new AppoResponse(response), HttpStatus.ACCEPTED);
     }
 
@@ -309,7 +320,7 @@ public class AppoServiceImpl implements AppoService {
 
     @Override
     public ResponseEntity<AppoResponse> terminateAppInstance(String accessToken, String tenantId,
-                                                             BatchInstancesParam appInstanceParam) {
+                                                             BatchTerminateReqParam appInstanceParam) {
         LOGGER.debug("Batch application terminate request received...");
 
         List<String> terminateAppInstIds = new LinkedList<>();
