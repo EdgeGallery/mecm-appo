@@ -17,6 +17,7 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import java.util.Map;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
@@ -122,8 +123,11 @@ public class InputParameters {
         delegateExecution.setVariable(Constants.ACCESS_TOKEN, accessToken);
         delegateExecution.setVariable(Constants.TENANT_ID, tenantId);
         delegateExecution.setVariable(Constants.APP_INSTANCE_IDS, appInstanceIds);
-
-        LOGGER.info("tenant_id: {}, app_instance_ids: {}", tenantId, appInstanceIds);
+        String instantiationParams = (String) delegateExecution.getVariable(Constants.BATCH_INSTANTIATION_PARAMS);
+        if (instantiationParams != null) {
+            delegateExecution.setVariable(Constants.BATCH_INSTANTIATION_PARAMS, instantiationParams);
+        }
+        LOGGER.info("tenant_id: {}", tenantId);
     }
 
     /**
@@ -141,6 +145,10 @@ public class InputParameters {
         delegateExecution.setVariable(Constants.TENANT_ID, tenantId);
         delegateExecution.setVariable(Constants.APP_INSTANCE_ID, appInstanceId);
         delegateExecution.setVariable(Constants.APPRULE_TASK_ID, appRuletaskId);
+        String instantiationParams = (String) delegateExecution.getVariable(Constants.INSTANTIATION_PARAMS);
+        if (instantiationParams != null) {
+            delegateExecution.setVariable(Constants.INSTANTIATION_PARAMS, instantiationParams);
+        }
 
         LOGGER.info("tenant_id: {}, app_instance_id: {}", tenantId, appInstanceId);
     }

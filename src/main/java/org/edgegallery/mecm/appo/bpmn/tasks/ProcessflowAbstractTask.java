@@ -205,11 +205,7 @@ public abstract class ProcessflowAbstractTask {
         try {
             uri = new URL(url).toURI();
 
-            if (entity.getBody() == null) {
-                LOGGER.info("\n\nSending Request: {}: URL: {}", method, url);
-            } else {
-                LOGGER.info("\n\nSending Request: {}: URL: {} \n{}", method, url, entity.getBody());
-            }
+            LOGGER.info("\n\nSending Request: {}: URL: {}", method, url);
 
             ResponseEntity<String> response = restTemplate.exchange(url, method, entity, String.class);
 
