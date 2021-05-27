@@ -17,8 +17,10 @@
 
 package org.edgegallery.mecm.appo.service;
 
+import org.edgegallery.mecm.appo.apihandler.dto.AppInstantiateReqParam;
 import org.edgegallery.mecm.appo.apihandler.dto.BatchCreateParam;
-import org.edgegallery.mecm.appo.apihandler.dto.BatchInstancesParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchInstancesReqParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchTerminateReqParam;
 import org.edgegallery.mecm.appo.apihandler.dto.CreateParam;
 import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
@@ -58,10 +60,12 @@ public interface AppoService {
      * @param accessToken   access token
      * @param tenantId      tenant ID
      * @param appInstanceId application instance ID
+     * @param instantiationparams application instantiate parameters
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId, String appInstanceId);
+    ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId, String appInstanceId,
+                                                        AppInstantiateReqParam instantiationparams);
 
 
     /**
@@ -74,20 +78,7 @@ public interface AppoService {
      */
 
     ResponseEntity<AppoResponse> instantiateAppInstance(String accessToken, String tenantId,
-                                                        BatchInstancesParam appInstanceParam);
-
-
-    /**
-     * Batch terminates application instances.
-     *
-     * @param accessToken       access token
-     * @param tenantId          tenant ID
-     * @param appInstanceparams application instance parameters
-     * @return status code 201 on success, error code on failure
-     */
-
-    ResponseEntity<AppoResponse> terminateAppInstance(String accessToken, String tenantId,
-                                                      BatchInstancesParam appInstanceparams);
+                                                        BatchInstancesReqParam appInstanceParam);
 
     /**
      * Terminates an application instance.
@@ -100,6 +91,17 @@ public interface AppoService {
 
     ResponseEntity<AppoResponse> terminateAppInstance(String accessToken, String tenantId, String appInstanceId);
 
+
+    /**
+     * Batch terminates application instances.
+     *
+     * @param accessToken   access token
+     * @param tenantId      tenant ID
+     * @param batchTerminateParams application instance ID
+     * @return status code 200 on success, error code on failure
+     */
+    ResponseEntity<AppoResponse> terminateAppInstance(String accessToken, String tenantId,
+                                                             BatchTerminateReqParam batchTerminateParams);
     /**
      * Retrieves an application instance information.
      *

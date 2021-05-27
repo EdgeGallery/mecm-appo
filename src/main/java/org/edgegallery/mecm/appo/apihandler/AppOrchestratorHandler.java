@@ -25,8 +25,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.edgegallery.mecm.appo.apihandler.dto.AppInstantiateReqParam;
 import org.edgegallery.mecm.appo.apihandler.dto.BatchCreateParam;
-import org.edgegallery.mecm.appo.apihandler.dto.BatchInstancesParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchInstancesReqParam;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchTerminateReqParam;
 import org.edgegallery.mecm.appo.apihandler.dto.CreateParam;
 import org.edgegallery.mecm.appo.service.AppoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
@@ -111,10 +113,13 @@ public class AppOrchestratorHandler {
             @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
             @ApiParam(value = "application instance id")
             @PathVariable("app_instance_id") @Pattern(regexp = Constants.APP_INST_ID_REGX)
-            @Size(max = 64) String appInstanceId) {
+            @Size(max = 64) String appInstanceId,
+            @ApiParam(value = "Instantiate application instances")
+            @Valid @RequestBody(required = false) AppInstantiateReqParam instantiateParam) {
+
         logger.debug("Application instantiation request received...");
 
-        return appoService.instantiateAppInstance(accessToken, tenantId, appInstanceId);
+        return appoService.instantiateAppInstance(accessToken, tenantId, appInstanceId, instantiateParam);
     }
 
     /**
@@ -301,7 +306,7 @@ public class AppOrchestratorHandler {
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
             @ApiParam(value = "Instantiate application instances")
-            @Valid @RequestBody BatchInstancesParam appInstanceParam) {
+            @Valid @RequestBody BatchInstancesReqParam appInstanceParam) {
         logger.debug("Application instantiation request received...");
 
         return appoService.instantiateAppInstance(accessToken, tenantId, appInstanceParam);
@@ -326,7 +331,7 @@ public class AppOrchestratorHandler {
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
             @ApiParam(value = "Batch terminate application instances")
-            @Valid @RequestBody BatchInstancesParam appInstanceParam) {
+            @Valid @RequestBody BatchTerminateReqParam appInstanceParam) {
         logger.debug("Batch terminate application instance request received...");
 
         return appoService.terminateAppInstance(accessToken, tenantId, appInstanceParam);

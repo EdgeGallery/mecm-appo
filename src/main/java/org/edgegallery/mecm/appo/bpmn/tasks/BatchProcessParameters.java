@@ -17,10 +17,12 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import com.google.gson.Gson;
 import java.util.Arrays;
 import java.util.List;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.edgegallery.mecm.appo.apihandler.dto.BatchInstancesReqParam;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +40,10 @@ public class BatchProcessParameters implements JavaDelegate {
                 setApplicationCreateParameters(delegateExecution);
                 break;
             case "SetAppInstantiateParams":
-            case "SetAppTerminateParams":
                 setApplicationInstantiateParameters(delegateExecution);
+                break;
+            case "SetAppTerminateParams":
+                setApplicationTerminateParameters(delegateExecution);
                 break;
             case "SetRequestCount":
                 setAppRequestCount(delegateExecution);
@@ -84,6 +88,36 @@ public class BatchProcessParameters implements JavaDelegate {
      * @param delegateExecution delegate execution
      */
     void setApplicationInstantiateParameters(DelegateExecution delegateExecution) {
+        String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
+
+        String batchInstantiateParams = (String) delegateExecution.getVariable(Constants.BATCH_INSTANTIATION_PARAMS);
+        BatchInstancesReqParam batchInstancesReqParam = new Gson().fromJson(batchInstantiateParams,
+                BatchInstancesReqParam.class);
+
+        Integer cnt = (Integer) delegateExecution.getVariable(Constants.APP_REQ_CNT);
+        if (delegateExecution.getVariable(Constants.APP_REQ_CNT) == null) {
+            cnt = batchInstancesReqParam.getInstantiationParameters().size();
+            delegateExecution.setVariable(Constants.APP_REQ_CNT, cnt);
+        }
+
+        if (cnt > 0) {
+            String appInstanceId = batchInstancesReqParam.getInstantiationParameters().get(cnt - 1).getAppInstanceId();
+            delegateExecution.setVariable(Constants.APP_INSTANCE_ID, appInstanceId);
+
+            String parameters = new Gson().toJson(batchInstancesReqParam
+                    .getInstantiationParameters().get(cnt - 1).getParameters());
+            delegateExecution.setVariable(Constants.INSTANTIATION_PARAMS, parameters);
+
+            LOGGER.info("tenant_id: {}, app_instance_id: {}", tenantId, appInstanceId);
+        }
+    }
+
+    /**
+     * Sets application terminate parameters request input parameters.
+     *
+     * @param delegateExecution delegate execution
+     */
+    void setApplicationTerminateParameters(DelegateExecution delegateExecution) {
         String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
 
         String appInstIds = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_IDS);

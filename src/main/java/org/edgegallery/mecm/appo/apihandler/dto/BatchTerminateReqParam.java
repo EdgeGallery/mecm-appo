@@ -13,10 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
- 
-package org.edgegallery.mecm.appo.model;
 
-import java.util.Map;
+package org.edgegallery.mecm.appo.apihandler.dto;
+
+import static org.edgegallery.mecm.appo.utils.Constants.APP_INST_ID_REGX;
+
+import java.util.List;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,19 +30,17 @@ import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Application instantiate request schema.
- *
+ * Batch terminate input parameters.
  */
 @Validated
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
-public class AppInstantiateReq {
+@AllArgsConstructor
+public final class BatchTerminateReqParam {
 
-    private String hostIp;
-    private String packageId;
-    private String appName;
-    private Map<String, Object> parameters;
+    @NotEmpty(message = "Application instance IDs mandatory")
+    @Size(max = 20)
+    private List<@Pattern(regexp = APP_INST_ID_REGX) String> appInstanceIds;
 }

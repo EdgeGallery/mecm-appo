@@ -19,6 +19,7 @@ package org.edgegallery.mecm.appo.apihandler.dto;
 import static org.edgegallery.mecm.appo.utils.Constants.APP_INST_ID_REGX;
 
 import java.util.List;
+import java.util.Map;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -40,7 +41,11 @@ import org.springframework.validation.annotation.Validated;
 @AllArgsConstructor
 public final class BatchInstancesParam {
 
-    @NotEmpty(message = "Application instance IDs mandatory")
+    @NotEmpty(message = "Application instance ID mandatory")
+    private String appInstanceId;
+
     @Size(max = 20)
-    private List<@Pattern(regexp = APP_INST_ID_REGX) String> appInstanceIds;
+    private Map<@Size(max = 256) String, @Size(max = 256) String> parameters;
+
+
 }

@@ -150,10 +150,15 @@ public class Mepm extends ProcessflowAbstractTask {
             // Preparing request headers.
             Map<String, Object> headers = new HashMap<>();
             headers.put("origin", "MEO");
-
+            String appInstantiationParams = (String) execution.getVariable(Constants.INSTANTIATION_PARAMS);
+            Map<String, Object> parameters = null;
+            if (appInstantiationParams != null) {
+                Gson gson = new Gson();
+                parameters = gson.fromJson(appInstantiationParams, Map.class);
+            }
             AppInstantiateReq appInstReq = new AppInstantiateReq(appInstanceInfo.getMecHost(),
                     appInstanceInfo.getAppPackageId(),
-                    appInstanceInfo.getAppName());
+                    appInstanceInfo.getAppName(), parameters);
 
             LOGGER.info("hostIp {} and appName {}", appInstanceInfo.getMecHost(), appInstanceInfo.getAppName());
 

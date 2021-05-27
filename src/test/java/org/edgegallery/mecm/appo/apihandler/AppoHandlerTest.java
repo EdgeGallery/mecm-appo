@@ -295,6 +295,19 @@ public class AppoHandlerTest {
                         .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON_VALUE).with(csrf())
+                        .content("{\n"
+                                + "    \"parameters\": { \"abilityZone\"    : \"zone\",\n"
+                                + "        \"ServerGroup\"    : \"serverGroup\",\n"
+                                + "        \"Net_n6_ip\"      : \"net_n6_i\",\n"
+                                + "        \"Net_n6_mask\"    : \"net_n6_mask\",\n"
+                                + "        \"Net_n6_vlan_id\" : \"net_n6_vlan_id\",\n"
+                                + "        \"Net_n6_phy_name\": \"net_n6_phy_name\",\n"
+                                + "        \"mepIp\"          : \"mep ip\",\n"
+                                + "        \"mepPort\"        : \"mep port\",\n"
+                                + "        \"ak\"             : \"ak\",\n"
+                                + "        \"sk\"             : \"sk\" \n"
+                                + "    }\n"
+                                + "}")
                         .header(ACCESS_TOKEN, SAMPLE_TOKEN));
         postInstantiateResult.andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
