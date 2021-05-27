@@ -106,10 +106,10 @@ public class AppoSyncHandler {
             Set<String> mepms = getInventoryMecHostsCfg(accessToken);
             for (String mepm: mepms) {
                 logger.info("Sync application instance infos from edge {}", mepm);
-                String appLcmEndPoint = getInventoryMepmCfg(mepm, accessToken);
+                String mepmEndPoint = getInventoryMepmCfg(mepm, accessToken);
 
-                getSyncAppInstanceStaleRecords(appLcmEndPoint, tenantId, accessToken);
-                getSyncAppInstanceUpdateRecords(appLcmEndPoint, tenantId, accessToken);
+                getSyncAppInstanceStaleRecords(mepmEndPoint, tenantId, accessToken);
+                getSyncAppInstanceUpdateRecords(mepmEndPoint, tenantId, accessToken);
             }
         } catch (AppoException ex) {
             throw new AppoException("failed to synchronize app instance info from edge:" + ex.getMessage());
@@ -137,9 +137,9 @@ public class AppoSyncHandler {
         }
     }
 
-    private void getSyncAppInstanceStaleRecords(String appLcmEndPoint, String tenantId, String accessToken) {
+    private void getSyncAppInstanceStaleRecords(String mepmEndPoint, String tenantId, String accessToken) {
         try {
-            StringBuilder sb = new StringBuilder(appLcmEndPoint);
+            StringBuilder sb = new StringBuilder(mepmEndPoint);
             String uri = sb.append("/lcmcontroller/v1/tenants/").append(tenantId).append("/app_instances"
                     + "/sync_deleted").toString();
 
