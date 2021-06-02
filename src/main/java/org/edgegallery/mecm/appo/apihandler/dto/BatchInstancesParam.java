@@ -44,7 +44,7 @@ public final class BatchInstancesParam {
     @NotEmpty(message = "Application instance ID mandatory")
     private String appInstanceId;
 
-    @Size(max = 20)
+    @Size(max = 50)
     private Map<@Size(max = 256) String, @Size(max = 256) String> parameters;
 
 
