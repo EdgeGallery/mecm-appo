@@ -45,7 +45,7 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
 
 /**
- * 部署前检查app包的依赖是否有对应实例.
+ * Check before deploymentappIs there a corresponding instance of the package dependency.
  *
  * @author 21cn/cuijch
  * @date 2020/11/9
@@ -63,11 +63,11 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
     private final AppInstanceInfoService appInstanceInfoService;
 
     /**
-     * 构造函数.
+     * Constructor.
      *
-     * @param delegateExecution      执行对象
-     * @param appPkgBasePath         包路径
-     * @param appInstanceInfoService 应用实例信息
+     * @param delegateExecution      Execution object
+     * @param appPkgBasePath         Package path
+     * @param appInstanceInfoService Application case information
      */
     public DeComposeAppPkgTask(DelegateExecution delegateExecution, String appPkgBasePath,
                                AppInstanceInfoService appInstanceInfoService) {
@@ -77,7 +77,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
     }
 
     /**
-     * 执行体.
+     * Executive body.
      */
     public void execute() {
         LOGGER.info("Decompose application package...");
@@ -176,9 +176,9 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
     }
 
     /**
-     * 从appRule中获取依赖列表，如果非空，检查依赖是否被部署.
+     * FromappRuleGet the list of dependencies in，If not empty，Check if dependencies are deployed.
      *
-     * @param appRule 包含依赖列表
+     * @param appRule Include dependency list
      */
     public void checkMainTemplate(AppRule appRule) {
         if (appRule.getAppServiceRequired() == null) {
@@ -188,7 +188,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         String appInstanceId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
         String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
 
-        // 根据mec host筛选实例列表，按照appPkgId转化为map，过滤掉状态非active的实例
+        // according tomec hostFilter the list of instances，according toappPkgIdConverted tomap，Filter out non-statusactiveInstance of
         List<AppInstanceInfo> appInstanceInfoListInHost = appInstanceInfoService
                 .getAppInstanceInfoByMecHost(tenantId, mecHost);
 
@@ -202,9 +202,9 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         Gson gson = new Gson();
         List<AppInstanceDependency> dependencies = new ArrayList<>();
 
-        // 解析MainServiceTemplate.yaml，确认依赖的APP是否被部署
+        // ParsingMainServiceTemplate.yaml，Confirmed dependentAPPWhether to be deployed
         for (AppServiceRequired required : appRule.getAppServiceRequired()) {
-            // 对于平台服务，不存在packageId，不需要检查
+            // For platform services，does not existpackageId，No need to check
             if (null == required.getPackageId() || "".equals(required.getPackageId())) {
                 continue;
             }
@@ -224,9 +224,9 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         execution.setVariable(Constants.APP_REQUIRED, appRequiredJson);
         LOGGER.info("Set app dependencies : {}", appRequiredJson);
 
-        // 因为appServiceRequired已被被序列化并存储到Constants.APP_REQUIRED了
-        // 而后面AppRule也会被序列化并存储到Constants.APP_RULES
-        // 因此把appServiceRequired设置为null
+        // becauseappServiceRequiredHas been serialized and stored inConstants.APP_REQUIREDUp
+        // And behindAppRuleWill also be serialized and stored inConstants.APP_RULES
+        // So putappServiceRequiredSet asnull
         appRule.setAppServiceRequired(null);
     }
 }

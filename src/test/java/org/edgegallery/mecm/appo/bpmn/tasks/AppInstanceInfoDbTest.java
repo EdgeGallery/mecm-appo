@@ -29,7 +29,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
- * 应用实例信息.
+ * Application case information.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class AppInstanceInfoDbTest {
