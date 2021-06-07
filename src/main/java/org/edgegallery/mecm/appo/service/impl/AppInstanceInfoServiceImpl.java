@@ -49,11 +49,11 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
     private AppInstanceDependencyRepository appInstanceDependencyRepository;
 
     /**
-     * 构造函数.
+     * Constructor.
      *
-     * @param appInstanceInfoRepository       app实例信息仓库
-     * @param appInstanceDependencyRepository 依赖的app实例仓库
-     * @param appoTenantRepository            租户仓库
+     * @param appInstanceInfoRepository       appInstance information warehouse
+     * @param appInstanceDependencyRepository dependentappInstance warehouse
+     * @param appoTenantRepository            Tenant warehouse
      */
     @Autowired
     public AppInstanceInfoServiceImpl(AppInstanceInfoRepository appInstanceInfoRepository,
