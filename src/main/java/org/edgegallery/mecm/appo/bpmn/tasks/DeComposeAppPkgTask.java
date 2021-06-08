@@ -188,7 +188,8 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         String appInstanceId = (String) execution.getVariable(Constants.APP_INSTANCE_ID);
         String mecHost = (String) execution.getVariable(Constants.MEC_HOST);
 
-        // according tomec hostFilter the list of instances，according toappPkgIdConverted tomap，Filter out non-statusactiveInstance of
+        /* according tomec hostFilter the list of instances，according toappPkgIdConverted tomap，
+         Filter out non-statusactiveInstance of */
         List<AppInstanceInfo> appInstanceInfoListInHost = appInstanceInfoService
                 .getAppInstanceInfoByMecHost(tenantId, mecHost);
 
