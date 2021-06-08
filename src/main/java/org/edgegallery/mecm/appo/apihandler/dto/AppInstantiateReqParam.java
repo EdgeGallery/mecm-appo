@@ -42,6 +42,6 @@ import org.springframework.validation.annotation.Validated;
 @AllArgsConstructor
 public final class AppInstantiateReqParam {
 
-    @Size(max = 20)
+    @Size(max = 50)
     private Map<@Size(max = 256) String, @Size(max = 256) String> parameters;
 }

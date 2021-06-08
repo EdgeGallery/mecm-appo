@@ -19,23 +19,32 @@ package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import static org.edgegallery.mecm.appo.bpmn.tasks.Apm.FAILED_TO_LOAD_YAML;
 import static org.edgegallery.mecm.appo.bpmn.tasks.Apm.FAILED_TO_UNZIP_CSAR;
+import static org.edgegallery.mecm.appo.utils.AppoServiceHelper.isFileWithSuffixExist;
 
 import com.google.gson.Gson;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.model.AppPackageMf;
 import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.model.AppServiceRequired;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
+import org.edgegallery.mecm.appo.utils.AppoServiceHelper;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -76,6 +85,40 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         this.appInstanceInfoService = appInstanceInfoService;
     }
 
+    private AppPackageMf getDeploymentType(String appPkgDir) {
+        List<File> files = (List<File>) FileUtils.listFiles(new File(appPkgDir), null, true);
+        for (File file: files) {
+            if (isFileWithSuffixExist(file.getName(), ".mf")) {
+                try (InputStream inputStream = new FileInputStream(file)) {
+                    Yaml yaml = new Yaml(new SafeConstructor());
+                    Map<String, Object> mfMap = yaml.load(inputStream);
+
+                    AppPackageMf mf = new AppPackageMf();
+                    mf.setAppClass(mfMap.get("app_class").toString());
+                    return mf;
+                } catch (IOException e) {
+                    throw new AppoException("failed to read .mf from app package");
+                }
+            }
+        }
+        throw new AppoException("failed, .mf file not available in app package");
+    }
+
+    private String getEntryDefinitionFromMetadata(String appPkgDir) {
+        List<File> files = (List<File>) FileUtils.listFiles(new File(appPkgDir), null, true);
+        for (File file: files) {
+            if (isFileWithSuffixExist(file.getName(), ".meta")) {
+                try (InputStream inputStream = new FileInputStream(file)) {
+                    Yaml yaml = new Yaml(new SafeConstructor());
+                    Map<String, Object> meatData = yaml.load(inputStream);
+                    return meatData.get("Entry-Definitions").toString();
+                } catch (IOException e) {
+                    throw new AppoException("failed to read metadata from app package");
+                }
+            }
+        }
+        throw new AppoException("failed, main service yaml not available in app package");
+    }
     /**
      * 执行体.
      */
@@ -94,34 +137,42 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         final String appPackagePath = appPkgBasePath + appInstanceId + Constants.SLASH + appPackageId
                 + Constants.APP_PKG_EXT;
 
-        try (ZipInputStream zis = new ZipInputStream(new FileInputStream(appPackagePath))) {
-            LOGGER.info("check application {} dependency", appId);
-            ZipEntry entry;
-            while ((entry = zis.getNextEntry()) != null) {
-                if (entry.getName().contains("/MainServiceTemplate.yaml")) {
-                    Map<String, Object> mainTemplateMap = loadMainServiceTemplateYaml(zis);
-                    updateApplicationDescriptor(mainTemplateMap);
-                    break;
-                }
+        String appPkgDir = FilenameUtils.removeExtension(appPackagePath);
+        try {
+            AppoServiceHelper.unzipApplicationPacakge(appPackagePath, appPkgDir);
+
+            String mainServiceYaml = appPkgDir + "/" + getEntryDefinitionFromMetadata(appPkgDir);
+
+            AppPackageMf mf = getDeploymentType(appPkgDir);
+            if ("vm".equalsIgnoreCase(mf.getAppClass())) {
+                String appDefnDir = FilenameUtils.removeExtension(mainServiceYaml);
+                AppoServiceHelper.unzipApplicationPacakge(mainServiceYaml, appDefnDir);
+
+                mainServiceYaml = appDefnDir + "/" + getEntryDefinitionFromMetadata(appDefnDir);
             }
+            Map<String, Object> mainTemplateMap = loadMainServiceTemplateYaml(mainServiceYaml);
+            updateApplicationDescriptor(mainTemplateMap);
 
             setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
-        } catch (IOException | IllegalArgumentException e) {
-            LOGGER.error(FAILED_TO_UNZIP_CSAR);
-            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
-        } catch (AppoException e) {
-            LOGGER.error(e.getMessage());
-            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+
+            FileUtils.deleteDirectory(new File(appPkgDir));
+        } catch (AppoException ex) {
+            LOGGER.error(ex.getMessage());
+            setProcessflowExceptionResponseAttributes(execution, ex.getMessage(), Constants.PROCESS_FLOW_ERROR);
+        } catch (IOException ex) {
+            LOGGER.error("failed to delete package directory");
         }
     }
 
-    private Map<String, Object> loadMainServiceTemplateYaml(ZipInputStream zis) {
+    private Map<String, Object> loadMainServiceTemplateYaml(String yamlFile) {
         Map<String, Object> mainTemplateMap;
         Yaml yaml = new Yaml(new SafeConstructor());
-        try {
-            mainTemplateMap = yaml.load(zis);
-        } catch (YAMLException e) {
+        try (InputStream inputStream = new FileInputStream(new File(yamlFile))) {
+            mainTemplateMap = yaml.load(inputStream);
+        } catch (YAMLException | FileNotFoundException e) {
             LOGGER.error(FAILED_TO_LOAD_YAML);
+            throw new AppoException(FAILED_TO_LOAD_YAML);
+        } catch (IOException e) {
             throw new AppoException(FAILED_TO_LOAD_YAML);
         }
         return mainTemplateMap;
