@@ -119,8 +119,9 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         }
         throw new AppoException("failed, main service yaml not available in app package");
     }
+
     /**
-     * Executive body.
+     * Executor to decompose application package.
      */
     public void execute() {
         LOGGER.info("Decompose application package...");
