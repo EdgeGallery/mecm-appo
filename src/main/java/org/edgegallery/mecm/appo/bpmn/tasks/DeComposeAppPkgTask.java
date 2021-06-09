@@ -119,6 +119,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         }
         throw new AppoException("failed, main service yaml not available in app package");
     }
+
     /**
      * Executive body.
      */
