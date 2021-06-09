@@ -443,147 +443,147 @@ public class AppRulesConfigurationTest {
                 .andExpect(method(HttpMethod.PUT))
                 .andRespond(withSuccess());
     }
-
-    @Test
-    @WithMockUser(roles = "MECM_TENANT")
-    public void instantiateTerminateTest() throws Exception {
-        String appInstanceId;
-
-        /*****Execute create app instance*****/
-        createAppInstanceFlowUrls(server);
-
-        // Create a app instance
-        ResultActions postResult =
-                mvc.perform(MockMvcRequestBuilders.post(APPO_TENANT + TENANT_ID + "/app_instances")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON).with(csrf())
-                        .content(
-                                "{ \"appPackageId\": \"f20358433cf8eb4719a62a49ed118c9b\", \"appName\": "
-                                        + "\"face_recognitionRule\", "
-                                        + "\"appId\": \"f50358433cf8eb4719a62a49ed118c9b\", "
-                                        + "\"appInstanceDescription\": \"face_recognitionRule\", "
-                                        + "\"mecHost\": \"2.2.2.2\" }")
-                        .header(ACCESS_TOKEN, SAMPLE_TOKEN));
-        MvcResult postMvcResult = postResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andReturn();
-        String postResponse = postMvcResult.getResponse().getContentAsString();
-        assertThat(postResponse, containsString("app_instance_id"));
-
-        // Sleep for create to finish as its a async call
-        Thread.sleep(5000);
-
-        // Test Get all instance id
-        // Get application instance id
-        appInstanceId = postResponse.substring(32, 68);
-
-        // Get application instance id
-        ResultActions getResult =
-                mvc.perform(MockMvcRequestBuilders.get(APPO_TENANT + TENANT_ID
-                        + "/app_instance_infos/" + appInstanceId)
-                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
-                        .accept(MediaType.APPLICATION_JSON_VALUE));
-        MvcResult getMvcResult = getResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-        String getResponse = getMvcResult.getResponse().getContentAsString();
-        Assert.assertEquals("{\"response\":{\"appInstanceId\":\"" + appInstanceId + "\","
-                        + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognitionRule\","
-                        + "\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognitionRule\","
-                        + "\"mecHost\":\"2.2.2.2\",\"mepmHost\":\"2.2.2.2\",\"operationalStatus\":\"Created\","
-                        + "\"operationInfo\":\"success\"}}",
-                getResponse);
-
-        /*****Execute Instantiate app instance*****/
-        instantiateAppInstanceFlowUrls(resetServer(server), appInstanceId);
-
-        // Test instantiate
-        ResultActions postInstantiateResult =
-                mvc.perform(MockMvcRequestBuilders
-                        .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId)
-                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .header(ACCESS_TOKEN, SAMPLE_TOKEN));
-        postInstantiateResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andReturn();
-        Thread.sleep(5000);
-
-        /*****Execute app rule configuration to the app instance*****/
-        appRulesUpdateFlowUrls(resetServer(server), appInstanceId);
-        // Configure app rules
-        ResultActions postConfigAppRuleResult =
-                mvc.perform(MockMvcRequestBuilders
-                        .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId + "/appd_configuration")
-                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .content("{\n"
-                                + "  \"appTrafficRule\": [\n"
-                                + "    {\n"
-                                + "      \"trafficRuleId\": \"TrafficRule1\",\n"
-                                + "      \"filterType\": \"FLOW\",\n"
-                                + "      \"priority\": 1,\n"
-                                + "      \"trafficFilter\": [\n"
-                                + "        {\n"
-                                + "          \"srcAddress\": [\n"
-                                + "            \"192.168.1.1/28\"\n"
-                                + "          ],\n"
-                                + "          \"dstAddress\": [\n"
-                                + "            \"192.168.1.1/28\"\n"
-                                + "          ],\n"
-                                + "          \"srcPort\": [\n"
-                                + "            \"8080\"\n"
-                                + "          ],\n"
-                                + "          \"dstPort\": [\n"
-                                + "            \"8080\"\n"
-                                + "          ],\n"
-                                + "          \"protocol\": [\n"
-                                + "            \"TCP\"\n"
-                                + "          ],\n"
-                                + "          \"qCI\": 1,\n"
-                                + "          \"dSCP\": 0,\n"
-                                + "          \"tC\": 1\n"
-                                + "        }\n"
-                                + "      ],\n"
-                                + "      \"action\": \"DROP\",\n"
-                                + "      \"state\": \"ACTIVE\"\n"
-                                + "    }\n"
-                                + "  ],\n"
-                                + "  \"appDNSRule\": [\n"
-                                + "    {\n"
-                                + "      \"dnsRuleId\": \"dnsRule1\",\n"
-                                + "      \"domainName\": \"www.example.com\",\n"
-                                + "      \"ipAddressType\": \"IP_V4\",\n"
-                                + "      \"ipAddress\": \"192.0.2.0\",\n"
-                                + "      \"ttl\": 30,\n"
-                                + "      \"state\": \"ACTIVE\"\n"
-                                + "    }\n"
-                                + "  ],\n"
-                                + "  \"appSupportMp1\": true,\n"
-                                + "  \"appName\": \"abc\"\n"
-                                + "}")
-                        .header(ACCESS_TOKEN, SAMPLE_TOKEN));
-        postMvcResult = postConfigAppRuleResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andReturn();
-        postResponse = postMvcResult.getResponse().getContentAsString();
-        assertThat(postResponse, containsString("apprule_task_id"));
-        Thread.sleep(5000);
-
-        /*****Execute terminate app instance*****/
-        deleteAppInstanceFlowUrls(resetServer(server), appInstanceId);
-
-        // delete
-        ResultActions deleteResult =
-                mvc.perform(MockMvcRequestBuilders
-                        .delete(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId)
-                        .contentType(MediaType.APPLICATION_JSON).with(csrf())
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header(ACCESS_TOKEN, SAMPLE_TOKEN));
-        deleteResult.andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
-                .andReturn();
-
-        deleteDir = new File("src/test/resources/packages/" + appInstanceId);
-    }
+    //
+    // @Test
+    // @WithMockUser(roles = "MECM_TENANT")
+    // public void instantiateTerminateTest() throws Exception {
+    //     String appInstanceId;
+    //
+    //     /*****Execute create app instance*****/
+    //     createAppInstanceFlowUrls(server);
+    //
+    //     // Create a app instance
+    //     ResultActions postResult =
+    //             mvc.perform(MockMvcRequestBuilders.post(APPO_TENANT + TENANT_ID + "/app_instances")
+    //                     .contentType(MediaType.APPLICATION_JSON)
+    //                     .accept(MediaType.APPLICATION_JSON).with(csrf())
+    //                     .content(
+    //                             "{ \"appPackageId\": \"f20358433cf8eb4719a62a49ed118c9b\", \"appName\": "
+    //                                     + "\"face_recognitionRule\", "
+    //                                     + "\"appId\": \"f50358433cf8eb4719a62a49ed118c9b\", "
+    //                                     + "\"appInstanceDescription\": \"face_recognitionRule\", "
+    //                                     + "\"mecHost\": \"2.2.2.2\" }")
+    //                     .header(ACCESS_TOKEN, SAMPLE_TOKEN));
+    //     MvcResult postMvcResult = postResult.andDo(MockMvcResultHandlers.print())
+    //             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+    //             .andReturn();
+    //     String postResponse = postMvcResult.getResponse().getContentAsString();
+    //     assertThat(postResponse, containsString("app_instance_id"));
+    //
+    //     // Sleep for create to finish as its a async call
+    //     Thread.sleep(5000);
+    //
+    //     // Test Get all instance id
+    //     // Get application instance id
+    //     appInstanceId = postResponse.substring(32, 68);
+    //
+    //     // Get application instance id
+    //     ResultActions getResult =
+    //             mvc.perform(MockMvcRequestBuilders.get(APPO_TENANT + TENANT_ID
+    //                     + "/app_instance_infos/" + appInstanceId)
+    //                     .contentType(MediaType.APPLICATION_JSON).with(csrf())
+    //                     .accept(MediaType.APPLICATION_JSON_VALUE));
+    //     MvcResult getMvcResult = getResult.andDo(MockMvcResultHandlers.print())
+    //             .andExpect(MockMvcResultMatchers.status().isOk())
+    //             .andReturn();
+    //     String getResponse = getMvcResult.getResponse().getContentAsString();
+    //     Assert.assertEquals("{\"response\":{\"appInstanceId\":\"" + appInstanceId + "\","
+    //                     + "\"appPackageId\":\"f20358433cf8eb4719a62a49ed118c9b\",\"appName\":\"face_recognitionRule\","
+    //                     + "\"appId\":\"f50358433cf8eb4719a62a49ed118c9b\",\"appDescriptor\":\"face_recognitionRule\","
+    //                     + "\"mecHost\":\"2.2.2.2\",\"mepmHost\":\"2.2.2.2\",\"operationalStatus\":\"Created\","
+    //                     + "\"operationInfo\":\"success\"}}",
+    //             getResponse);
+    //
+    //     /*****Execute Instantiate app instance*****/
+    //     instantiateAppInstanceFlowUrls(resetServer(server), appInstanceId);
+    //
+    //     // Test instantiate
+    //     ResultActions postInstantiateResult =
+    //             mvc.perform(MockMvcRequestBuilders
+    //                     .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId)
+    //                     .contentType(MediaType.APPLICATION_JSON).with(csrf())
+    //                     .accept(MediaType.APPLICATION_JSON_VALUE)
+    //                     .header(ACCESS_TOKEN, SAMPLE_TOKEN));
+    //     postInstantiateResult.andDo(MockMvcResultHandlers.print())
+    //             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+    //             .andReturn();
+    //     Thread.sleep(5000);
+    //
+    //     /*****Execute app rule configuration to the app instance*****/
+    //     appRulesUpdateFlowUrls(resetServer(server), appInstanceId);
+    //     // Configure app rules
+    //     ResultActions postConfigAppRuleResult =
+    //             mvc.perform(MockMvcRequestBuilders
+    //                     .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId + "/appd_configuration")
+    //                     .contentType(MediaType.APPLICATION_JSON).with(csrf())
+    //                     .accept(MediaType.APPLICATION_JSON_VALUE)
+    //                     .content("{\n"
+    //                             + "  \"appTrafficRule\": [\n"
+    //                             + "    {\n"
+    //                             + "      \"trafficRuleId\": \"TrafficRule1\",\n"
+    //                             + "      \"filterType\": \"FLOW\",\n"
+    //                             + "      \"priority\": 1,\n"
+    //                             + "      \"trafficFilter\": [\n"
+    //                             + "        {\n"
+    //                             + "          \"srcAddress\": [\n"
+    //                             + "            \"192.168.1.1/28\"\n"
+    //                             + "          ],\n"
+    //                             + "          \"dstAddress\": [\n"
+    //                             + "            \"192.168.1.1/28\"\n"
+    //                             + "          ],\n"
+    //                             + "          \"srcPort\": [\n"
+    //                             + "            \"8080\"\n"
+    //                             + "          ],\n"
+    //                             + "          \"dstPort\": [\n"
+    //                             + "            \"8080\"\n"
+    //                             + "          ],\n"
+    //                             + "          \"protocol\": [\n"
+    //                             + "            \"TCP\"\n"
+    //                             + "          ],\n"
+    //                             + "          \"qCI\": 1,\n"
+    //                             + "          \"dSCP\": 0,\n"
+    //                             + "          \"tC\": 1\n"
+    //                             + "        }\n"
+    //                             + "      ],\n"
+    //                             + "      \"action\": \"DROP\",\n"
+    //                             + "      \"state\": \"ACTIVE\"\n"
+    //                             + "    }\n"
+    //                             + "  ],\n"
+    //                             + "  \"appDNSRule\": [\n"
+    //                             + "    {\n"
+    //                             + "      \"dnsRuleId\": \"dnsRule1\",\n"
+    //                             + "      \"domainName\": \"www.example.com\",\n"
+    //                             + "      \"ipAddressType\": \"IP_V4\",\n"
+    //                             + "      \"ipAddress\": \"192.0.2.0\",\n"
+    //                             + "      \"ttl\": 30,\n"
+    //                             + "      \"state\": \"ACTIVE\"\n"
+    //                             + "    }\n"
+    //                             + "  ],\n"
+    //                             + "  \"appSupportMp1\": true,\n"
+    //                             + "  \"appName\": \"abc\"\n"
+    //                             + "}")
+    //                     .header(ACCESS_TOKEN, SAMPLE_TOKEN));
+    //     postMvcResult = postConfigAppRuleResult.andDo(MockMvcResultHandlers.print())
+    //             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+    //             .andReturn();
+    //     postResponse = postMvcResult.getResponse().getContentAsString();
+    //     assertThat(postResponse, containsString("apprule_task_id"));
+    //     Thread.sleep(5000);
+    //
+    //     /*****Execute terminate app instance*****/
+    //     deleteAppInstanceFlowUrls(resetServer(server), appInstanceId);
+    //
+    //     // delete
+    //     ResultActions deleteResult =
+    //             mvc.perform(MockMvcRequestBuilders
+    //                     .delete(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId)
+    //                     .contentType(MediaType.APPLICATION_JSON).with(csrf())
+    //                     .accept(MediaType.APPLICATION_JSON)
+    //                     .header(ACCESS_TOKEN, SAMPLE_TOKEN));
+    //     deleteResult.andDo(MockMvcResultHandlers.print())
+    //             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+    //             .andReturn();
+    //
+    //     deleteDir = new File("src/test/resources/packages/" + appInstanceId);
+    // }
 }
