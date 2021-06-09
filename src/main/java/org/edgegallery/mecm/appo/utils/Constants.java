@@ -124,6 +124,7 @@ public final class Constants {
     public static final String OPER_STATUS_CREATED = "Created";
     public static final String OPER_STATUS_CREATE_FAILED = "Create failed";
     public static final String OPER_STATUS_INSTANTIATED = "Instantiated";
+    public static final String FAILED_TO_UNZIP_CSAR = "failed to unzip the csar file";
 
     private Constants() {
     }
