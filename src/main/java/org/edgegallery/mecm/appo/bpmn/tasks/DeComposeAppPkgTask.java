@@ -121,7 +121,7 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
     }
 
     /**
-     * Executive body.
+     * Executor to decompose application package.
      */
     public void execute() {
         LOGGER.info("Decompose application package...");
@@ -144,13 +144,11 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
 
             String mainServiceYaml = appPkgDir + "/" + getEntryDefinitionFromMetadata(appPkgDir);
 
-            AppPackageMf mf = getDeploymentType(appPkgDir);
-            if ("vm".equalsIgnoreCase(mf.getAppClass())) {
-                String appDefnDir = FilenameUtils.removeExtension(mainServiceYaml);
-                AppoServiceHelper.unzipApplicationPacakge(mainServiceYaml, appDefnDir);
+            String appDefnDir = FilenameUtils.removeExtension(mainServiceYaml);
+            AppoServiceHelper.unzipApplicationPacakge(mainServiceYaml, appDefnDir);
 
-                mainServiceYaml = appDefnDir + "/" + getEntryDefinitionFromMetadata(appDefnDir);
-            }
+            mainServiceYaml = appDefnDir + "/" + getEntryDefinitionFromMetadata(appDefnDir);
+
             Map<String, Object> mainTemplateMap = loadMainServiceTemplateYaml(mainServiceYaml);
             updateApplicationDescriptor(mainTemplateMap);
 
