@@ -144,7 +144,6 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
 
             String mainServiceYaml = appPkgDir + "/" + getEntryDefinitionFromMetadata(appPkgDir);
 
-            AppPackageMf mf = getDeploymentType(appPkgDir);
             String appDefnDir = FilenameUtils.removeExtension(mainServiceYaml);
             AppoServiceHelper.unzipApplicationPacakge(mainServiceYaml, appDefnDir);
 
