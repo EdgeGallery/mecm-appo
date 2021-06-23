@@ -104,14 +104,14 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         throw new AppoException("failed, .mf file not available in app package");
     }
 
-    private String getEntryDefinitionFromMetadata(String appPkgDir) {
+    private String getEntryDefinitionFromMetadata(String appPkgDir, String metaFile) {
         List<File> files = (List<File>) FileUtils.listFiles(new File(appPkgDir), null, true);
         for (File file: files) {
-            if (isFileWithSuffixExist(file.getName(), ".meta")) {
+            if (isFileWithSuffixExist(file.getName(), metaFile)) {
                 try (InputStream inputStream = new FileInputStream(file)) {
                     Yaml yaml = new Yaml(new SafeConstructor());
-                    Map<String, Object> meatData = yaml.load(inputStream);
-                    return meatData.get("Entry-Definitions").toString();
+                    Map<String, Object> metaData = yaml.load(inputStream);
+                    return metaData.get("Entry-Definitions").toString();
                 } catch (IOException e) {
                     throw new AppoException("failed to read metadata from app package");
                 }
@@ -142,14 +142,15 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         try {
             AppoServiceHelper.unzipApplicationPacakge(appPackagePath, appPkgDir);
 
-            String mainServiceYaml = appPkgDir + "/" + getEntryDefinitionFromMetadata(appPkgDir);
+            String mainSvcTemplateZip = appPkgDir + "/" + getEntryDefinitionFromMetadata(appPkgDir, "TOSCA.meta");
 
-            String appDefnDir = FilenameUtils.removeExtension(mainServiceYaml);
-            AppoServiceHelper.unzipApplicationPacakge(mainServiceYaml, appDefnDir);
+            String mainSvcTemplateDir = FilenameUtils.removeExtension(mainSvcTemplateZip);
+            AppoServiceHelper.unzipApplicationPacakge(mainSvcTemplateZip, mainSvcTemplateDir);
 
-            mainServiceYaml = appDefnDir + "/" + getEntryDefinitionFromMetadata(appDefnDir);
+            String mainSvcTemplateYaml = mainSvcTemplateDir + "/" + getEntryDefinitionFromMetadata(mainSvcTemplateDir,
+                    "TOSCA_VNFD.meta");
 
-            Map<String, Object> mainTemplateMap = loadMainServiceTemplateYaml(mainServiceYaml);
+            Map<String, Object> mainTemplateMap = loadMainServiceTemplateYaml(mainSvcTemplateYaml);
             updateApplicationDescriptor(mainTemplateMap);
 
             setProcessflowResponseAttributes(execution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
