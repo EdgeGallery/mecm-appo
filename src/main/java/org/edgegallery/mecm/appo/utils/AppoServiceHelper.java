@@ -19,6 +19,8 @@ package org.edgegallery.mecm.appo.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -94,7 +96,12 @@ public final class AppoServiceHelper {
                         if (inputStream.available() > TOO_BIG) {
                             throw new IllegalStateException("file being unzipped is too big");
                         }
-                        FileUtils.copyInputStreamToFile(inputStream, new File(fileName));
+                        File f = new File(fileName);
+                        if (!f.getParentFile().exists()) {
+                            Files.createDirectories(Paths.get(f.getParentFile().getCanonicalPath()));
+                        }
+
+                        FileUtils.copyInputStreamToFile(inputStream, f);
                         LOGGER.info("unzip package... {}", entry.getName());
                     }
                 } else {
@@ -105,7 +112,7 @@ public final class AppoServiceHelper {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error(Constants.FAILED_TO_UNZIP_CSAR, e);
+            LOGGER.error(Constants.FAILED_TO_UNZIP_CSAR);
             throw new AppoException(Constants.FAILED_TO_UNZIP_CSAR);
         }
     }
