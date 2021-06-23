@@ -105,8 +105,9 @@ public final class AppoServiceHelper {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error(Constants.FAILED_TO_UNZIP_CSAR);
+            LOGGER.error(Constants.FAILED_TO_UNZIP_CSAR, e);
             throw new AppoException(Constants.FAILED_TO_UNZIP_CSAR);
         }
     }
+
 }
