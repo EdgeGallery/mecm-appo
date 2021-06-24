@@ -18,7 +18,6 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import static org.edgegallery.mecm.appo.bpmn.tasks.Apm.FAILED_TO_LOAD_YAML;
-import static org.edgegallery.mecm.appo.bpmn.tasks.Apm.FAILED_TO_UNZIP_CSAR;
 import static org.edgegallery.mecm.appo.utils.AppoServiceHelper.isFileWithSuffixExist;
 
 import com.google.gson.Gson;
@@ -31,11 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
@@ -83,25 +79,6 @@ public class DeComposeAppPkgTask extends ProcessflowAbstractTask {
         this.execution = delegateExecution;
         this.appPkgBasePath = appPkgBasePath;
         this.appInstanceInfoService = appInstanceInfoService;
-    }
-
-    private AppPackageMf getDeploymentType(String appPkgDir) {
-        List<File> files = (List<File>) FileUtils.listFiles(new File(appPkgDir), null, true);
-        for (File file: files) {
-            if (isFileWithSuffixExist(file.getName(), ".mf")) {
-                try (InputStream inputStream = new FileInputStream(file)) {
-                    Yaml yaml = new Yaml(new SafeConstructor());
-                    Map<String, Object> mfMap = yaml.load(inputStream);
-
-                    AppPackageMf mf = new AppPackageMf();
-                    mf.setAppClass(mfMap.get("app_class").toString());
-                    return mf;
-                } catch (IOException e) {
-                    throw new AppoException("failed to read .mf from app package");
-                }
-            }
-        }
-        throw new AppoException("failed, .mf file not available in app package");
     }
 
     private String getEntryDefinitionFromMetadata(String appPkgDir, String metaFile) {
