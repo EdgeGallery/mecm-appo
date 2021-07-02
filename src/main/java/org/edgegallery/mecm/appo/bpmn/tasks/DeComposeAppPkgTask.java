@@ -36,7 +36,6 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.model.AppInstanceDependency;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
-import org.edgegallery.mecm.appo.model.AppPackageMf;
 import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.model.AppServiceRequired;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
