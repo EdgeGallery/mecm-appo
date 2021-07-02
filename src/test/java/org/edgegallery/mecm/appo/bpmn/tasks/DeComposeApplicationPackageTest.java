@@ -17,9 +17,13 @@
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
 import static org.edgegallery.mecm.appo.bpmn.tasks.ProcessflowAbstractTask.RESPONSE_CODE;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
@@ -33,12 +37,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeComposeApplicationPackageTest {
