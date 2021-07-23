@@ -53,6 +53,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.NestedServletException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AppoApplicationTest.class)
@@ -326,7 +327,7 @@ public class AppRulesConfigurationTest {
     @Test
     @WithMockUser(roles = "MECM_TENANT")
     public void instantiateTerminateTest() throws Exception {
-        String appInstanceId;
+        String appInstanceId, appruleTaskId;
 
         /*****Execute create app instance*****/
         createAppInstanceFlowUrls(server);
@@ -374,7 +375,6 @@ public class AppRulesConfigurationTest {
         postInstantiateResult.andDo(MockMvcResultHandlers.print())
             .andExpect(MockMvcResultMatchers.status().is2xxSuccessful()).andReturn();
         Thread.sleep(5000);
-
         /*****Execute app rule configuration to the app instance*****/
         appRulesUpdateFlowUrls(resetServer(server), appInstanceId);
         // Configure app rules
@@ -400,6 +400,54 @@ public class AppRulesConfigurationTest {
         postResponse = postMvcResult.getResponse().getContentAsString();
         assertThat(postResponse, containsString("apprule_task_id"));
         Thread.sleep(5000);
+
+        appruleTaskId = postResponse.substring(32, 68);
+
+        // tests Update application rules
+        ResultActions putUpdateAppRuleResult = mvc.perform(
+                MockMvcRequestBuilders.put(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId + "/appd_configuration")
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf()).accept(MediaType.APPLICATION_JSON_VALUE).content(
+                        "{\n" + "  \"appTrafficRule\": [\n" + "    {\n" + "      \"trafficRuleId\": \"TrafficRule2\",\n"
+                                + "      \"filterType\": \"FLOW\",\n" + "      \"priority\": 1,\n" + "      \"trafficFilter\": [\n"
+                                + "        {\n" + "          \"srcAddress\": [\n" + "            \"192.168.1.1/28\"\n"
+                                + "          ],\n" + "          \"dstAddress\": [\n" + "            \"192.168.1.1/28\"\n"
+                                + "          ],\n" + "          \"srcPort\": [\n" + "            \"8080\"\n" + "          ],\n"
+                                + "          \"dstPort\": [\n" + "            \"8080\"\n" + "          ],\n"
+                                + "          \"protocol\": [\n" + "            \"TCP\"\n" + "          ],\n"
+                                + "          \"qCI\": 1,\n" + "          \"dSCP\": 0,\n" + "          \"tC\": 1\n" + "        }\n"
+                                + "      ],\n" + "      \"action\": \"DROP\",\n" + "      \"state\": \"ACTIVE\"\n" + "    }\n"
+                                + "  ],\n" + "  \"appDNSRule\": [\n" + "    {\n" + "      \"dnsRuleId\": \"dnsRule1\",\n"
+                                + "      \"domainName\": \"www.example.com\",\n" + "      \"ipAddressType\": \"IP_V4\",\n"
+                                + "      \"ipAddress\": \"192.0.2.0\",\n" + "      \"ttl\": 30,\n" + "      \"state\": \"ACTIVE\"\n"
+                                + "    }\n" + "  ],\n" + "  \"appSupportMp1\": true,\n" + "  \"appName\": \"xyz\"\n" + "}")
+                        .header(ACCESS_TOKEN, SAMPLE_TOKEN));
+        MvcResult putUpdateMvcResult = putUpdateAppRuleResult.andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful()).andReturn();
+        String putUpdateResponse = putUpdateMvcResult.getResponse().getContentAsString();
+
+        assertThat(putUpdateResponse, containsString("apprule_task_id"));
+
+        String updatedAppruleTaskId = putUpdateResponse.substring(32, 68);
+        Assert.assertEquals("{\"response\":{\"apprule_task_id\":\"" + updatedAppruleTaskId + "\"}}", putUpdateResponse);
+
+        /*deleteAppInstanceFlowUrls(resetServer(server), appInstanceId);
+        // test delete application rules
+        ResultActions deleteAppRuleResult = mvc.perform(
+                MockMvcRequestBuilders.delete(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId + "/appd_configuration")
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf()).accept(MediaType.APPLICATION_JSON)
+                        .header(ACCESS_TOKEN, SAMPLE_TOKEN));
+        deleteAppRuleResult.andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();*/
+
+        // test app rule task
+        ResultActions getAppRuleTaskInfoResult = mvc.perform(
+                MockMvcRequestBuilders.get(APPO_TENANT + TENANT_ID + "/apprule_task_infos/" + appruleTaskId)
+                        .contentType(MediaType.APPLICATION_JSON).with(csrf()).accept(MediaType.APPLICATION_JSON_VALUE));
+        MvcResult getAppRuleTaskInfoMvcResult = getAppRuleTaskInfoResult.andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
+        String getAppRuleTaskInfoResponse = getAppRuleTaskInfoMvcResult.getResponse().getContentAsString();
+        Assert.assertEquals("{\"response\":{\"taskId\":\"\",\"appInstanceId\":\"40519ee1-fb9d-4a61-855c-1b5c2a41da9f\"," +
+                "\"detailed\":\"duplicate dns entry\",\"configResult\":\"SUCCESS\"}}", getAppRuleTaskInfoResponse);
 
         /*****Execute terminate app instance*****/
         deleteAppInstanceFlowUrls(resetServer(server), appInstanceId);

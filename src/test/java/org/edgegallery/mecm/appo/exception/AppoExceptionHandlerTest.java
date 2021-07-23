@@ -17,8 +17,12 @@
 package org.edgegallery.mecm.appo.exception;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 
+import java.util.HashSet;
 import java.util.NoSuchElementException;
+import java.util.Set;
+
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,9 +31,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AppoExceptionHandlerTest {
@@ -60,6 +68,15 @@ public class AppoExceptionHandlerTest {
 
     @Mock
     NoSuchElementException noSuchElementException;
+
+    @Mock
+    ConstraintViolationException constraintViolationException;
+
+    @Mock
+    RuntimeException runtimeException;
+
+    @Mock
+    org.springframework.security.access.AccessDeniedException accessDeniedException;
 
     @Test
     public void testAppoException() {
@@ -98,5 +115,32 @@ public class AppoExceptionHandlerTest {
         ResponseEntity<AppoExceptionResponse> appoElementResponse =
                 appoExceptionHandler.handleNoSuchElementException(noSuchElementException);
         assertNotNull(appoElementResponse);
+    }
+
+    @Test
+    public void testHandleConstraintViolationException() {
+        Set<ConstraintViolation<?>> violations = new HashSet<>();
+        ConstraintViolation mockedViolation = mock(ConstraintViolation.class);
+        violations.add(mockedViolation);
+        constraintViolationException = new ConstraintViolationException("message", violations);
+        ResponseEntity<AppoExceptionResponse> appoConstraintViolationResponse =
+                appoExceptionHandler.handleConstraintViolationException(constraintViolationException);
+        assertNotNull(appoConstraintViolationResponse);
+    }
+
+    @Test
+    public void testHandleRuntimeException() {
+        runtimeException = new RuntimeException();
+        ResponseEntity<AppoExceptionResponse> appoRuntimeResponse =
+                appoExceptionHandler.handleRuntimeException(runtimeException);
+        assertNotNull(appoRuntimeResponse);
+    }
+
+    @Test
+    public void testHandleAccessDeniedException() {
+        accessDeniedException = new AccessDeniedException(AppoConstantsTest.MESSAGE);
+        ResponseEntity<AppoExceptionResponse> appoAccessDeniedResponse =
+                appoExceptionHandler.handleAccessDeniedException(accessDeniedException);
+        assertNotNull(appoAccessDeniedResponse);
     }
 }

@@ -218,7 +218,7 @@ public class AppoBatchDeployTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void instantiateTerminateTest() throws Exception {
+    public void batchInstantiateTerminateTest() throws Exception {
         String appInstanceId;
 
         createAppInstanceFlowUrls(server);
@@ -330,4 +330,5 @@ public class AppoBatchDeployTest {
 
         File deleteDir = new File("src/test/resources/packages/" + appInstanceId);
     }
+
 }
