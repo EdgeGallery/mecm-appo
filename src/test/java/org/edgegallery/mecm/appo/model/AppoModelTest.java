@@ -1,6 +1,7 @@
 package org.edgegallery.mecm.appo.model;
 
 import org.edgegallery.mecm.appo.service.AppoProcessFlowResponse;
+import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +22,7 @@ public class AppoModelTest {
     AppRuleTask appRuleTask= new AppRuleTask();
     AppServiceRequired serviceRequired = new AppServiceRequired();
     AppoProcessFlowResponse response = new AppoProcessFlowResponse();
+    AppoResponse appoResponse = new AppoResponse(response);
 
     @Before
     public void setUp() {
@@ -66,6 +68,7 @@ public class AppoModelTest {
         serviceRequired.setVersion("1.0");
         serviceRequired.setRequestedPermissions(true);
         response.setProcessInstanceID("ProcessInstanceId");
+        appoResponse.setResponse(response);
 
     }
 
@@ -114,6 +117,7 @@ public class AppoModelTest {
         Assert.assertNotNull(serviceRequired.toString());
         Assert.assertEquals("ProcessInstanceId", response.getProcessInstanceID());
         Assert.assertNotNull(response.toString());
+        Assert.assertNotNull(appoResponse.getResponse());
 
     }
 }

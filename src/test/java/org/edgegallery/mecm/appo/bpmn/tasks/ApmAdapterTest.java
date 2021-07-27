@@ -16,6 +16,7 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
@@ -41,5 +42,12 @@ public class ApmAdapterTest {
         Mockito.when(execution.getVariable(AppoConstantsTest.OPERATION_TYPE))
                 .thenReturn(AppoConstantsTest.DOWNLOAD);
         assertThrows(Exception.class, () -> apmAdapter.execute(execution));
+    }
+
+    @Test
+    public void testExecuteApmAdapterOther() {
+        Mockito.when(execution.getVariable(AppoConstantsTest.OPERATION_TYPE))
+                .thenReturn("other");
+        assertDoesNotThrow(() -> apmAdapter.execute(execution));
     }
 }

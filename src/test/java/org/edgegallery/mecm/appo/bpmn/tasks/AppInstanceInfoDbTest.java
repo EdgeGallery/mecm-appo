@@ -71,4 +71,11 @@ public class AppInstanceInfoDbTest {
         appoExceptionHandler = new AppInstanceInfoDb(execution, appInstanceInfoServiceImpl);
         assertDoesNotThrow(appoExceptionHandler::execute);
     }
+
+    @Test
+    public void testOther() {
+        Mockito.when(execution.getVariable(AppoConstantsTest.OPERATION_TYPE)).thenReturn("other");
+        appoExceptionHandler = new AppInstanceInfoDb(execution, appInstanceInfoServiceImpl);
+        assertDoesNotThrow(appoExceptionHandler::execute);
+    }
 }

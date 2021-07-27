@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.camunda.bpm.engine.impl.pvm.runtime.ExecutionImpl;
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
+import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.service.impl.AppInstanceInfoServiceImpl;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.junit.Before;
@@ -37,6 +39,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeComposeApplicationPackageTest {
@@ -49,6 +53,12 @@ public class DeComposeApplicationPackageTest {
 
     @Mock
     AppInstanceInfoServiceImpl appInstanceInfoService;
+
+    @Mock
+    private AppInstanceInfoService appInfoService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Before
     public void setUp() throws Exception {
@@ -123,4 +133,14 @@ public class DeComposeApplicationPackageTest {
         Assertions.assertDoesNotThrow(() -> deComposeApplicationPackage.execute(execution));
         Assertions.assertTrue(result.containsKey("deploySuccess"));
     }
+
+    @Test
+    public void testUpdateApplicationDescriptor() throws Exception {
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("1", execution);
+        DeComposeAppPkgTask deComposeAppPkgTask = new DeComposeAppPkgTask(execution, "", appInfoService);
+        deComposeAppPkgTask.updateApplicationDescriptor(map);
+    }
+
 }
