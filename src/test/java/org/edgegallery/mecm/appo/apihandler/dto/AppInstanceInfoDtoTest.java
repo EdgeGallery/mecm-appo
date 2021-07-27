@@ -22,10 +22,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AppInstanceInfoDtoTest {
 
     @InjectMocks
     AppInstanceInfoDto appInstanceInfoDto = new AppInstanceInfoDto();
+    SyncUpdatedAppInstanceDto  updatedAppInstanceDto = new SyncUpdatedAppInstanceDto();
+
 
     @Before
     public void setUp() {
@@ -38,6 +43,9 @@ public class AppInstanceInfoDtoTest {
         appInstanceInfoDto.setMecHost(AppoConstantsTest.MEC_HOST);
         appInstanceInfoDto.setOperationalStatus(AppoConstantsTest.OPERATIONAL_STATUS);
         appInstanceInfoDto.setOperationInfo(AppoConstantsTest.OPERATIONAL_INFO);
+        List<AppInstanceInfoDto> infoDtos = new ArrayList<>();
+        infoDtos.add(appInstanceInfoDto);
+        updatedAppInstanceDto.setAppInstanceUpdatedRecs(infoDtos);
     }
 
     @Test
@@ -51,5 +59,7 @@ public class AppInstanceInfoDtoTest {
         Assert.assertEquals(AppoConstantsTest.MEC_HOST, appInstanceInfoDto.getMecHost());
         Assert.assertEquals(AppoConstantsTest.OPERATIONAL_STATUS, appInstanceInfoDto.getOperationalStatus());
         Assert.assertEquals(AppoConstantsTest.OPERATIONAL_INFO, appInstanceInfoDto.getOperationInfo());
+        Assert.assertNotNull(updatedAppInstanceDto.getAppInstanceUpdatedRecs());
+        Assert.assertNotNull(updatedAppInstanceDto.toString());
     }
 }

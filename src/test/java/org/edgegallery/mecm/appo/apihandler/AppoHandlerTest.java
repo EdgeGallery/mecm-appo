@@ -28,11 +28,19 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.edgegallery.mecm.appo.apihandler.dto.AppRuleDeleteConfigDto;
+import org.edgegallery.mecm.appo.service.AppoService;
+import org.edgegallery.mecm.appo.service.RestClientHelper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,6 +72,12 @@ public class AppoHandlerTest {
     @Autowired
     private RestTemplate restTemplate;
 
+    @InjectMocks
+    AppRuleHandler handler;
+
+    @Mock
+    private AppoService appoService;
+
     private static final String TENANT_ID = "12db0288-3c67-4042-a708-a8e4a10c6b31";
     private static final String APP_INSTANCE = "/app_instances/";
     private static final String APPO_TENANT = "/appo/v1/tenants/";
@@ -72,6 +86,7 @@ public class AppoHandlerTest {
 
     private File deleteDir;
     private MockRestServiceServer server;
+    RestClientHelper restClientHelper;
 
     @Before
     public void setUp() {
@@ -330,4 +345,21 @@ public class AppoHandlerTest {
 
         deleteDir = new File("src/test/resources/packages/" + appInstanceId);
     }
+
+    @Test
+    public void testUpdateSyncAppInstanceRecords() throws Exception {
+        AppRuleDeleteConfigDto appRuleDeleteConfigDto = new AppRuleDeleteConfigDto();
+        Set<String> trafficRule = new HashSet<>();
+        trafficRule.add("traffic_rule");
+
+        Set<String> dnsRule = new HashSet<>();
+        dnsRule.add("dns_rule");
+
+        appRuleDeleteConfigDto.setAppDNSRule(trafficRule);
+        appRuleDeleteConfigDto.setAppTrafficRule(dnsRule);
+
+        handler.deleteApplicationRules(ACCESS_TOKEN, TENANT_ID, "instance_id", appRuleDeleteConfigDto);
+    }
+
+
 }

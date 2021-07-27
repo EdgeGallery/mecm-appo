@@ -19,9 +19,12 @@ package org.edgegallery.mecm.appo.exception;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
+import java.util.List;
 import java.util.Set;
+import java.util.NoSuchElementException;
 
 import org.edgegallery.mecm.appo.common.AppoConstantsTest;
 import org.junit.Test;
@@ -142,5 +145,15 @@ public class AppoExceptionHandlerTest {
         ResponseEntity<AppoExceptionResponse> appoAccessDeniedResponse =
                 appoExceptionHandler.handleAccessDeniedException(accessDeniedException);
         assertNotNull(appoAccessDeniedResponse);
+    }
+
+    @Test
+    public void testGetDetails() {
+        LocalDateTime time = LocalDateTime.MIN;
+        List<String> list = new ArrayList<>();
+        list.add("string");
+        AppoExceptionResponse response = new AppoExceptionResponse(time, "string", list);
+        response.getDetails();
+        response.getTimestamp();
     }
 }
