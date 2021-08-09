@@ -16,14 +16,6 @@ public class TrafficRuleTest {
         trafficRule.setFilterType("filterType");
         trafficRule.setPriority(1);
         trafficRule.setAction("action");
-
-        //trafficFilter.setSrcAddress("srcAddress");
-        //trafficFilter.setSrcPort("srcPort");
-        //trafficFilter.setDstAddress("dstAddress");
-        //trafficFilter.setDstPort("dstPort");
-        //trafficFilter.setTag("tag");
-        //trafficFilter.setSrcTunnelAddress("srcTunnelAddress");
-
     }
 
     @Test
