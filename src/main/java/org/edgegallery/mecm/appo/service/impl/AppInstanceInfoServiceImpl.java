@@ -93,11 +93,10 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
     }
 
     @Override
-    public AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo) {
+    public void createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo) {
 
         LOGGER.debug("Add application instance {}", appInstanceInfo);
         boolean addTenant = false;
-        AppInstanceInfo appInstance = null;
         appInstanceInfo.setTenant(tenantId);
 
         Optional<AppoTenant> info = appoTenantRepository.findById(tenantId);
@@ -115,7 +114,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             addTenant = true;
         }
 
-        appInstance = appInstanceInfoRepository.save(appInstanceInfo);
+        appInstanceInfoRepository.save(appInstanceInfo);
 
         if (addTenant) {
             LOGGER.info("Add tenant {}", tenantId);
@@ -123,7 +122,6 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             tenant.setTenant(tenantId);
             appoTenantRepository.save(tenant);
         }
-        return appInstance;
     }
 
     @Override
@@ -236,11 +234,10 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
     }
 
     @Override
-    public AppRuleTask createAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo) {
+    public void createAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo) {
 
         LOGGER.debug("Add application rule task info {}", appRuleTaskInfo);
         boolean addTenant = false;
-        AppRuleTask appRuleTask = null;
         appRuleTaskInfo.setTenant(tenantId);
 
         Optional<AppoTenant> info = appoTenantRepository.findById(tenantId);
@@ -259,7 +256,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             addTenant = true;
         }
 
-        appRuleTask = appRuleTaskRepository.save(appRuleTaskInfo);
+        appRuleTaskRepository.save(appRuleTaskInfo);
 
         if (addTenant) {
             LOGGER.info("Add tenant {}", tenantId);
@@ -267,7 +264,6 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
             tenant.setTenant(tenantId);
             appoTenantRepository.save(tenant);
         }
-        return appRuleTask;
     }
 
     @Override
@@ -293,7 +289,7 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
 
     @Override
     @Transactional
-    public AppRuleTask updateAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo) {
+    public void updateAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo) {
 
         String appRuleTaskId = appRuleTaskInfo.getAppRuleTaskId();
 
@@ -330,6 +326,6 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         }
 
         LOGGER.debug("Update application rule task {}", info);
-        return appRuleTaskRepository.save(info);
+        appRuleTaskRepository.save(info);
     }
 }

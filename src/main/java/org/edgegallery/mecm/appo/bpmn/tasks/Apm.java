@@ -50,12 +50,13 @@ public class Apm extends ProcessflowAbstractTask {
     private static final Logger LOGGER = LoggerFactory.getLogger(Apm.class);
     private static final String FAILED_TO_CREATE_DIR = "failed to create local directory";
     private static final String FAILED_TO_GET_PATH = "failed to get local directory path";
+    private static final String HTTPS_PROTO = "https://";
     private final DelegateExecution execution;
     private final String operation;
-    private String baseUrl;
-    private String appPkgBasePath;
-    private RestTemplate restTemplate;
-    private String protocol = "https://";
+    private final String baseUrl;
+    private final String appPkgBasePath;
+    private final RestTemplate restTemplate;
+    private String protocol = HTTPS_PROTO;
 
     /**
      * Constructor for APM.
@@ -202,9 +203,8 @@ public class Apm extends ProcessflowAbstractTask {
      * Validates application package.
      *
      * @param appPackage CSAR file path
-     * @return main service template content in string
      */
-    public Boolean validateApplicationPackage(String appPackage) {
+    public void validateApplicationPackage(String appPackage) {
 
         try (ZipFile zipFile = new ZipFile(appPackage)) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -221,6 +221,5 @@ public class Apm extends ProcessflowAbstractTask {
             LOGGER.error(FAILED_TO_UNZIP_CSAR);
             throw new AppoException(FAILED_TO_UNZIP_CSAR);
         }
-        return Boolean.TRUE;
     }
 }

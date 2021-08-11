@@ -35,9 +35,9 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AppInstanceInfoDb.class);
 
-    private AppInstanceInfoService appInstanceInfoService;
-    private DelegateExecution execution;
-    private String operationType;
+    private final AppInstanceInfoService appInstanceInfoService;
+    private final DelegateExecution execution;
+    private final String operationType;
 
     /**
      * Constructor for DB operations.
@@ -153,11 +153,10 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * Updates application instance info in DB.
      *
      * @param delegateExecution delegate execution
-     * @return application instance info
      * @throws AppoException exception
      */
-    private AppInstanceInfo updateAppInstanceinfo(DelegateExecution delegateExecution) {
-        AppInstanceInfo appInstanceInfo = null;
+    private void updateAppInstanceinfo(DelegateExecution delegateExecution) {
+        AppInstanceInfo appInstanceInfo;
         try {
 
             String appInstanceId = (String) delegateExecution.getVariable(Constants.APP_INSTANCE_ID);
@@ -206,7 +205,6 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app instance info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
-        return appInstanceInfo;
     }
 
     /**
@@ -235,11 +233,10 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * Updates application rule task info in DB.
      *
      * @param delegateExecution delegate execution
-     * @return application rule task info
      * @throws AppoException exception
      */
-    private AppRuleTask updateAppRuleTask(DelegateExecution delegateExecution) {
-        AppRuleTask appRuleTaskInfo = null;
+    private void updateAppRuleTask(DelegateExecution delegateExecution) {
+        AppRuleTask appRuleTaskInfo;
         try {
 
             String appRuleTaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
@@ -272,7 +269,6 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app rule task info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
-        return appRuleTaskInfo;
     }
 
     private AppRuleTask convertRspStrToAppRuleTaskObj(String jsonString, boolean isErrResp) {
@@ -297,12 +293,11 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
      * Retrieves application rule task info from DB.
      *
      * @param delegateExecution delegate execution
-     * @return application rule task info
      * @throws AppoException exception
      */
-    private AppRuleTask getAppRuleTask(DelegateExecution delegateExecution) {
+    private void getAppRuleTask(DelegateExecution delegateExecution) {
 
-        AppRuleTask appRuleTaskInfo = null;
+        AppRuleTask appRuleTaskInfo;
         try {
             String appRuleTaskId = (String) delegateExecution.getVariable(Constants.APPRULE_TASK_ID);
             String tenantId = (String) delegateExecution.getVariable(Constants.TENANT_ID);
@@ -323,7 +318,6 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to get app rule task info",
                     Constants.PROCESS_FLOW_ERROR);
         }
-        return appRuleTaskInfo;
     }
 
     /**
@@ -345,7 +339,7 @@ public class AppInstanceInfoDb extends ProcessflowAbstractTask {
         } catch (NoSuchElementException ex) {
             setProcessflowResponseAttributes(delegateExecution, Constants.SUCCESS, Constants.PROCESS_FLOW_SUCCESS);
         } catch (AppoException | NumberFormatException e) {
-            LOGGER.info("Failed to update app rule task info record {}", e.getMessage());
+            LOGGER.error("Failed to update app rule task info record {}", e.getMessage());
             setProcessflowExceptionResponseAttributes(delegateExecution, "Failed to update app rule task info record",
                     Constants.PROCESS_FLOW_ERROR);
         }
