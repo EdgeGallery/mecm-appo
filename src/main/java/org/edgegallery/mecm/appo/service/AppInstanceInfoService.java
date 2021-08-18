@@ -54,9 +54,8 @@ public interface AppInstanceInfoService {
      *
      * @param tenantId        tenant ID
      * @param appInstanceInfo application information
-     * @return application information
      */
-    AppInstanceInfo createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo);
+    void createAppInstanceInfo(String tenantId, AppInstanceInfo appInstanceInfo);
 
     /**
      * Create the dependency info of instance.
@@ -106,9 +105,8 @@ public interface AppInstanceInfoService {
      *
      * @param tenantId        tenant ID
      * @param appRuleTaskInfo application rule task
-     * @return application rule task information
      */
-    AppRuleTask createAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo);
+    void createAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo);
 
     /**
      * Deletes application rule task information.
@@ -123,7 +121,6 @@ public interface AppInstanceInfoService {
      *
      * @param tenantId        tenant ID
      * @param appRuleTaskInfo application rule task information
-     * @return application rule task information
      */
-    AppRuleTask updateAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo);
+    void updateAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo);
 }

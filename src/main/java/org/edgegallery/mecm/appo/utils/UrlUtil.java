@@ -26,7 +26,7 @@ public class UrlUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UrlUtil.class);
 
-    private Map<String, String> pathParams;
+    private final Map<String, String> pathParams;
 
     public UrlUtil() {
         this.pathParams = new HashMap<>();

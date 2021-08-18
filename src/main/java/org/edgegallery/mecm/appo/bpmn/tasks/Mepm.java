@@ -44,11 +44,12 @@ public class Mepm extends ProcessflowAbstractTask {
     private static final String URL_PARAM_ERROR = "Failed to resolve url path parameters";
     private static final String DELETE_APP_RULES = "deleteAppRules";
     private static final String CONFIGURE_APP_RULES = "configureAppRules";
+    private static final String HTTPS_PROTO = "https://";
     private final DelegateExecution execution;
     private final String action;
-    private String appPkgBasePath;
-    private RestTemplate restTemplate;
-    private String protocol = "https://";
+    private final String appPkgBasePath;
+    private final RestTemplate restTemplate;
+    private String protocol = HTTPS_PROTO;
 
     /**
      * Creates an MEPM instance.
@@ -103,8 +104,8 @@ public class Mepm extends ProcessflowAbstractTask {
     private String resolveUrlPathParameters(String uri) {
         LOGGER.info("Resolve url path parameters...");
         UrlUtil urlUtil;
-        String mepmIp = null;
-        String mepmPort = null;
+        String mepmIp;
+        String mepmPort;
 
         try {
             urlUtil = new UrlUtil();

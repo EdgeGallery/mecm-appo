@@ -39,11 +39,12 @@ public class Inventory extends ProcessflowAbstractTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Inventory.class);
     private static final String STATUS = "status";
+    private static final String HTTPS_PROTO = "https://";
     private final DelegateExecution execution;
     private final String table;
     RestTemplate restTemplate;
-    private String baseUrl;
-    private String protocol = "https://";
+    private final String baseUrl;
+    private String protocol = HTTPS_PROTO;
 
     /**
      * Constructor for get inventory.

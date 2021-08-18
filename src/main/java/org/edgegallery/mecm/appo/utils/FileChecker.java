@@ -45,8 +45,8 @@ public class FileChecker {
     public static void check(File file) {
         String fileName = file.getName();
 
-        // file name should not contains blank.
-        if (fileName != null && WHITE_SPACE_PATTERN.split(fileName).length > 1) {
+        // file name should not contain blank.
+        if (WHITE_SPACE_PATTERN.split(fileName).length > 1) {
             throw new IllegalArgumentException(fileName + " :fileName contain blank");
         }
 

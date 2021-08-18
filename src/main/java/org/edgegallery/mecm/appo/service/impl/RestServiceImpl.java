@@ -44,6 +44,9 @@ import org.springframework.web.client.RestTemplate;
 public class RestServiceImpl implements RestService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestServiceImpl.class);
+    private static final String ACCESS_TOKEN = "access_token";
+    private static final String HTTPS_PROTO = "https://";
+    private static final String HTTP_PROTO = "http://";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -53,9 +56,9 @@ public class RestServiceImpl implements RestService {
 
     @Override
     public <T extends SyncBaseDto> ResponseEntity<T> syncRecords(String uri, Class<T> responseClass, String token) {
-        String protocol = "http://";
+        String protocol = HTTP_PROTO;
         if ("true".equals(isSslEnabled)) {
-            protocol = "https://";
+            protocol = HTTPS_PROTO;
         }
         String url = protocol + uri;
 
@@ -86,9 +89,9 @@ public class RestServiceImpl implements RestService {
 
     @Override
     public ResponseEntity<String> sendRequest(String uri, HttpMethod method, String token, String data) {
-        String protocol = "http://";
+        String protocol = HTTP_PROTO;
         if ("true".equals(isSslEnabled)) {
-            protocol = "https://";
+            protocol = HTTPS_PROTO;
         }
         String url = protocol + uri;
 
@@ -134,7 +137,7 @@ public class RestServiceImpl implements RestService {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.setAccept(list);
 
-        httpHeaders.set("access_token", token);
+        httpHeaders.set(ACCESS_TOKEN, token);
         return httpHeaders;
     }
 }
