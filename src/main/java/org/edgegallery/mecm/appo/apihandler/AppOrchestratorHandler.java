@@ -181,7 +181,7 @@ public class AppOrchestratorHandler {
      * @return status code 200 on success, error code on failure
      */
     @ApiOperation(value = "Retrieves edge host performance statistics", response = String.class)
-    @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/kpi", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/kpi")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
     public ResponseEntity<String> queryKpi(@ApiParam(value = "access token")
                                                  @RequestHeader("access_token") String accessToken,
