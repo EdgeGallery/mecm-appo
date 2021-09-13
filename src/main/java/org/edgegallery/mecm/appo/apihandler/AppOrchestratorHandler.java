@@ -180,10 +180,10 @@ public class AppOrchestratorHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves edge host performance statistics", response = AppoResponse.class)
+    @ApiOperation(value = "Retrieves edge host performance statistics", response = String.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/kpi", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<AppoResponse> queryKpi(@ApiParam(value = "access token")
+    public ResponseEntity<String> queryKpi(@ApiParam(value = "access token")
                                                  @RequestHeader("access_token") String accessToken,
                                                  @PathVariable("tenant_id")
                                                  @Pattern(regexp = Constants.TENENT_ID_REGEX)
@@ -203,11 +203,11 @@ public class AppOrchestratorHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves edge host platform capabilities", response = AppoResponse.class)
+    @ApiOperation(value = "Retrieves edge host platform capabilities", response = String.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/mep_capabilities",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<AppoResponse> queryEdgehostCapabilities(@ApiParam(value = "access token")
+    public ResponseEntity<String> queryEdgehostCapabilities(@ApiParam(value = "access token")
                                                                   @RequestHeader("access_token") String accessToken,
                                                                   @ApiParam(value = "tenant id")
                                                                   @PathVariable("tenant_id")
@@ -230,11 +230,11 @@ public class AppOrchestratorHandler {
      * @param capabilityId capability ID
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves edge host platform capabilities", response = AppoResponse.class)
+    @ApiOperation(value = "Retrieves edge host platform capabilities", response = String.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/mep_capabilities/{capability_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<AppoResponse> queryEdgehostCapability(@ApiParam(value = "access token")
+    public ResponseEntity<String> queryEdgehostCapability(@ApiParam(value = "access token")
                                                                 @RequestHeader("access_token") String accessToken,
                                                                 @ApiParam(value = "tenant id")
                                                                 @PathVariable("tenant_id")

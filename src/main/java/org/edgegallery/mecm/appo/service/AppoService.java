@@ -122,7 +122,7 @@ public interface AppoService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<AppoResponse> queryKpi(String accessToken, String tenantId, String hostIp);
+    ResponseEntity<String> queryKpi(String accessToken, String tenantId, String hostIp);
 
     /**
      * Retrieves edge host platform capabilities.
@@ -134,7 +134,7 @@ public interface AppoService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId,
+    ResponseEntity<String> queryEdgehostCapabilities(String accessToken, String tenantId,
                                                            String hostIp, String capabilityId);
 
     /**

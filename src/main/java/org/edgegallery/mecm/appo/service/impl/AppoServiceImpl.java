@@ -396,21 +396,21 @@ public class AppoServiceImpl implements AppoService {
     }
 
     @Override
-    public ResponseEntity<AppoResponse> queryKpi(String accessToken, String tenantId, String hostIp) {
+    public ResponseEntity<String> queryKpi(String accessToken, String tenantId, String hostIp) {
         LOGGER.debug("Query KPI request received...");
 
         return platformInfoQuery("queryKpi", accessToken, tenantId, hostIp, null);
     }
 
     @Override
-    public ResponseEntity<AppoResponse> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp,
+    public ResponseEntity<String> queryEdgehostCapabilities(String accessToken, String tenantId, String hostIp,
                                                                   String capabilityId) {
         LOGGER.debug("Query MEP capabilities request received...");
 
         return platformInfoQuery("queryEdgeCapabilities", accessToken, tenantId, hostIp, capabilityId);
     }
 
-    private ResponseEntity<AppoResponse> platformInfoQuery(String process, String accessToken, String tenantId,
+    private ResponseEntity<String> platformInfoQuery(String process, String accessToken, String tenantId,
                                                            String hostIp, String capabilityId) {
 
         Map<String, String> requestBodyParam = new HashMap<>();
@@ -428,10 +428,10 @@ public class AppoServiceImpl implements AppoService {
         LOGGER.debug("Query response : {} ", response.getResponse());
 
         if (response.getResponseCode() == HttpStatus.OK.value()) {
-            return new ResponseEntity<>(new AppoResponse(response.getResponse()), HttpStatus.OK);
+            return new ResponseEntity<>(response.getResponse(), HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(new AppoResponse(response.getResponse()),
+        return new ResponseEntity<>(response.getResponse(),
                 HttpStatus.valueOf(response.getResponseCode()));
     }
 
