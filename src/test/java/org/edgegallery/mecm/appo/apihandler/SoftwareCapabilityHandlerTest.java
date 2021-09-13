@@ -20,6 +20,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -103,11 +104,11 @@ public class SoftwareCapabilityHandlerTest {
         // Test edgehost capablitlities
         server.expect(requestTo(getMepCapablities))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("[{\"capabilityId\":\"1\",\"capabilityName\":\"2\",\"status\": \"ACTIVE\","
-                                + "\"version\": \"4.5.8\",\"consumers\": [{\"applicationInstanceId\":\"5abe4782-2c70-4e47-9a4e-0ee3a1a0fd1f\"},"
-                                + "{\"applicationInstanceId\":\"86dfc97d-325e-4feb-ac4f-280a0ba42513\"}]},"
-                                + "{\"capabilityId\":\"1\",\"capabilityName\":\"2\",\"status\": \"ACTIVE\",\"version\": \"4.5.8\","
-                                + "\"consumers\": [{\"applicationInstanceId\":\"88922760-861b-4578-aae5-77b8fcb06142\"}]}]",
+                .andRespond(withSuccess("{\"[capabilityId\":\"16384563dca094183778a41ea7701d15\","
+                        + "\"capabilityName\":\"FaceRegService\",\"status\":\"Active\",\"version\": \"4.5.8\","
+                        + "\"consumers\":[{\"applicationInstanceId\":\"5abe4782-2c70-4e47-9a4e-0ee3a1a0fd1f\"},"
+                        + "{\"applicationInstanceId\":\"f05a5591-d8f2-4f89-8c0b-8cea6d45712e\"},"
+                        + "{\"applicationInstanceId\":\"86dfc97d-325e-4feb-ac4f-280a0ba42513\"}]}",
                         MediaType.APPLICATION_JSON));
 
         ResultActions edgehostCapabilities =
@@ -120,12 +121,11 @@ public class SoftwareCapabilityHandlerTest {
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
         String edgeResponse = getEdgeHost.getResponse().getContentAsString();
-        Assert.assertEquals("{\"response\":\"[{\\\"capabilityId\\\":\\\"1\\\",\\\"capabilityName\\\":\\\"2\\\","
-                        + "\\\"status\\\": \\\"ACTIVE\\\",\\\"version\\\": \\\"4.5.8\\\",\\\"consumers\\\": "
-                        + "[{\\\"applicationInstanceId\\\":\\\"5abe4782-2c70-4e47-9a4e-0ee3a1a0fd1f\\\"},"
-                        + "{\\\"applicationInstanceId\\\":\\\"86dfc97d-325e-4feb-ac4f-280a0ba42513\\\"}]},"
-                        + "{\\\"capabilityId\\\":\\\"1\\\",\\\"capabilityName\\\":\\\"2\\\",\\\"status\\\": \\\"ACTIVE\\\",\\\"version\\\": \\\"4.5.8\\\","
-                        + "\\\"consumers\\\": [{\\\"applicationInstanceId\\\":\\\"88922760-861b-4578-aae5-77b8fcb06142\\\"}]}]\"}",
+        Assert.assertEquals("{\"[capabilityId\":\"16384563dca094183778a41ea7701d15\",\"capabilityName\":"
+                + "\"FaceRegService\",\"status\":\"Active\",\"version\": \"4.5.8\",\"consumers\":"
+                + "[{\"applicationInstanceId\":\"5abe4782-2c70-4e47-9a4e-0ee3a1a0fd1f\"},{\"applicationInstanceId\":"
+                + "\"f05a5591-d8f2-4f89-8c0b-8cea6d45712e\"},{\"applicationInstanceId\":"
+                + "\"86dfc97d-325e-4feb-ac4f-280a0ba42513\"}]}",
                 edgeResponse);
         Thread.sleep(5000);
     }
@@ -153,12 +153,13 @@ public class SoftwareCapabilityHandlerTest {
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
         String getEdgeResponse = getEdgeHostResult.getResponse().getContentAsString();
-        Assert.assertEquals("{\"response\":\"{\\\"capabilityId\\\":\\\"16384563dca094183778a41ea7701d15\\\","
-                + "\\\"capabilityName\\\":\\\"FaceRegService\\\",\\\"status\\\":\\\"Active\\\","
-                + "\\\"version\\\": \\\"4.5.8\\\",\\\"consumers\\\":[{\\\""
-                + "applicationInstanceId\\\":\\\"5abe4782-2c70-4e47-9a4e-0ee3a1a0fd1f\\\"},"
-                + "{\\\"applicationInstanceId\\\":\\\"f05a5591-d8f2-4f89-8c0b-8cea6d45712e\\\"},"
-                + "{\\\"applicationInstanceId\\\":\\\"86dfc97d-325e-4feb-ac4f-280a0ba42513\\\"}}\"}", getEdgeResponse);
+        Assert.assertEquals(
+            "{\"capabilityId\":\"16384563dca094183778a41ea7701d15\",\"capabilityName\":\"FaceRegService\","
+                + "\"status\":\"Active\",\"version\": \"4.5.8\",\"consumers\":[{\"applicationInstanceId\":"
+                + "\"5abe4782-2c70-4e47-9a4e-0ee3a1a0fd1f\"},{\"applicationInstanceId\":"
+                + "\"f05a5591-d8f2-4f89-8c0b-8cea6d45712e\"},{\"applicationInstanceId\":"
+                + "\"86dfc97d-325e-4feb-ac4f-280a0ba42513\"}}",
+            getEdgeResponse);
         Thread.sleep(5000);
     }
 }
