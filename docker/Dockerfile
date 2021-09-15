@@ -1,6 +1,6 @@
 # Prepare stage for multistage image build
 ## START OF STAGE0 ##
-FROM openjdk:8u201-jdk-alpine
+FROM swr.cn-north-4.myhuaweicloud.com/eg-common/openjdk:8u201-jdk-alpine
 
 # Define all environment variable here
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
