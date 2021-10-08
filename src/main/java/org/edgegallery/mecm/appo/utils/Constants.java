@@ -33,7 +33,7 @@ public final class Constants {
     public static final String APPD_ID_REGEX = "[0-9a-f]{32}";
     public static final String APP_PKG_ID_REGX = "[0-9a-f]{32,64}";
     public static final String TENENT_ID_REGEX = "[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}";
-    public static final String APP_NAME_REGEX = "^[a-zA-Z0-9]*$|^[a-zA-Z0-9][a-zA-Z0-9_\\-]*[a-zA-Z0-9]$";
+    public static final String APP_NAME_REGEX = "^[\\d\\p{L}]*$|^[\\d\\p{L}][\\d\\p{L}_\\-]*[\\d\\p{L}]$";
     public static final String RECORD_NOT_FOUND = "Record not found";
     public static final String APP_INSTANCE_NOT_FOUND = "Application instance id does not exist ";
     public static final String TLS_VER = "TLSv1.2";
