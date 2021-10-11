@@ -119,7 +119,7 @@ public class AppoSyncHandler {
     private void getSyncAppInstanceUpdateRecords(String appLcmEndPoint, String tenantId, String accessToken) {
         try {
             StringBuilder sb = new StringBuilder(appLcmEndPoint);
-            String uri = sb.append("/lcmcontroller/v1/tenants/").append(tenantId)
+            String uri = sb.append("/lcmcontroller/v2/tenants/").append(tenantId)
                             .append("/app_instances/sync_updated").toString();
 
             ResponseEntity<SyncUpdatedAppInstanceDto> updateResponse = syncService.syncRecords(uri,
@@ -140,7 +140,7 @@ public class AppoSyncHandler {
     private void getSyncAppInstanceStaleRecords(String mepmEndPoint, String tenantId, String accessToken) {
         try {
             StringBuilder sb = new StringBuilder(mepmEndPoint);
-            String uri = sb.append("/lcmcontroller/v1/tenants/").append(tenantId).append("/app_instances"
+            String uri = sb.append("/lcmcontroller/v2/tenants/").append(tenantId).append("/app_instances"
                     + "/sync_deleted").toString();
 
             ResponseEntity<SyncDeletedAppInstanceDto> updateResponse = syncService.syncRecords(uri,
