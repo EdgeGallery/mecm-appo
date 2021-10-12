@@ -74,15 +74,15 @@ public final class Constants {
             + "/mechosts/{mec_host}/apps/{app_instance_id}";
 
     public static final String APPLCM_INSTANTIATE_URI =
-            "/lcmcontroller/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/instantiate";
-    public static final String APPLCM_QUERY_URI = "/lcmcontroller/v1/tenants/{tenant_id}/app_instances"
+            "/lcmcontroller/v2/tenants/{tenant_id}/app_instances/{app_instance_id}/instantiate";
+    public static final String APPLCM_QUERY_URI = "/lcmcontroller/v2/tenants/{tenant_id}/app_instances"
             + "/{app_instance_id}";
     public static final String APPLCM_TERMINATE_URI =
-            "/lcmcontroller/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/terminate";
-    public static final String APPLCM_QUERY_KPI_URI = "/lcmcontroller/v1/tenants/{tenant_id}/hosts/{mec_host}/kpi";
-    public static final String APPLCM_QUERY_CAPABILITIES_URI = "/lcmcontroller/v1/tenants/{tenant_id}/hosts/{mec_host"
+            "/lcmcontroller/v2/tenants/{tenant_id}/app_instances/{app_instance_id}/terminate";
+    public static final String APPLCM_QUERY_KPI_URI = "/lcmcontroller/v2/tenants/{tenant_id}/hosts/{mec_host}/kpi";
+    public static final String APPLCM_QUERY_CAPABILITIES_URI = "/lcmcontroller/v2/tenants/{tenant_id}/hosts/{mec_host"
             + "}/mep_capabilities";
-    public static final String APPLCM_QUERY_CAPABILITY_URI = "/lcmcontroller/v1/tenants/{tenant_id}/hosts/{mec_host"
+    public static final String APPLCM_QUERY_CAPABILITY_URI = "/lcmcontroller/v2/tenants/{tenant_id}/hosts/{mec_host"
             + "}/mep_capabilities/{capability_id}";
     public static final String APPRULE_URI =
             "/apprulemgr/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/appd_configuration";

@@ -17,6 +17,9 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -215,12 +218,16 @@ public abstract class ProcessflowAbstractTask {
                 return null;
             }
 
-            String responsBody = "{}";
+            String responseBody = "{}";
             if (response.getBody() != null) {
-                responsBody = response.getBody();
+                responseBody = response.getBody();
+                if (responseBody != null && responseBody.contains("data")) {
+                    JsonObject jsonObject = new JsonParser().parse(responseBody).getAsJsonObject();
+                    responseBody = jsonObject.get("data").getAsString();
+                }
             }
-            setProcessflowResponseAttributes(execution, responsBody, Constants.PROCESS_FLOW_SUCCESS);
-            return responsBody;
+            setProcessflowResponseAttributes(execution, responseBody, Constants.PROCESS_FLOW_SUCCESS);
+            return responseBody;
         } catch (ResourceAccessException ex) {
             LOGGER.error(Constants.FAILED_TO_CONNECT + "{}", ex.getMessage());
             setProcessflowExceptionResponseAttributes(execution,

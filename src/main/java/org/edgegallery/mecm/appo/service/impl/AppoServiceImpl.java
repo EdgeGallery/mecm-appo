@@ -14,6 +14,9 @@
 package org.edgegallery.mecm.appo.service.impl;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -314,7 +317,10 @@ public class AppoServiceImpl implements AppoService {
                 processflowService.executeProcessSync("queryApplicationInstance", requestBodyParam);
         LOGGER.debug("Query application info response : {} ", response.getResponse());
 
-        return new ResponseEntity<>(new AppoResponse(response.getResponse()),
+        JsonObject jsonObject = new JsonParser().parse(response.getResponse()).getAsJsonObject();
+        JsonElement data = jsonObject.get("data");
+
+        return new ResponseEntity<>(new AppoResponse(data.getAsString()),
                 HttpStatus.valueOf(response.getResponseCode()));
     }
 
