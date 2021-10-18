@@ -65,10 +65,10 @@ public class SoftwareCapabilityHandlerTest {
 
     String mepmQuery = "http://10.9.9.1:11111/inventory/v1/mepms/1.1.1.1";
 
-    String getMepCapablities = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + "/hosts/" + "1.1.1.1/" +
+    String getMepCapablities = "http://1.1.1.1:10000/lcmcontroller/v2/tenants/" + TENANT_ID + "/hosts/" + "1.1.1.1/" +
             "mep_capabilities";
 
-    String getMepCapablity = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + "/hosts/" + "1.1.1.1/" +
+    String getMepCapablity = "http://1.1.1.1:10000/lcmcontroller/v2/tenants/" + TENANT_ID + "/hosts/" + "1.1.1.1/" +
             "mep_capabilities/12";
 
     @Before
