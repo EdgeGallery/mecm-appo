@@ -107,7 +107,7 @@ public class AppoQueryKpiTest {
                         MediaType.APPLICATION_JSON));
 
         // Mocking get mepm API
-        url = "http://3.3.3.3:10000/lcmcontroller/v1/tenants/" + TENANT_ID + "/hosts/3.3.3.3/kpi";
+        url = "http://3.3.3.3:10000/lcmcontroller/v2/tenants/" + TENANT_ID + "/hosts/3.3.3.3/kpi";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess());
