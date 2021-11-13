@@ -328,4 +328,16 @@ public class AppInstanceInfoServiceImpl implements AppInstanceInfoService {
         LOGGER.debug("Update application rule task {}", info);
         appRuleTaskRepository.save(info);
     }
+
+    @Override
+    public List<AppInstanceInfo> getAppInstanceInfoByPkgId(String tenantId, String appId, String pkgId) {
+        LOGGER.debug("Get application instance info for package ID {}... from DB", pkgId);
+
+        List<AppInstanceInfo> info = appInstanceInfoRepository.findByTenantIdAndAppIdPackageId(tenantId, pkgId, appId);
+        if (info == null || info.isEmpty()) {
+            LOGGER.debug("application instance info not found for package ID {}", pkgId);
+            throw new NoSuchElementException(RECORD_NOT_FOUND + pkgId);
+        }
+        return info;
+    }
 }

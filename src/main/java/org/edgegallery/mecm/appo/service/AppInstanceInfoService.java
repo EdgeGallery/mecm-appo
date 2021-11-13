@@ -123,4 +123,13 @@ public interface AppInstanceInfoService {
      * @param appRuleTaskInfo application rule task information
      */
     void updateAppRuleTaskInfo(String tenantId, AppRuleTask appRuleTaskInfo);
+
+    /**
+     * Retrieves app instance info based on package ID.
+     * @param tenantId tenant ID
+     * @param appId app ID
+     * @param pkgId app package ID
+     * @return list of app instances
+     */
+    List<AppInstanceInfo> getAppInstanceInfoByPkgId(String tenantId, String appId, String pkgId);
 }
