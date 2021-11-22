@@ -16,12 +16,15 @@
 
 package org.edgegallery.mecm.appo.apihandler;
 
+import static org.edgegallery.mecm.appo.utils.Constants.APPD_ID_REGEX;
 import static org.edgegallery.mecm.appo.utils.Constants.APP_INST_ID_REGX;
+import static org.edgegallery.mecm.appo.utils.Constants.APP_PKG_ID_REGX;
 import static org.edgegallery.mecm.appo.utils.Constants.TENENT_ID_REGEX;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,12 +32,15 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.edgegallery.mecm.appo.apihandler.dto.AppInstanceInfoDto;
+import org.edgegallery.mecm.appo.apihandler.dto.AppPkgInstanceInfoDto;
 import org.edgegallery.mecm.appo.apihandler.dto.AppRuleTaskDto;
 import org.edgegallery.mecm.appo.model.AppInstanceInfo;
 import org.edgegallery.mecm.appo.model.AppRuleTask;
 import org.edgegallery.mecm.appo.service.AppInstanceInfoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
+import org.edgegallery.mecm.appo.utils.ErrorMessage;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,5 +171,41 @@ public class AppoDbHandler {
         AppRuleTaskDto dto = mapper.map(appRuletaskInfo, AppRuleTaskDto.class);
 
         return new ResponseEntity<>(new AppoResponse(dto), HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves application instance info based on package ID.
+     *
+     * @param tenantId      tenant ID
+     * @param appId application ID
+     * @param appPkgId application package ID
+     * @return application instantiation information
+     */
+    @ApiOperation(value = "Retrieves application instance info based on package ID", response = AppoV2Response.class)
+    @GetMapping(path = "/tenants/{tenant_id}/apps/{app_id}/packages/{app_package_id}/status",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
+    public ResponseEntity<AppoV2Response> getAppPkgInstantiationStatus(
+            @ApiParam(value = "tenant id") @PathVariable("tenant_id")
+            @Pattern(regexp = TENENT_ID_REGEX) @Size(max = 64) String tenantId,
+            @ApiParam(value = "app id") @PathVariable("app_id")
+            @Pattern(regexp = APPD_ID_REGEX) @Size(max = 64) String appId,
+            @ApiParam(value = "app package id") @PathVariable("app_package_id")
+            @Pattern(regexp = APP_PKG_ID_REGX) @Size(max = 64) String appPkgId) {
+
+        LOGGER.info("Retrieve application instance info based on package id: {}", appPkgId);
+
+        List<AppInstanceInfo> appInstanceInfo = appInstanceInfoService.getAppInstanceInfoByPkgId(tenantId,
+                appId, appPkgId);
+        List<AppPkgInstanceInfoDto> data = new LinkedList<>();
+        AppPkgInstanceInfoDto instanceInfo;
+        for (AppInstanceInfo info: appInstanceInfo) {
+            ModelMapper mapper = new ModelMapper();
+            instanceInfo = mapper.map(info, AppPkgInstanceInfoDto.class);
+            data.add(instanceInfo);
+        }
+
+        return new ResponseEntity<>(new AppoV2Response(data, new ErrorMessage(HttpStatus.OK.value(),
+                Collections.<String>emptyList()), ""), HttpStatus.OK);
     }
 }

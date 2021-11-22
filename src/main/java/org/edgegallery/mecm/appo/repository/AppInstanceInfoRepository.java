@@ -36,4 +36,10 @@ public interface AppInstanceInfoRepository extends CrudRepository<AppInstanceInf
             nativeQuery = true)
     List<AppInstanceInfo> findByTenantIdAndMecHost(@Param("tenant") String tenant,
                                                    @Param("mec_host") String mecHost);
+
+    @Query(value = "SELECT * FROM appinstanceinfo m WHERE m.tenant=:tenant and m.app_package_id=:app_package_id"
+            + " and m.app_id=:app_id", nativeQuery = true)
+    List<AppInstanceInfo> findByTenantIdAndAppIdPackageId(@Param("tenant") String tenant,
+                                                   @Param("app_package_id") String pkgId,
+                                                   @Param("app_id") String appId);
 }
