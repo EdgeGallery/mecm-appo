@@ -1,0 +1,43 @@
+{
+  "name": "sample_network",
+  "adminStateUp": true,
+  "dnsDomain": "my-domain.org.",
+  "mtu": 1400,
+  "portSecurityEnabled": true,
+  "providerNetworkType": "vlan",
+  "providerPhysicalNetwork": "network",
+  "providerSegmentationId": 1,
+  "qosPolicyId": "abc",
+  "routerExternal": true,
+  "segments": [
+    {
+      "providerSegmentationId": 1,
+      "providerPhysicalNetwork": "abc",
+      "providerNetworkType": ""
+    }
+  ],
+  "shared": true,
+  "vlanTransparent": true,
+  "isDefault": true,
+  "subnets": [
+    {
+      "name": "subnetA",
+      "enableDhcp": true,
+      "dnsNameservers": [
+        "",
+        ""
+      ],
+      "allocationPools": [
+        {
+          "start": "192.168.1.5",
+          "end": "192.168.2.25"
+        }
+      ],
+      "ipVersion": 2,
+      "gatewayIp": "192.168.3.1",
+      "cidr": "10.0.0.0/24",
+      "ipv6AddressMode": "",
+      "ipv6RaMode": ""
+    }
+  ]
+}
