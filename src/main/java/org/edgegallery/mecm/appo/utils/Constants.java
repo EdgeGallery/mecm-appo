@@ -88,6 +88,7 @@ public final class Constants {
             "/apprulemgr/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/appd_configuration";
     public static final String INVENTORY_APPRULE_URI =
             "/inventory/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/appd_configuration";
+    public static final String RESOURCE_CONTROLLER_URI = "/rescontroller/v1/tenants/";
 
     public static final String PROCESS_FLOW_SUCCESS = "200";
     public static final String PROCESS_FLOW_ERROR = "500";

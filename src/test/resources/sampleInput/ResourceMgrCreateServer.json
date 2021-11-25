@@ -1,0 +1,31 @@
+{
+  "name": "vmTest",
+  "flavor": "0e12087a-7c87-476a-8f84-7398e991cecc",
+  "image" : "cec3aab9-5991-4893-befe-4775ddf79de6",
+  "imageRef" : "70a599e0-31e7-49b7-b260-868f441e862b",
+  "availabilityZone": "us-west",
+  "user_data" : "IyEvYmluL2Jhc2gKL2Jpbi9zdQplY2hvICJJIGFtIGluIHlvdSEiCg==",
+  "configDrive": true,
+  "securityGroups": [
+    {
+      "name": "default"
+    },
+    {
+      "name": "default1"
+    }
+  ],
+  "netWork": [
+    {
+      "network": "0884b5fb-ea5c-4951-9c54-256f4fc38991",
+      "fixedIp": "192.168.1.19"
+    },
+    {
+      "network": "241aee72-de67-4c95-bdaa-e63f12fbd183",
+      "fixedIp": "192.168.1.29"
+    },
+    {
+      "network": "446aa035-f737-45db-9834-83c7a5f94046",
+      "fixedIp": "192.168.1.39"
+    }
+  ]
+}
