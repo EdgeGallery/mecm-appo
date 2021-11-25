@@ -173,7 +173,7 @@ public class ResourceMgrSecGrpTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void querySecurityGroups() throws Exception {
+    public void querySecurityGroupsTest() throws Exception {
         inventoryInfos(server);
         querySecurityGroups(server);
         ResultActions getResult =
@@ -190,7 +190,7 @@ public class ResourceMgrSecGrpTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void querySecurityGroupById() throws Exception {
+    public void querySecurityGroupByIdTest() throws Exception {
         inventoryInfos(server);
         querySecurityGroupById(server);
         ResultActions getResult =
@@ -207,7 +207,7 @@ public class ResourceMgrSecGrpTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void querySecurityGroupRules() throws Exception {
+    public void querySecurityGroupRulesTest() throws Exception {
         inventoryInfos(server);
         querySecurityGroupRules(server);
         ResultActions getResult =
@@ -225,7 +225,7 @@ public class ResourceMgrSecGrpTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void createSecurityGroup() throws Exception {
+    public void createSecurityGroupTest() throws Exception {
         inventoryInfos(server);
         createSecurityGroup(server);
         ResultActions postResult =
@@ -244,7 +244,7 @@ public class ResourceMgrSecGrpTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void createSecurityGroupRule() throws Exception {
+    public void createSecurityGroupRuleTest() throws Exception {
 
         inventoryInfos(server);
         createSecurityGroupRule(server);
@@ -273,7 +273,7 @@ public class ResourceMgrSecGrpTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void deleteSecurityGroup() throws Exception {
+    public void deleteSecurityGroupTest() throws Exception {
         inventoryInfos(server);
         deleteSecurityGroup(server);
         ResultActions deleteResult =
@@ -291,7 +291,7 @@ public class ResourceMgrSecGrpTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void deleteSecurityGroupRule() throws Exception {
+    public void deleteSecurityGroupRuleTest() throws Exception {
         inventoryInfos(server);
         deleteSecurityGroupRule(server);
         ResultActions deleteResult =
