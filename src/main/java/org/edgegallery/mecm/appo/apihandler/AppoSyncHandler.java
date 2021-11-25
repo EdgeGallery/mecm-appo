@@ -103,7 +103,7 @@ public class AppoSyncHandler {
     private void synchronizeAppInstancesInfoFromEdges(String tenantId,  String accessToken) {
         logger.info("Sync application instance infos from edge");
         try {
-            Set<String> mepms = getInventoryMecHostsCfg(accessToken);
+            Set<String> mepms = getInventoryMecHostsCfg(tenantId, accessToken);
             for (String mepm: mepms) {
                 logger.info("Sync application instance infos from edge {}", mepm);
                 String mepmEndPoint = getInventoryMepmCfg(mepm, accessToken);
@@ -217,14 +217,16 @@ public class AppoSyncHandler {
     /**
      * Gets MEPM configurations from inventory.
      *
+     * @param tenantId tenant ID
      * @param accessToken access token
      * @return returns mepm configurations
      * @throws AppoException exception if failed to get MEPm details
      */
-    private Set<String> getInventoryMecHostsCfg(String accessToken) {
+    private Set<String> getInventoryMecHostsCfg(String tenantId, String accessToken) {
 
         String url = new StringBuilder(inventoryService).append(":")
-                .append(inventoryServicePort).append("/inventory/v1").append("/mechosts/").toString();
+                .append(inventoryServicePort).append("/inventory/v1").append("/tenants/").append(tenantId)
+                .append("/mechosts/").toString();
 
         ResponseEntity<String> response = syncService.sendRequest(url, HttpMethod.GET, accessToken, null);
 
