@@ -151,7 +151,7 @@ public class ResourceMgrImageTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void queryImages() throws Exception {
+    public void queryImagesTest() throws Exception {
 
         inventoryInfos(server);
         queryImage(server);
@@ -170,7 +170,7 @@ public class ResourceMgrImageTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void queryImageById() throws Exception {
+    public void queryImageByIdTest() throws Exception {
 
         inventoryInfos(server);
         queryImageById(server);
@@ -189,7 +189,7 @@ public class ResourceMgrImageTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void deleteImage() throws Exception {
+    public void deleteImageTest() throws Exception {
         inventoryInfos(server);
         deleteImage(server);
 
@@ -208,7 +208,7 @@ public class ResourceMgrImageTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void createImage() throws Exception {
+    public void createImageTest() throws Exception {
 
         inventoryInfos(server);
         createImage(server);
@@ -234,7 +234,7 @@ public class ResourceMgrImageTest {
 
     @Test
     @WithMockUser(roles = "MECM_TENANT")
-    public void importImage() throws Exception {
+    public void importImageTest() throws Exception {
 
         inventoryInfos(server);
         importImage(server);
