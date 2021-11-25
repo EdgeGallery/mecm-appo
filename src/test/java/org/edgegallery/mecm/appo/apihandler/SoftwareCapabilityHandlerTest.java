@@ -61,7 +61,7 @@ public class SoftwareCapabilityHandlerTest {
 
     MockRestServiceServer server;
 
-    String inventoryQuery = "http://10.9.9.1:11111/inventory/v1/mechosts/1.1.1.1";
+    String inventoryQuery = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/1.1.1.1";
 
     String mepmQuery = "http://10.9.9.1:11111/inventory/v1/mepms/1.1.1.1";
 

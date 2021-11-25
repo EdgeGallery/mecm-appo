@@ -92,7 +92,7 @@ public class AppoBatchDeployTest {
 
     private void createAppInstanceFlowUrls(MockRestServiceServer server)  throws Exception {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/3.3.3.3";
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/3.3.3.3";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"mechostIp\":\"3.3.3.3\",\"mechostName\":\"TestHost\","
@@ -130,7 +130,7 @@ public class AppoBatchDeployTest {
 
     private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/3.3.3"
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/3.3.3"
                 + ".3";
         server = MockRestServiceServer.createServer(restTemplate);
         server.expect(requestTo(url))
@@ -176,7 +176,7 @@ public class AppoBatchDeployTest {
 
     private void deleteAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/3.3.3.3";
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/3.3.3.3";
         server = MockRestServiceServer.createServer(restTemplate);
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))

@@ -103,7 +103,7 @@ public class QueryAppInstanceTest {
     private void createAppInstanceFlowUrls(MockRestServiceServer server) throws Exception {
 
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2.2";
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/2.2.2.2";
         server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(withSuccess(
             "{\"mechostIp\":\"2.2.2.2\",\"mechostName\":\"TestHost\"," + "\"zipCode\":null," + "\"city\":\"TestCity\","
                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
@@ -133,7 +133,7 @@ public class QueryAppInstanceTest {
 
     private void instantiateAppInstanceFlowUrls(MockRestServiceServer server, String appInstanceId) {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2.2";
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/2.2.2.2";
         server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(withSuccess(
             "{\"mechostIp\":\"2.2.2.2\",\"mechostName\":\"TestHost\"," + "\"zipCode\":null," + "\"city\":\"TestCity\","
                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
@@ -152,7 +152,7 @@ public class QueryAppInstanceTest {
             + "/instantiate";
         server.expect(requestTo(url)).andExpect(method(HttpMethod.POST)).andRespond(withSuccess());
 
-        url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2.2";
+        url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/2.2.2.2";
         server.expect(requestTo(url)).andExpect(method(HttpMethod.GET)).andRespond(withSuccess(
             "{\"mechostIp\":\"2.2.2.2\",\"mechostName\":\"TestHost\"," + "\"zipCode\":null," + "\"city\":\"TestCity\","
                 + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
@@ -182,7 +182,7 @@ public class QueryAppInstanceTest {
 
     private void syncAppInstanceInfos(MockRestServiceServer server)  throws Exception {
         // Mocking get MEC host from inventory
-        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/2.2.2.2";
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/2.2.2.2";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("[{\"mechostIp\":\"1.1.1.1\",\"mechostName\":\"TestHost\","
