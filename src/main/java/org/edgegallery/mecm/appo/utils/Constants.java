@@ -66,7 +66,7 @@ public final class Constants {
     public static final String APPRULE_TASK_ID = "apprule_task_id";
 
     public static final String APM_DOWNLOAD_URI = "/apm/v1/tenants/{tenant_id}/packages/{app_package_id}/download";
-    public static final String INVENTORY_MEC_HOST_URI = "/inventory/v1/mechosts/{mec_host}";
+    public static final String INVENTORY_MEC_HOST_URI = "/inventory/v1/tenants/{tenant_id}/mechosts/{mec_host}";
     public static final String INVENTORY_MEPM_URI = "/inventory/v1/mepms/{mepm_ip}";
     public static final String INVENTORY_APPLICATIONS_URI = "/inventory/v1/tenants/{tenant_id}"
             + "/mechosts/{mec_host}/apps";
