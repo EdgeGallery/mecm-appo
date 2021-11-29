@@ -214,6 +214,7 @@ public abstract class ProcessflowAbstractTask {
 
             if (!HttpStatus.OK.equals(response.getStatusCode())) {
                 LOGGER.info("Response: \nmethod: {} \nURL: {} \nFailed: {}", method, url, response.getStatusCode());
+                LOGGER.info("Response: \nmethod: {} \nURL: {} \nFailed: {}", method, url, response.getBody());
                 setProcessflowErrorResponseAttributes(execution, uri.toString(), response.getStatusCode().toString());
                 return null;
             }
