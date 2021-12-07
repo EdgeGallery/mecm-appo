@@ -35,10 +35,6 @@ server:
   port: 8091
   tomcat:
     max-threads: 200
-  compression:
-    enabled: true
-    mime-types: application/json
-    min-response-size: 10240
 
   ssl:
     enabled: ${SSL_ENABLED:true}
