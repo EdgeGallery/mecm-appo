@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.util.Arrays;
+import java.util.Map;
 import org.edgegallery.mecm.appo.exception.ResourceMgrException;
 import org.edgegallery.mecm.appo.service.impl.RestServiceImpl;
 import org.slf4j.Logger;
@@ -28,7 +30,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,6 +51,9 @@ public final class ResourceMgrServiceHelper {
     @Autowired
     private RestServiceImpl restService;
 
+    @Autowired
+    TokenStore jwtTokenStore;
+
     private ResourceMgrServiceHelper(RestServiceImpl restService) {
         this.restService = restService;
     }
@@ -57,9 +66,11 @@ public final class ResourceMgrServiceHelper {
      * @throws ResourceMgrException exception if failed to get MEPm details
      */
     public String getInventoryMecHostsCfg(String accessToken, String hostIp) {
-
+        String tenantId = getTenantIdFromToken(accessToken);
+        LOGGER.info("teanant id is :" + tenantId);
         String url = new StringBuilder(inventoryService).append(":")
-                .append(inventoryServicePort).append("/inventory/v1").append("/mechosts/").append(hostIp).toString();
+                .append(inventoryServicePort).append("/inventory/v1").append("/tenants/").append(tenantId)
+            .append("/mechosts/").append(hostIp).toString();
 
         ResponseEntity<String> response = restService.sendRequest(url, HttpMethod.GET, accessToken, null);
 
@@ -72,6 +83,22 @@ public final class ResourceMgrServiceHelper {
         }
 
         return getInventoryMepmCfg(mepmIp.getAsString(), accessToken);
+    }
+
+    private String getTenantIdFromToken(String accessTokenStr) {
+        OAuth2AccessToken accessToken = jwtTokenStore.readAccessToken(accessTokenStr);
+        if (accessToken == null || accessToken.isExpired()) {
+            LOGGER.error("Access token has expired.");
+            return "";
+        }
+
+        Map<String, Object> additionalInfoMap = accessToken.getAdditionalInformation();
+        OAuth2Authentication auth = jwtTokenStore.readAuthentication(accessToken);
+        if (additionalInfoMap == null || auth == null) {
+            LOGGER.error("Access token is invalid.");
+            return "";
+        }
+        return additionalInfoMap.get("userId").toString();
     }
 
     /**
