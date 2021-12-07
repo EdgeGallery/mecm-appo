@@ -37,6 +37,7 @@ server:
     max-threads: 200
   compression:
     enabled: true
+    mime-types: application/json
     min-response-size: 10240
 
   ssl:
