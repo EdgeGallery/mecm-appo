@@ -223,7 +223,11 @@ public abstract class ProcessflowAbstractTask {
                 responseBody = response.getBody();
                 if (responseBody != null && responseBody.contains("data")) {
                     JsonObject jsonObject = new JsonParser().parse(responseBody).getAsJsonObject();
-                    responseBody = jsonObject.get("data").getAsString();
+                    if (!jsonObject.get("data").isJsonNull()) {
+                        responseBody = jsonObject.get("data").getAsString();
+                    } else if (!jsonObject.get("message").isJsonNull()) {
+                        responseBody = jsonObject.get("message").getAsString();
+                    }
                 }
             }
             setProcessflowResponseAttributes(execution, responseBody, Constants.PROCESS_FLOW_SUCCESS);
