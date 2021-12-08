@@ -19,6 +19,7 @@ package org.edgegallery.mecm.appo.service;
 
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.OperateVmParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesServerReqParam;
+import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface ResourceMgrServerService {
@@ -46,7 +47,7 @@ public interface ResourceMgrServerService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryServers(String accessToken, String tenantId, String hostId);
+    ResponseEntity<AppoResponse> queryServers(String accessToken, String tenantId, String hostId);
 
     /**
      * Query Server By ID.
