@@ -96,8 +96,7 @@ public class ResourceManagerServerHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves Servers", response = String.class)
-    @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers", produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
     public ResponseEntity<String> queryServers(@ApiParam(value = "access token")
                                                @RequestHeader("access_token") String accessToken,
