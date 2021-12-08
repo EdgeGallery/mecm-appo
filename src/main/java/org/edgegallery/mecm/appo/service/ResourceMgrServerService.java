@@ -47,7 +47,7 @@ public interface ResourceMgrServerService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<AppoResponse> queryServers(String accessToken, String tenantId, String hostId);
+    ResponseEntity<String> queryServers(String accessToken, String tenantId, String hostId);
 
     /**
      * Query Server By ID.

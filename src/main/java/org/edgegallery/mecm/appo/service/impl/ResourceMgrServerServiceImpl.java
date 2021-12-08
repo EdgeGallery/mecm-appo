@@ -19,14 +19,12 @@ package org.edgegallery.mecm.appo.service.impl;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.OperateVmParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesServerReqParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrServerService;
-import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.ResourceMgrServiceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +77,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     }
 
     @Override
-    public ResponseEntity<AppoResponse> queryServers(String accessToken, String tenantId, String hostId) {
+    public ResponseEntity<String> queryServers(String accessToken, String tenantId, String hostId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
         LOGGER.info("url: {}", url);
 
@@ -87,10 +85,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/servers").toString();
-        String response = restService.sendRequest(url, HttpMethod.GET, accessToken, null).toString();
-        AppoResponse responseEntity = new AppoResponse(HttpStatus.OK);
-        responseEntity.setResponse(response);
-        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
+        return restService.sendRequest(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override

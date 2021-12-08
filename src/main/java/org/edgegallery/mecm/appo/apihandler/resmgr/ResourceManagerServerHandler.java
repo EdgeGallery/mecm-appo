@@ -31,7 +31,6 @@ import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -99,9 +98,9 @@ public class ResourceManagerServerHandler {
      * @return status code 200 on success, error code on failure
      */
     @ApiOperation(value = "Retrieves Servers", response = AppoResponse.class)
-    @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers", produces = MediaType.TEXT_PLAIN_VALUE)
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<AppoResponse> queryServers(@ApiParam(value = "access token")
+    public ResponseEntity<String> queryServers(@ApiParam(value = "access token")
                                                @RequestHeader("access_token") String accessToken,
                                                @PathVariable("tenant_id")
                                                @Pattern(regexp = Constants.TENENT_ID_REGEX)
