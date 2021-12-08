@@ -117,7 +117,7 @@ public class RestServiceImpl implements RestService {
                     + e.getLocalizedMessage());
         }
         LOGGER.info("Send request status code {}, value {} ", responseEntity.getStatusCodeValue(),
-                responseEntity.getBody());
+                );
 
         HttpStatus statusCode = responseEntity.getStatusCode();
         if (Constants.PROCESS_RECORD_NOT_FOUND.equals(statusCode.toString())) {
@@ -127,7 +127,7 @@ public class RestServiceImpl implements RestService {
         if (!statusCode.is2xxSuccessful()) {
             throw new AppoException("Failure while sending request status code: " + statusCode);
         }
-        return responseEntity;
+        return ResponseEntity.ok(responseEntity.getBody());
     }
 
     private HttpHeaders getHttpHeader(String token) {
