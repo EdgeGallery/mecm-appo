@@ -117,7 +117,7 @@ public class RestServiceImpl implements RestService {
                     + e.getLocalizedMessage());
         }
         LOGGER.info("Send request status code {}, value {} ", responseEntity.getStatusCodeValue(),
-                );
+            responseEntity.getBody());
 
         HttpStatus statusCode = responseEntity.getStatusCode();
         if (Constants.PROCESS_RECORD_NOT_FOUND.equals(statusCode.toString())) {
