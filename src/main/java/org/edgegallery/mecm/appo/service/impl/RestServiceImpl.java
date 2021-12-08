@@ -19,6 +19,7 @@ package org.edgegallery.mecm.appo.service.impl;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import org.edgegallery.mecm.appo.apihandler.dto.SyncBaseDto;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.service.RestService;
@@ -127,7 +128,7 @@ public class RestServiceImpl implements RestService {
         if (!statusCode.is2xxSuccessful()) {
             throw new AppoException("Failure while sending request status code: " + statusCode);
         }
-        return ResponseEntity.ok(responseEntity.getBody());
+        return ResponseEntity.ok(Objects.requireNonNull(responseEntity.getBody()));
     }
 
     private HttpHeaders getHttpHeader(String token) {
