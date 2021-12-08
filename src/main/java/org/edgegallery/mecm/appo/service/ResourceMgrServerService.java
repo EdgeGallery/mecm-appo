@@ -19,7 +19,6 @@ package org.edgegallery.mecm.appo.service;
 
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.OperateVmParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesServerReqParam;
-import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface ResourceMgrServerService {

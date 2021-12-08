@@ -27,7 +27,6 @@ import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.OperateVmParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesServerReqParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrServerService;
-import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +96,7 @@ public class ResourceManagerServerHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves Servers", response = AppoResponse.class)
+    @ApiOperation(value = "Retrieves Servers", response = String.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers", produces = MediaType.TEXT_PLAIN_VALUE)
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
     public ResponseEntity<String> queryServers(@ApiParam(value = "access token")
