@@ -19,7 +19,6 @@ package org.edgegallery.mecm.appo.service.impl;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import org.edgegallery.mecm.appo.apihandler.dto.SyncBaseDto;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.service.RestService;
@@ -119,7 +118,8 @@ public class RestServiceImpl implements RestService {
         }
         LOGGER.info("Send request status code {}, value {} ", responseEntity.getStatusCodeValue(),
             responseEntity.getBody());
-
+        String body = "";
+        body = responseEntity.getBody();
         HttpStatus statusCode = responseEntity.getStatusCode();
         if (Constants.PROCESS_RECORD_NOT_FOUND.equals(statusCode.toString())) {
             throw new NoSuchElementException("Record not found status code: " + statusCode);
@@ -128,7 +128,7 @@ public class RestServiceImpl implements RestService {
         if (!statusCode.is2xxSuccessful()) {
             throw new AppoException("Failure while sending request status code: " + statusCode);
         }
-        return ResponseEntity.ok(Objects.requireNonNull(responseEntity.getBody()));
+        return ResponseEntity.ok(body == null ? "" : body);
     }
 
     private HttpHeaders getHttpHeader(String token) {
