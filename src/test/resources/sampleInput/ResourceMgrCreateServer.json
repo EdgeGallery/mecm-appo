@@ -14,7 +14,7 @@
       "name": "default1"
     }
   ],
-  "netWork": [
+  "netWorks": [
     {
       "network": "0884b5fb-ea5c-4951-9c54-256f4fc38991",
       "fixedIp": "192.168.1.19"
