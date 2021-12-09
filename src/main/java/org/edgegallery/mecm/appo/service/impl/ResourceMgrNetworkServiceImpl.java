@@ -45,7 +45,7 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
     @Override
     public ResponseEntity<String> createNetworks(String accessToken, String tenantId, String hostId,
                                                 ResourcesNetworkReqParam resourcesNetworkReqParam) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
         LOGGER.info("request body: {}",resourceMgrServiceHelper.convertToJson(resourcesNetworkReqParam));
 
@@ -59,7 +59,7 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
 
     @Override
     public ResponseEntity<String> queryNetwork(String accessToken, String tenantId, String hostId) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
         LOGGER.debug("Query Networks request received...");
@@ -72,7 +72,7 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
     @Override
     public ResponseEntity<String> queryNetworkById(String accessToken, String tenantId, String hostId,
                                                    String networkId) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
         LOGGER.debug("Query Networks by Id request received...");
@@ -85,7 +85,7 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
     @Override
     public ResponseEntity<String> deleteNetworkById(String accessToken, String tenantId, String hostId,
                                                     String networkId) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
         LOGGER.debug("Delete Networks by Id request received...");

@@ -49,7 +49,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     @Override
     public ResponseEntity<String> createServers(String accessToken, String tenantId, String hostId,
                                                 ResourcesServerReqParam resourcesServerReqParam) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourcesServerReqParam));
 
@@ -64,7 +64,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     @Override
     public ResponseEntity<String> operateVM(String accessToken, String tenantId, String hostId,
                                             String serverId, OperateVmParam operateVmParam) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
         LOGGER.info("request body: {}",resourceMgrServiceHelper.convertToJson(operateVmParam));
 
@@ -78,7 +78,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
 
     @Override
     public ResponseEntity<String> queryServers(String accessToken, String tenantId, String hostId) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
         LOGGER.debug("Query Servers request received...");
@@ -91,7 +91,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     @Override
     public ResponseEntity<String> queryServerById(String accessToken, String tenantId, String hostId,
                                                   String serverId) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
         LOGGER.debug("Query Servers by Id request received...");
@@ -104,7 +104,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     @Override
     public ResponseEntity<String> deleteServerById(String accessToken, String tenantId, String hostId,
                                                    String serverId) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
         LOGGER.debug("Delete Servers by Id request received...");
