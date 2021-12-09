@@ -49,7 +49,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
     public ResponseEntity<String> createFlavor(String accessToken, String tenantId,
                                                String hostId, ResourceFlavorReqParam resourceFlavorReqParam) {
 
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
         LOGGER.debug("Create Flavor request received...");
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourceFlavorReqParam));
@@ -62,7 +62,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
 
     @Override
     public ResponseEntity<String> queryFlavors(String accessToken, String tenantId, String hostId) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
         LOGGER.debug("Query Flavors request received...");
@@ -75,7 +75,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
     @Override
     public ResponseEntity<String> queryFlavorsById(String accessToken, String tenantId,
                                                    String hostId, String flavorId) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
         LOGGER.debug("Query Flavors by Id request received...");
@@ -88,7 +88,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
     @Override
     public ResponseEntity<String> deleteFlavorsById(String accessToken, String tenantId, String hostId,
                                                     String flavorId) {
-        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostId);
+        String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
         LOGGER.debug("Delete Flavors by Id request received...");

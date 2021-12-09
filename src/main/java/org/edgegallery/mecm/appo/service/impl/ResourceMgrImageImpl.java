@@ -48,7 +48,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
     @Override
     public ResponseEntity<String> queryImages(String accessToken, String tenantId, String hostIp) {
         LOGGER.debug("Query images request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images").toString();
@@ -58,7 +58,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
     @Override
     public ResponseEntity<String> queryImagesById(String accessToken, String tenantId, String hostIp, String imageId) {
         LOGGER.debug("Query image by ID request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images/" + imageId).toString();
@@ -68,7 +68,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
     @Override
     public ResponseEntity<String> deleteImage(String accessToken, String tenantId, String hostIp, String imageId) {
         LOGGER.debug("Delete image request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images/" + imageId).toString();
@@ -79,7 +79,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
     public ResponseEntity<String> createImage(String accessToken, String tenantId, String hostIp,
                                               ResourceMgrImageParam resourceMgrImageParam) {
         LOGGER.debug("Create image request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images").toString();
@@ -92,7 +92,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
     public ResponseEntity<String> importImage(String accessToken, String tenantId, String hostIp, String imageId,
                                               ResourceMgrImportParam resourceMgrImportParam) {
         LOGGER.debug("Import image request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images/" + imageId).toString();

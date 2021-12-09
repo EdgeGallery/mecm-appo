@@ -91,7 +91,7 @@ public class ResourceMgrNetworkTest {
 
     private void inventoryInfos(MockRestServiceServer server){
 
-        String url = "http://10.9.9.1:11111/inventory/v1/mechosts/3.3.3.3";
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/3.3.3.3";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess("{\"mechostIp\":\"3.3.3.3\",\"mechostName\":\"TestHost\","
@@ -140,7 +140,6 @@ public class ResourceMgrNetworkTest {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(mapper.readValue
                 (new File("src/test/resources/sampleInput/ResourceMgrCreateNetwork.json"), Object.class));
-        System.out.println("input: " + jsonInput);
         //create network
         ResultActions postResult =
                 mvc.perform(MockMvcRequestBuilders.post(RESOURCE_MGR + "/networks")
