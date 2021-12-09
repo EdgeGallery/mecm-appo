@@ -48,7 +48,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
     @Override
     public ResponseEntity<String> querySecurityGroups(String accessToken, String tenantId, String hostIp) {
         LOGGER.debug("Query security groups request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/securityGroups").toString();
@@ -59,7 +59,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
     public ResponseEntity<String> querySecurityGroupRules(String accessToken, String tenantId, String hostIp,
                                                           String securityGroupId) {
         LOGGER.debug("Query security group rules request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/securityGroups/").append(securityGroupId + "/securityGroupRules").toString();
@@ -70,7 +70,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
     public ResponseEntity<String> querySecurityGroupById(String accessToken, String tenantId, String hostIp,
                                                          String securityGroupId) {
         LOGGER.debug("Query security group by ID request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/securityGroups/" + securityGroupId).toString();
@@ -81,7 +81,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
     public ResponseEntity<String> deleteSecurityGroup(String accessToken, String tenantId, String hostIp,
                                                       String securityGroupId) {
         LOGGER.debug("Delete security groups request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/securityGroups/" + securityGroupId).toString();
@@ -92,7 +92,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
     public ResponseEntity<String> deleteSecurityGroupRule(String accessToken, String tenantId, String hostIp,
                                                           String securityGroupId, String securityGroupRuleId) {
         LOGGER.debug("Delete security group rule request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/securityGroups/" + securityGroupId + "/securityGroupRules/" + securityGroupRuleId).toString();
@@ -103,7 +103,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
     public ResponseEntity<String> createSecurityGroup(String accessToken, String tenantId, String hostIp,
                                                       ResourceMgrSecGrpParam securityGroupParam) {
         LOGGER.debug("Create security group request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/securityGroups").toString();
@@ -117,7 +117,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
                                                           String securityGroupId,
                                                           ResourceMgrSecGrpRuleParam securityGroupRuleParam) {
         LOGGER.debug("Create security group rule request received...");
-        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, hostIp);
+        String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/securityGroups/" + securityGroupId + "/securityGroupRules").toString();

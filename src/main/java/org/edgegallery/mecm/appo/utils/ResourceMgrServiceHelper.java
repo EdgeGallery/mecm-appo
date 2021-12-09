@@ -51,9 +51,6 @@ public final class ResourceMgrServiceHelper {
     @Autowired
     private RestServiceImpl restService;
 
-    @Autowired
-    TokenStore jwtTokenStore;
-
     private ResourceMgrServiceHelper(RestServiceImpl restService) {
         this.restService = restService;
     }
@@ -65,8 +62,8 @@ public final class ResourceMgrServiceHelper {
      * @return returns mepm configurations
      * @throws ResourceMgrException exception if failed to get MEPm details
      */
-    public String getInventoryMecHostsCfg(String accessToken, String hostIp) {
-        String tenantId = getTenantIdFromToken(accessToken);
+    public String getInventoryMecHostsCfg(String accessToken, String tenantId, String hostIp) {
+
         LOGGER.info("teanant id is :" + tenantId);
         String url = new StringBuilder(inventoryService).append(":")
                 .append(inventoryServicePort).append("/inventory/v1").append("/tenants/").append(tenantId)
@@ -83,22 +80,6 @@ public final class ResourceMgrServiceHelper {
         }
 
         return getInventoryMepmCfg(mepmIp.getAsString(), accessToken);
-    }
-
-    private String getTenantIdFromToken(String accessTokenStr) {
-        OAuth2AccessToken accessToken = jwtTokenStore.readAccessToken(accessTokenStr);
-        if (accessToken == null || accessToken.isExpired()) {
-            LOGGER.error("Access token has expired.");
-            return "";
-        }
-
-        Map<String, Object> additionalInfoMap = accessToken.getAdditionalInformation();
-        OAuth2Authentication auth = jwtTokenStore.readAuthentication(accessToken);
-        if (additionalInfoMap == null || auth == null) {
-            LOGGER.error("Access token is invalid.");
-            return "";
-        }
-        return additionalInfoMap.get("userId").toString();
     }
 
     /**
