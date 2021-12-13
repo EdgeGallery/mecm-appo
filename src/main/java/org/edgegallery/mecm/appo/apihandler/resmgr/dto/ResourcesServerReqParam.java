@@ -23,7 +23,7 @@ public final class ResourcesServerReqParam {
     private String availabilityZone;
     private String userData;
     private Boolean configDrive;
-    private List<SecurityGroup> securityGroups = new ArrayList<SecurityGroup>();
+    private List<String> securityGroups;
     private List<NetWork> netWorks = new ArrayList<NetWork>();
 }
 

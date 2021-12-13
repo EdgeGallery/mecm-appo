@@ -154,7 +154,7 @@ public class ResourceMgrServerTest {
 
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(mapper.readValue
-                (new File("src/test/resources/sampleInput/ResourceMgrCreateServer.json"), Object.class));
+                (new File("src/test/resources/sampleInput/ResourceMgrCreateServer_Latest.json"), Object.class));
         System.out.println("input: " + jsonInput);
         //create server
         ResultActions postResult =
