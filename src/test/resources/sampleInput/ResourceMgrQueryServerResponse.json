@@ -1,0 +1,347 @@
+{
+    "code": 200,
+    "msg": "success",
+    "data": [
+        {
+            "id": "45bd462d-aa9d-4326-9f04-ae11ce5d3eee",
+            "name": "测试虚拟机2",
+            "status": "ACTIVE",
+            "addresses": {
+                "MEC_APP_N6": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.220.8",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:93:a2:b4"
+                    }
+                ],
+                "MEC_APP_Private": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.221.8",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:90:75:92"
+                    }
+                ],
+                "MEC_APP_Public": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.222.8",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:10:f3:72"
+                    }
+                ]
+            },
+            "flavor": {
+                "id": "7340c337-8634-43c5-8b82-8b90c1087254",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/flavors/7340c337-8634-43c5-8b82-8b90c1087254"
+                    }
+                ]
+            },
+            "image": {
+                "id": "9475754e-f407-4984-829b-ce5f06fbd8cd",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/images/9475754e-f407-4984-829b-ce5f06fbd8cd"
+                    }
+                ]
+            },
+            "securityGroups": [
+                {
+                    "name": "eg-38d77f84-DefaultSecurityGroup-qbdnog2o2v2x"
+                },
+                {
+                    "name": "eg-38d77f84-DefaultSecurityGroup-qbdnog2o2v2x"
+                },
+                {
+                    "name": "eg-38d77f84-DefaultSecurityGroup-qbdnog2o2v2x"
+                }
+            ]
+        },
+        {
+            "id": "d9f052c1-d351-4ed3-a1fd-10961fe26bf4",
+            "name": "测试虚拟机",
+            "status": "ACTIVE",
+            "addresses": {
+                "MEC_APP_N6": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.220.7",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:b3:d7:b2"
+                    }
+                ],
+                "MEC_APP_Private": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.221.7",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:5c:70:83"
+                    }
+                ],
+                "MEC_APP_Public": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.222.7",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:f5:6b:ec"
+                    }
+                ]
+            },
+            "flavor": {
+                "id": "48c46f39-abad-46f2-9126-0e0f6585658c",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/flavors/48c46f39-abad-46f2-9126-0e0f6585658c"
+                    }
+                ]
+            },
+            "image": {
+                "id": "43c2e030-1c38-4e4c-9134-d791c3c87189",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/images/43c2e030-1c38-4e4c-9134-d791c3c87189"
+                    }
+                ]
+            },
+            "securityGroups": [
+                {
+                    "name": "eg-0f2e0b18-DefaultSecurityGroup-2wdfggghrslj"
+                },
+                {
+                    "name": "eg-0f2e0b18-DefaultSecurityGroup-2wdfggghrslj"
+                },
+                {
+                    "name": "eg-0f2e0b18-DefaultSecurityGroup-2wdfggghrslj"
+                }
+            ]
+        },
+        {
+            "id": "755cf1b9-eb2b-47eb-aa60-a5b1d54c0e35",
+            "name": "chandlertest1",
+            "status": "ACTIVE",
+            "addresses": {
+                "mec_network_n6": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.225.203",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:1d:14:db"
+                    }
+                ]
+            },
+            "flavor": {
+                "id": "1d87c597-adc3-4f43-b240-fcd97fc6d282",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/flavors/1d87c597-adc3-4f43-b240-fcd97fc6d282"
+                    }
+                ]
+            },
+            "image": {
+                "id": "12e64ef6-2b29-4d83-8b87-b2501160647f",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/images/12e64ef6-2b29-4d83-8b87-b2501160647f"
+                    }
+                ]
+            },
+            "securityGroups": [
+                {
+                    "name": "asdAS"
+                }
+            ]
+        },
+        {
+            "id": "bd27ac17-b93d-4645-9411-ebd9ed9a9dd5",
+            "name": "vmTest",
+            "status": "ACTIVE",
+            "addresses": {
+                "MEC_APP_N6": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.220.99",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:23:49:1e"
+                    }
+                ],
+                "MEC_APP_Private": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.221.99",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:ae:9e:2e"
+                    }
+                ],
+                "MEC_APP_Public": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.222.99",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:60:7f:16"
+                    }
+                ]
+            },
+            "flavor": {
+                "id": "0f40c2fe-9495-4a9e-84ba-e641627a4e4e",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/flavors/0f40c2fe-9495-4a9e-84ba-e641627a4e4e"
+                    }
+                ]
+            },
+            "image": {
+                "id": "d0dac5bd-fb3e-43b9-9af6-a55b28f2c948",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/images/d0dac5bd-fb3e-43b9-9af6-a55b28f2c948"
+                    }
+                ]
+            },
+            "securityGroups": [
+                {
+                    "name": "eg-4e1c21a6-DefaultSecurityGroup-w5sey2r7a3cq"
+                },
+                {
+                    "name": "eg-4e1c21a6-DefaultSecurityGroup-w5sey2r7a3cq"
+                },
+                {
+                    "name": "eg-4e1c21a6-DefaultSecurityGroup-w5sey2r7a3cq"
+                }
+            ]
+        },
+        {
+            "id": "bb8bdad0-de3c-4e38-9616-9d40dffb2e11",
+            "name": "chandlertest1",
+            "status": "ACTIVE",
+            "addresses": {
+                "mec_network_n6": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.225.197",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:2c:82:35"
+                    }
+                ]
+            },
+            "flavor": {
+                "id": "1d87c597-adc3-4f43-b240-fcd97fc6d282",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/flavors/1d87c597-adc3-4f43-b240-fcd97fc6d282"
+                    }
+                ]
+            },
+            "image": {
+                "id": "12e64ef6-2b29-4d83-8b87-b2501160647f",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/images/12e64ef6-2b29-4d83-8b87-b2501160647f"
+                    }
+                ]
+            },
+            "securityGroups": [
+                {
+                    "name": "asdAS"
+                }
+            ]
+        },
+        {
+            "id": "fe585feb-a01e-4c46-ae7f-2956f4422cb2",
+            "name": "vmTest",
+            "status": "ACTIVE",
+            "addresses": {
+                "mec_network_n6": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.225.196",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:b8:11:51"
+                    }
+                ]
+            },
+            "flavor": {
+                "id": "1d87c597-adc3-4f43-b240-fcd97fc6d282",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/flavors/1d87c597-adc3-4f43-b240-fcd97fc6d282"
+                    }
+                ]
+            },
+            "image": {
+                "id": "12e64ef6-2b29-4d83-8b87-b2501160647f",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/images/12e64ef6-2b29-4d83-8b87-b2501160647f"
+                    }
+                ]
+            },
+            "securityGroups": [
+                {
+                    "name": "asdAS"
+                }
+            ]
+        },
+        {
+            "id": "d39d2499-84e7-4327-9bc3-ab8ef028faa8",
+            "name": "zlftest111",
+            "status": "ACTIVE",
+            "addresses": {
+                "mec_network_n6": [
+                    {
+                        "version": 4,
+                        "addr": "192.168.225.12",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:19:52:9c"
+                    },
+                    {
+                        "version": 4,
+                        "addr": "192.168.225.187",
+                        "OS-EXT-IPS:type": "fixed",
+                        "OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:48:3d:74"
+                    }
+                ]
+            },
+            "flavor": {
+                "id": "33f51fab-4795-45cb-9a04-446547869321",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/flavors/33f51fab-4795-45cb-9a04-446547869321"
+                    }
+                ]
+            },
+            "image": {
+                "id": "12e64ef6-2b29-4d83-8b87-b2501160647f",
+                "links": [
+                    {
+                        "rel": "bookmark",
+                        "href": "http://192.168.1.156/compute/images/12e64ef6-2b29-4d83-8b87-b2501160647f"
+                    }
+                ]
+            },
+            "securityGroups": [
+                {
+                    "name": "eg-67138e77-DefaultSecurityGroup-3prwa6si3p6q"
+                },
+                {
+                    "name": "eg-67138e77-DefaultSecurityGroup-3prwa6si3p6q"
+                }
+            ]
+        }
+    ]
+}
