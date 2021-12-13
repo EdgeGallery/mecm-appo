@@ -30,7 +30,6 @@ import org.edgegallery.mecm.appo.service.ResourceMgrServerService;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -97,7 +96,6 @@ public class ResourceManagerServerHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves Servers", response = String.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
     public ResponseEntity<String> queryServers(@ApiParam(value = "access token")
