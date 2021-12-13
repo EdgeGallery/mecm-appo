@@ -26,6 +26,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesNetworkReqParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrNetworkService;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,14 +66,14 @@ public class ResourceManagerNetworkHandler {
      * @param tenantId      tenant ID
      * @return status code 201, error code on failure
      */
-    @ApiOperation(value = "Create Networks", response = String.class)
+    @ApiOperation(value = "Create Networks", response = AppoV2Response.class)
     @PostMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/networks",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = String.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoV2Response.class),
+            @ApiResponse(code = 500, message = "internal server error", response = AppoV2Response.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
-    public ResponseEntity<String> createNetworks(
+    public ResponseEntity<AppoV2Response> createNetworks(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
@@ -94,15 +95,15 @@ public class ResourceManagerNetworkHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves Networks", response = String.class)
+    @ApiOperation(value = "Retrieves Networks", response = AppoV2Response.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/networks")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> queryNetworks(@ApiParam(value = "access token")
+    public ResponseEntity<AppoV2Response> queryNetworks(@ApiParam(value = "access token")
                                                @RequestHeader("access_token") String accessToken,
-                                               @PathVariable("tenant_id")
+                                                        @PathVariable("tenant_id")
                                                @Pattern(regexp = Constants.TENENT_ID_REGEX)
                                                @Size(max = 64) String tenantId,
-                                               @ApiParam(value = "edge host ip")
+                                                        @ApiParam(value = "edge host ip")
                                                @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
                                                @Size(max = 15) String hostIp) {
         logger.debug("Query Networks request received...");
@@ -117,10 +118,10 @@ public class ResourceManagerNetworkHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves Networks by Id", response = String.class)
+    @ApiOperation(value = "Retrieves Networks by Id", response = AppoV2Response.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/networks/{network_id}")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> queryNetworkById(@ApiParam(value = "access token")
+    public ResponseEntity<AppoV2Response> queryNetworkById(@ApiParam(value = "access token")
                                                    @RequestHeader("access_token") String accessToken,
                                                    @PathVariable("tenant_id")
                                                    @Pattern(regexp = Constants.TENENT_ID_REGEX)
@@ -143,14 +144,14 @@ public class ResourceManagerNetworkHandler {
      * @param tenantId      tenant ID
      * @return status code 201, error code on failure
      */
-    @ApiOperation(value = "Terminates Networks By Id", response = String.class)
+    @ApiOperation(value = "Terminates Networks By Id", response = AppoV2Response.class)
     @DeleteMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/networks/{network_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = String.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoV2Response.class),
+            @ApiResponse(code = 500, message = "internal server error", response = AppoV2Response.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
-    public ResponseEntity<String> deleteFlavorsById(
+    public ResponseEntity<AppoV2Response> deleteFlavorsById(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,

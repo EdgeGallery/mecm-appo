@@ -18,6 +18,7 @@
 package org.edgegallery.mecm.appo.service;
 
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesNetworkReqParam;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.springframework.http.ResponseEntity;
 
 public interface ResourceMgrNetworkService {
@@ -33,7 +34,7 @@ public interface ResourceMgrNetworkService {
      * @return status code 201 on success, error code on failure
      */
 
-    ResponseEntity<String> createNetworks(String accessToken, String tenantId, String hostId,
+    ResponseEntity<AppoV2Response> createNetworks(String accessToken, String tenantId, String hostId,
                                          ResourcesNetworkReqParam resourcesNetworkReqParam);
 
     /**
@@ -45,7 +46,7 @@ public interface ResourceMgrNetworkService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryNetwork(String accessToken, String tenantId, String hostId);
+    ResponseEntity<AppoV2Response> queryNetwork(String accessToken, String tenantId, String hostId);
 
     /**
      * Query Network By ID.
@@ -57,7 +58,7 @@ public interface ResourceMgrNetworkService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryNetworkById(String accessToken, String tenantId, String hostId,
+    ResponseEntity<AppoV2Response> queryNetworkById(String accessToken, String tenantId, String hostId,
                                             String networkId);
 
     /**
@@ -70,7 +71,7 @@ public interface ResourceMgrNetworkService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> deleteNetworkById(String accessToken, String tenantId, String hostId,
+    ResponseEntity<AppoV2Response> deleteNetworkById(String accessToken, String tenantId, String hostId,
                                              String networkId);
 
 }

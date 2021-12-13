@@ -117,7 +117,8 @@ public class ResourceMgrNetworkTest {
         String url =  RESOURCE_CTRL_URL  + "/networks";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"query networks "
+                        + "success\"}", MediaType.APPLICATION_JSON));
     }
 
     private void createNetworkInfos(MockRestServiceServer server){
@@ -126,8 +127,8 @@ public class ResourceMgrNetworkTest {
         String url =  RESOURCE_CTRL_URL  + "/networks";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"create network "
-                        + "\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"create network "
+                        + "success\"}", MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -186,7 +187,8 @@ public class ResourceMgrNetworkTest {
                 + NETWORK_ID;
         server.expect(requestTo(url1))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"queryById networks "
+                        + "success\"}", MediaType.APPLICATION_JSON));
 
         // Create a queryFlavors By Id
         ResultActions getResult =
@@ -212,8 +214,8 @@ public class ResourceMgrNetworkTest {
                 + NETWORK_ID;
         server.expect(requestTo(url1))
                 .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"delete network "
-                        + "success\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"delete network "
+                        + "success\"}", MediaType.APPLICATION_JSON));
 
         // Create a queryFlavors By Id
         ResultActions deleteResult =

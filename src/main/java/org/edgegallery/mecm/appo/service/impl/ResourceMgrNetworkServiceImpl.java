@@ -15,6 +15,7 @@ package org.edgegallery.mecm.appo.service.impl;
 
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesNetworkReqParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrNetworkService;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.ResourceMgrServiceHelper;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
     }
 
     @Override
-    public ResponseEntity<String> createNetworks(String accessToken, String tenantId, String hostId,
+    public ResponseEntity<AppoV2Response> createNetworks(String accessToken, String tenantId, String hostId,
                                                 ResourcesNetworkReqParam resourcesNetworkReqParam) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
@@ -53,12 +54,12 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/networks").toString();
-        return restService.sendRequest(url, HttpMethod.POST, accessToken,
+        return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourcesNetworkReqParam));
     }
 
     @Override
-    public ResponseEntity<String> queryNetwork(String accessToken, String tenantId, String hostId) {
+    public ResponseEntity<AppoV2Response> queryNetwork(String accessToken, String tenantId, String hostId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
@@ -66,11 +67,11 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/networks").toString();
-        return restService.sendRequest(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
-    public ResponseEntity<String> queryNetworkById(String accessToken, String tenantId, String hostId,
+    public ResponseEntity<AppoV2Response> queryNetworkById(String accessToken, String tenantId, String hostId,
                                                    String networkId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
@@ -79,11 +80,11 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/networks/").append(networkId).toString();
-        return restService.sendRequest(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
-    public ResponseEntity<String> deleteNetworkById(String accessToken, String tenantId, String hostId,
+    public ResponseEntity<AppoV2Response> deleteNetworkById(String accessToken, String tenantId, String hostId,
                                                     String networkId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
@@ -92,6 +93,6 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/networks/").append(networkId).toString();
-        return restService.sendRequest(url, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequest_ResourceManager(url, HttpMethod.DELETE, accessToken, null);
     }
 }
