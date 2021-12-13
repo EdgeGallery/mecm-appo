@@ -118,7 +118,8 @@ public class ResourceMgrFlavorTest {
         String url =  RESOURCE_CTRL_URL  + "/flavors";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"query flavor "
+                        + "success\"}", MediaType.APPLICATION_JSON));
     }
 
     private void createFlavorInfos(MockRestServiceServer server){
@@ -127,8 +128,8 @@ public class ResourceMgrFlavorTest {
         String url =  RESOURCE_CTRL_URL  + "/flavors";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"create flavor success\"," +
-                        "\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"create flavor "
+                        + "success\"}", MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -188,7 +189,8 @@ public class ResourceMgrFlavorTest {
         String url1 =  RESOURCE_CTRL_URL  + "/flavors/" + FLAVOR_ID;
         server.expect(requestTo(url1))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"queryById flavor "
+                        + "success\"}", MediaType.APPLICATION_JSON));
 
         // Create a queryFlavors By Id
         ResultActions getResult =
@@ -213,8 +215,8 @@ public class ResourceMgrFlavorTest {
         String url1 =  RESOURCE_CTRL_URL  + "/flavors/" + FLAVOR_ID;
         server.expect(requestTo(url1))
                 .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"delete flavor" +
-                        " success\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"delete flavor "
+                        + "success\"}", MediaType.APPLICATION_JSON));
 
         // Create a queryFlavors By Id
         ResultActions deleteResult =

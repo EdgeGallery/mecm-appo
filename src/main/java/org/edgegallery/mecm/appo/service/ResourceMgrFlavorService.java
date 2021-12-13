@@ -18,6 +18,7 @@
 package org.edgegallery.mecm.appo.service;
 
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceFlavorReqParam;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.springframework.http.ResponseEntity;
 
 public interface ResourceMgrFlavorService {
@@ -33,8 +34,8 @@ public interface ResourceMgrFlavorService {
      * @return status code 201 on success, error code on failure
      */
 
-    ResponseEntity<String> createFlavor(String accessToken, String tenantId, String hostId,
-                                        ResourceFlavorReqParam resourceFlavorReqParam);
+    ResponseEntity<AppoV2Response> createFlavor(String accessToken, String tenantId, String hostId,
+                                                ResourceFlavorReqParam resourceFlavorReqParam);
 
 
     /**
@@ -46,7 +47,7 @@ public interface ResourceMgrFlavorService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryFlavors(String accessToken, String tenantId, String hostId);
+    ResponseEntity<AppoV2Response> queryFlavors(String accessToken, String tenantId, String hostId);
 
     /**
      * Query Flavor By ID.
@@ -58,7 +59,7 @@ public interface ResourceMgrFlavorService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryFlavorsById(String accessToken, String tenantId, String hostId,
+    ResponseEntity<AppoV2Response> queryFlavorsById(String accessToken, String tenantId, String hostId,
                                             String flavorId);
 
     /**
@@ -71,6 +72,6 @@ public interface ResourceMgrFlavorService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> deleteFlavorsById(String accessToken, String tenantId, String hostId,
+    ResponseEntity<AppoV2Response> deleteFlavorsById(String accessToken, String tenantId, String hostId,
                                             String flavorId);
 }
