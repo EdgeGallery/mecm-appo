@@ -139,7 +139,7 @@ public class ResourceMgrNetworkTest {
 
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(mapper.readValue
-                (new File("src/test/resources/sampleInput/ResourceMgrCreateNetwork.json"), Object.class));
+                (new File("src/test/resources/sampleInput/ResourceMgrCreateNetwork_Latest.json"), Object.class));
         //create network
         ResultActions postResult =
                 mvc.perform(MockMvcRequestBuilders.post(RESOURCE_MGR + "/networks")

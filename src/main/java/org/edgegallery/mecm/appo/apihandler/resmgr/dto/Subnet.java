@@ -31,14 +31,8 @@ import org.springframework.validation.annotation.Validated;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-final class Subnet {
-    private String name;
-    private Boolean enableDhcp;
-    private List<String> dnsNameservers = new ArrayList<String>();
-    private List<AllocationPool> allocationPools = new ArrayList<AllocationPool>();
-    private Integer ipVersion;
-    private String gatewayIp;
-    private String cidr;
-    private String ipv6AddressMode;
-    private String ipv6RaMode;
+final class Subnets {
+    public String name;
+    public String gatewayIp;
+    public String cidr;
 }
