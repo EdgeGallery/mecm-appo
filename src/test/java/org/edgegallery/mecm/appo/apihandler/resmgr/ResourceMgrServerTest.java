@@ -117,6 +117,7 @@ public class ResourceMgrServerTest {
         ObjectMapper mapper = new ObjectMapper();
         String jsonOutput = mapper.writeValueAsString(mapper.readValue
                 (new File("src/test/resources/sampleInput/ResourceMgrQueryServerResponse.json"), Object.class));
+        System.out.println("input: " + jsonOutput);
 
         String url =  RESOURCE_CTRL_URL  + "/servers";
         server.expect(requestTo(url))
@@ -130,8 +131,8 @@ public class ResourceMgrServerTest {
         String url =  RESOURCE_CTRL_URL  + "/servers";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"create server " +
-                        "success\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"create server " +
+                        "success\"}", MediaType.APPLICATION_JSON));
     }
 
     private void operateVmInfos(MockRestServiceServer server){
@@ -140,8 +141,8 @@ public class ResourceMgrServerTest {
         String url =  RESOURCE_CTRL_URL  + "/servers/" + SERVER_ID;
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"operate vm " +
-                        "success\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"operate vm " +
+                        "success\"}", MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -154,6 +155,7 @@ public class ResourceMgrServerTest {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInput = mapper.writeValueAsString(mapper.readValue
                 (new File("src/test/resources/sampleInput/ResourceMgrCreateServer.json"), Object.class));
+        System.out.println("input: " + jsonInput);
         //create server
         ResultActions postResult =
                 mvc.perform(MockMvcRequestBuilders.post(RESOURCE_MGR + "/servers")
@@ -200,7 +202,8 @@ public class ResourceMgrServerTest {
                 + SERVER_ID;
         server.expect(requestTo(url1))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"queryById server " +
+                        "success\"}", MediaType.APPLICATION_JSON));
 
         // Create a queryFlavors By Id
         ResultActions getResult =
@@ -249,8 +252,8 @@ public class ResourceMgrServerTest {
         String url1 =  RESOURCE_CTRL_URL  + "/servers/" + SERVER_ID;
         server.expect(requestTo(url1))
                 .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"delete server "
-                         + "success\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"delete server "
+                        + "success\"}", MediaType.APPLICATION_JSON));
 
         // Create a queryFlavors By Id
         ResultActions deleteResult =

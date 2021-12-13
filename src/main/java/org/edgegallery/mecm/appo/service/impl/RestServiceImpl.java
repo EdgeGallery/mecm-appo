@@ -16,13 +16,19 @@
 
 package org.edgegallery.mecm.appo.service.impl;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.edgegallery.mecm.appo.apihandler.dto.SyncBaseDto;
 import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.service.RestService;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
+import org.edgegallery.mecm.appo.utils.ErrorMessage;
+import org.jose4j.json.internal.json_simple.JSONObject;
+import org.jose4j.json.internal.json_simple.parser.JSONParser;
+import org.jose4j.json.internal.json_simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,9 +123,8 @@ public class RestServiceImpl implements RestService {
                     + e.getLocalizedMessage());
         }
         LOGGER.info("Send request status code {}, value {} ", responseEntity.getStatusCodeValue(),
-            responseEntity.getBody());
-        String body = "";
-        body = responseEntity.getBody();
+                responseEntity.getBody());
+
         HttpStatus statusCode = responseEntity.getStatusCode();
         if (Constants.PROCESS_RECORD_NOT_FOUND.equals(statusCode.toString())) {
             throw new NoSuchElementException("Record not found status code: " + statusCode);
@@ -128,7 +133,7 @@ public class RestServiceImpl implements RestService {
         if (!statusCode.is2xxSuccessful()) {
             throw new AppoException("Failure while sending request status code: " + statusCode);
         }
-        return ResponseEntity.ok(body == null ? "" : body);
+        return responseEntity;
     }
 
     private HttpHeaders getHttpHeader(String token) {
@@ -140,5 +145,60 @@ public class RestServiceImpl implements RestService {
 
         httpHeaders.set(ACCESS_TOKEN, token);
         return httpHeaders;
+    }
+
+    @Override
+    public ResponseEntity<AppoV2Response> sendRequest_ResourceManager(String uri, HttpMethod method, String token,
+                                                                      String data) {
+        String protocol = HTTP_PROTO;
+        if ("true".equals(isSslEnabled)) {
+            protocol = HTTPS_PROTO;
+        }
+        String url = protocol + uri;
+
+        // Preparing HTTP header
+        HttpHeaders httpHeaders = getHttpHeader(token);
+
+        // Creating HTTP entity with headers
+        HttpEntity<String> httpEntity = null;
+        if (method == HttpMethod.POST || method == HttpMethod.PUT) {
+            httpEntity = new HttpEntity<>(data, httpHeaders);
+        } else if (method == HttpMethod.DELETE || method == HttpMethod.GET) {
+            httpEntity = new HttpEntity<>(httpHeaders);
+        }
+
+        ResponseEntity<String> responseEntity;
+        // Sending request
+        try {
+            LOGGER.info("{}: {}", method, url);
+
+            responseEntity = restTemplate.exchange(url, method, httpEntity, String.class);
+        } catch (RestClientException e) {
+            throw new AppoException("Failure while sending request with error message: "
+                    + e.getLocalizedMessage());
+        }
+        LOGGER.info("Send request status code {}, value {} ", responseEntity.getStatusCodeValue(),
+                responseEntity.getBody());
+
+        HttpStatus statusCode = responseEntity.getStatusCode();
+        if (Constants.PROCESS_RECORD_NOT_FOUND.equals(statusCode.toString())) {
+            throw new NoSuchElementException("Record not found status code: " + statusCode);
+        }
+
+        if (!statusCode.is2xxSuccessful()) {
+            throw new AppoException("Failure while sending request status code: " + statusCode);
+        }
+
+        JSONParser parser = new JSONParser();
+        JSONObject json = new JSONObject();
+        try {
+            json = (JSONObject) parser.parse(responseEntity.getBody());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(new AppoV2Response(json.get("data"),
+                new ErrorMessage(responseEntity.getStatusCode().value(), Collections.<String>emptyList()),
+                json.get("msg").toString()), responseEntity.getStatusCode());
     }
 }

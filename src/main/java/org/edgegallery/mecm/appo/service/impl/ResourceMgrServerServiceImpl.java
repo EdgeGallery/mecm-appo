@@ -19,6 +19,7 @@ package org.edgegallery.mecm.appo.service.impl;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.OperateVmParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesServerReqParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrServerService;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.ResourceMgrServiceHelper;
 import org.slf4j.Logger;
@@ -47,8 +48,8 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     }
 
     @Override
-    public ResponseEntity<String> createServers(String accessToken, String tenantId, String hostId,
-                                                ResourcesServerReqParam resourcesServerReqParam) {
+    public ResponseEntity<AppoV2Response> createServers(String accessToken, String tenantId, String hostId,
+                                                        ResourcesServerReqParam resourcesServerReqParam) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourcesServerReqParam));
@@ -57,13 +58,13 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/servers").toString();
-        return restService.sendRequest(url, HttpMethod.POST, accessToken,
+        return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourcesServerReqParam));
     }
 
     @Override
-    public ResponseEntity<String> operateVM(String accessToken, String tenantId, String hostId,
-                                            String serverId, OperateVmParam operateVmParam) {
+    public ResponseEntity<AppoV2Response> operateVM(String accessToken, String tenantId, String hostId,
+                                                    String serverId, OperateVmParam operateVmParam) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
         LOGGER.info("request body: {}",resourceMgrServiceHelper.convertToJson(operateVmParam));
@@ -72,12 +73,12 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/servers/").append(serverId).toString();
-        return restService.sendRequest(url, HttpMethod.POST, accessToken,
+        return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(operateVmParam));
     }
 
     @Override
-    public ResponseEntity<String> queryServers(String accessToken, String tenantId, String hostId) {
+    public ResponseEntity<AppoV2Response> queryServers(String accessToken, String tenantId, String hostId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
@@ -85,12 +86,12 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/servers").toString();
-        return restService.sendRequest(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
-    public ResponseEntity<String> queryServerById(String accessToken, String tenantId, String hostId,
-                                                  String serverId) {
+    public ResponseEntity<AppoV2Response> queryServerById(String accessToken, String tenantId, String hostId,
+                                                          String serverId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
@@ -98,12 +99,12 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/servers/").append(serverId).toString();
-        return restService.sendRequest(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
-    public ResponseEntity<String> deleteServerById(String accessToken, String tenantId, String hostId,
-                                                   String serverId) {
+    public ResponseEntity<AppoV2Response> deleteServerById(String accessToken, String tenantId, String hostId,
+                                                           String serverId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
@@ -111,6 +112,6 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/servers/").append(serverId).toString();
-        return restService.sendRequest(url, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequest_ResourceManager(url, HttpMethod.DELETE, accessToken, null);
     }
 }

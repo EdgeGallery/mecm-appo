@@ -17,6 +17,7 @@
 package org.edgegallery.mecm.appo.service;
 
 import org.edgegallery.mecm.appo.apihandler.dto.SyncBaseDto;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
@@ -46,4 +47,7 @@ public interface RestService {
      * @return response entity
      */
     ResponseEntity<String> sendRequest(String uri, HttpMethod method, String token, String data);
+
+    ResponseEntity<AppoV2Response> sendRequest_ResourceManager(String uri, HttpMethod method, String token,
+                                                               String data);
 }

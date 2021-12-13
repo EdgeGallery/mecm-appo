@@ -27,9 +27,11 @@ import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.OperateVmParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesServerReqParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrServerService;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,11 +72,11 @@ public class ResourceManagerServerHandler {
     @ApiOperation(value = "Create Servers", response = String.class)
     @PostMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = String.class),
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoV2Response.class),
             @ApiResponse(code = 500, message = "internal server error", response = String.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
-    public ResponseEntity<String> createServers(
+    public ResponseEntity<AppoV2Response> createServers(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
@@ -96,16 +98,17 @@ public class ResourceManagerServerHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
+    @ApiOperation(value = "Retrieves Servers", response = AppoV2Response.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> queryServers(@ApiParam(value = "access token")
-                                               @RequestHeader("access_token") String accessToken,
-                                               @PathVariable("tenant_id")
-                                               @Pattern(regexp = Constants.TENENT_ID_REGEX)
-                                               @Size(max = 64) String tenantId,
-                                               @ApiParam(value = "edge host ip")
-                                               @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
-                                               @Size(max = 15) String hostIp) {
+    public ResponseEntity<AppoV2Response> queryServers(@ApiParam(value = "access token")
+                                                       @RequestHeader("access_token") String accessToken,
+                                                       @PathVariable("tenant_id")
+                                                       @Pattern(regexp = Constants.TENENT_ID_REGEX)
+                                                       @Size(max = 64) String tenantId,
+                                                       @ApiParam(value = "edge host ip")
+                                                       @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
+                                                       @Size(max = 15) String hostIp) {
         logger.debug("Query Servers request received...");
 
         return resourceMgrServerService.queryServers(accessToken, tenantId, hostIp);
@@ -118,20 +121,20 @@ public class ResourceManagerServerHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves Servers by Id", response = String.class)
+    @ApiOperation(value = "Retrieves Servers by Id", response = AppoV2Response.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers/{server_id}")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> queryServerById(@ApiParam(value = "access token")
-                                                   @RequestHeader("access_token") String accessToken,
-                                                   @PathVariable("tenant_id")
-                                                   @Pattern(regexp = Constants.TENENT_ID_REGEX)
-                                                   @Size(max = 64) String tenantId,
-                                                   @ApiParam(value = "edge host ip")
-                                                   @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
-                                                   @Size(max = 15) String hostIp,
-                                                   @ApiParam(value = "server id")
-                                                   @PathVariable("server_id")
-                                                   @Size(max = 64) String serverId) {
+    public ResponseEntity<AppoV2Response> queryServerById(@ApiParam(value = "access token")
+                                                          @RequestHeader("access_token") String accessToken,
+                                                          @PathVariable("tenant_id")
+                                                          @Pattern(regexp = Constants.TENENT_ID_REGEX)
+                                                          @Size(max = 64) String tenantId,
+                                                          @ApiParam(value = "edge host ip")
+                                                          @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
+                                                          @Size(max = 15) String hostIp,
+                                                          @ApiParam(value = "server id")
+                                                          @PathVariable("server_id")
+                                                          @Size(max = 64) String serverId) {
         logger.debug("Query Servers by Id received...");
 
         return resourceMgrServerService.queryServerById(accessToken, tenantId, hostIp, serverId);
@@ -144,22 +147,22 @@ public class ResourceManagerServerHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves Servers by Id", response = String.class)
+    @ApiOperation(value = "Retrieves Servers by Id", response = AppoV2Response.class)
     @PostMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers/{server_id}")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> operateVM(@ApiParam(value = "access token")
-                                                  @RequestHeader("access_token") String accessToken,
-                                                  @PathVariable("tenant_id")
-                                                  @Pattern(regexp = Constants.TENENT_ID_REGEX)
-                                                  @Size(max = 64) String tenantId,
-                                                  @ApiParam(value = "edge host ip")
-                                                  @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
-                                                  @Size(max = 15) String hostIp,
-                                                  @ApiParam(value = "server id")
-                                                  @PathVariable("server_id")
-                                                  @Size(max = 64) String serverId,
-                                                  @ApiParam(value = "Create Servers")
-                                                  @Valid @RequestBody(required = false) OperateVmParam oprateVmParam) {
+    public ResponseEntity<AppoV2Response> operateVM(@ApiParam(value = "access token")
+                                                    @RequestHeader("access_token") String accessToken,
+                                                    @PathVariable("tenant_id")
+                                                    @Pattern(regexp = Constants.TENENT_ID_REGEX)
+                                                    @Size(max = 64) String tenantId,
+                                                    @ApiParam(value = "edge host ip")
+                                                    @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
+                                                    @Size(max = 15) String hostIp,
+                                                    @ApiParam(value = "server id")
+                                                    @PathVariable("server_id")
+                                                    @Size(max = 64) String serverId,
+                                                    @ApiParam(value = "Create Servers")
+                                                    @Valid @RequestBody(required = false) OperateVmParam oprateVmParam) {
         logger.debug("Query Servers by Id received...");
 
         return resourceMgrServerService.operateVM(accessToken, tenantId, hostIp, serverId, oprateVmParam);
@@ -172,14 +175,14 @@ public class ResourceManagerServerHandler {
      * @param tenantId      tenant ID
      * @return status code 201, error code on failure
      */
-    @ApiOperation(value = "Terminates Servers By Id", response = String.class)
+    @ApiOperation(value = "Terminates Servers By Id", response = AppoV2Response.class)
     @DeleteMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/servers/{server_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = String.class),
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoV2Response.class),
             @ApiResponse(code = 500, message = "internal server error", response = String.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
-    public ResponseEntity<String> deleteServersById(
+    public ResponseEntity<AppoV2Response> deleteServersById(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
