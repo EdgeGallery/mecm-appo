@@ -27,6 +27,7 @@ import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceMgrImageParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceMgrImportParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrImageService;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,13 +66,14 @@ public class ResourceMgrImageHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves images", response = String.class)
+    @ApiOperation(value = "Retrieves images", response = AppoV2Response.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/images")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "query images successfully.", response = String.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "query images successfully.",
+            response = AppoV2Response.class), @ApiResponse(code = 500, message = "internal server error",
+            response = AppoV2Response.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> queryImages(@ApiParam(value = "access token")
+    public ResponseEntity<AppoV2Response> queryImages(@ApiParam(value = "access token")
                                               @RequestHeader("access_token") String accessToken,
                                               @PathVariable("tenant_id")
                                               @Pattern(regexp = Constants.TENENT_ID_REGEX)
@@ -91,13 +93,14 @@ public class ResourceMgrImageHandler {
      * @param imageId  image ID
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves images", response = String.class)
+    @ApiOperation(value = "Retrieves images", response = AppoV2Response.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/images/{image_id}")
-    @ApiResponses(value = {@ApiResponse(code = 200, message = "query images successfully.", response = String.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "query images successfully.",
+            response = AppoV2Response.class), @ApiResponse(code = 500, message = "internal server error",
+            response = AppoV2Response.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> queryImageById(@ApiParam(value = "access token")
+    public ResponseEntity<AppoV2Response> queryImageById(@ApiParam(value = "access token")
                                                  @RequestHeader("access_token") String accessToken,
                                                  @PathVariable("tenant_id")
                                                  @Pattern(regexp = Constants.TENENT_ID_REGEX)
@@ -118,14 +121,15 @@ public class ResourceMgrImageHandler {
      * @param imageId       image ID
      * @return status code 201, error code on failure
      */
-    @ApiOperation(value = "Delete Images", response = String.class)
+    @ApiOperation(value = "Delete Images", response = AppoV2Response.class)
     @DeleteMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/images/{image_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "image deleted successfully. ", response = String.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "image deleted successfully. ",
+            response = AppoV2Response.class), @ApiResponse(code = 500, message = "internal server error",
+            response = AppoV2Response.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> deleteImage(@ApiParam(value = "access token")
+    public ResponseEntity<AppoV2Response> deleteImage(@ApiParam(value = "access token")
                                               @RequestHeader("access_token") String accessToken,
                                               @PathVariable("tenant_id")
                                               @Pattern(regexp = Constants.TENENT_ID_REGEX)
@@ -146,14 +150,15 @@ public class ResourceMgrImageHandler {
      * @param hostIp   edge host IP
      * @return status code 201 on success, error code on failure
      */
-    @ApiOperation(value = "create image", response = String.class)
+    @ApiOperation(value = "create image", response = AppoV2Response.class)
     @PostMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/images",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Image created successfully.", response = String.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Image created successfully.",
+            response = AppoV2Response.class), @ApiResponse(code = 500, message = "internal server error",
+            response = AppoV2Response.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> createImage(@ApiParam(value = "access token")
+    public ResponseEntity<AppoV2Response> createImage(@ApiParam(value = "access token")
                                               @RequestHeader("access_token") String accessToken,
                                               @PathVariable("tenant_id")
                                               @Pattern(regexp = Constants.TENENT_ID_REGEX)
@@ -178,21 +183,22 @@ public class ResourceMgrImageHandler {
     @ApiOperation(value = "import images", response = String.class)
     @PostMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/images/{image_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "Image imported successfully.", response = String.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "Image imported successfully.",
+            response = AppoV2Response.class), @ApiResponse(code = 500, message = "internal server error",
+            response = AppoV2Response.class)
     })
-    public ResponseEntity<String> importImage(@ApiParam(value = "access token")
-                                              @RequestHeader("access_token") String accessToken,
-                                              @PathVariable("tenant_id")
-                                              @Pattern(regexp = Constants.TENENT_ID_REGEX)
-                                              @Size(max = 64) String tenantId,
-                                              @ApiParam(value = "edge host ip")
-                                              @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
-                                              @Size(max = 15) String hostIp,
-                                              @ApiParam(value = "image id")
-                                              @PathVariable("image_id") String imageId,
-                                              @ApiParam(value = "import image")
-                                              @Valid @RequestBody ResourceMgrImportParam resourceMgrImageParam) {
+    public ResponseEntity<AppoV2Response> importImage(@ApiParam(value = "access token")
+                                                      @RequestHeader("access_token") String accessToken,
+                                                      @PathVariable("tenant_id")
+                                                      @Pattern(regexp = Constants.TENENT_ID_REGEX)
+                                                      @Size(max = 64) String tenantId,
+                                                      @ApiParam(value = "edge host ip")
+                                                      @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
+                                                      @Size(max = 15) String hostIp,
+                                                      @ApiParam(value = "image id")
+                                                      @PathVariable("image_id") String imageId,
+                                                      @ApiParam(value = "import image")
+                                                   @Valid @RequestBody ResourceMgrImportParam resourceMgrImageParam) {
         logger.debug("Import image request received...");
         return resourceMgrService.importImage(accessToken, tenantId, hostIp, imageId, resourceMgrImageParam);
     }

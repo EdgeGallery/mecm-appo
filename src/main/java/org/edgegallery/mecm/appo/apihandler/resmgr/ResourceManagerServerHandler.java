@@ -31,7 +31,6 @@ import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -107,7 +106,8 @@ public class ResourceManagerServerHandler {
                                                        @Pattern(regexp = Constants.TENENT_ID_REGEX)
                                                        @Size(max = 64) String tenantId,
                                                        @ApiParam(value = "edge host ip")
-                                                       @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
+                                                       @PathVariable("host_ip")
+                                                       @Pattern(regexp = Constants.HOST_IP_REGX)
                                                        @Size(max = 15) String hostIp) {
         logger.debug("Query Servers request received...");
 
@@ -130,7 +130,8 @@ public class ResourceManagerServerHandler {
                                                           @Pattern(regexp = Constants.TENENT_ID_REGEX)
                                                           @Size(max = 64) String tenantId,
                                                           @ApiParam(value = "edge host ip")
-                                                          @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
+                                                          @PathVariable("host_ip")
+                                                          @Pattern(regexp = Constants.HOST_IP_REGX)
                                                           @Size(max = 15) String hostIp,
                                                           @ApiParam(value = "server id")
                                                           @PathVariable("server_id")
@@ -162,7 +163,8 @@ public class ResourceManagerServerHandler {
                                                     @PathVariable("server_id")
                                                     @Size(max = 64) String serverId,
                                                     @ApiParam(value = "Create Servers")
-                                                    @Valid @RequestBody(required = false) OperateVmParam oprateVmParam) {
+                                                    @Valid @RequestBody(required = false)
+                                                    OperateVmParam oprateVmParam) {
         logger.debug("Query Servers by Id received...");
 
         return resourceMgrServerService.operateVM(accessToken, tenantId, hostIp, serverId, oprateVmParam);

@@ -19,6 +19,7 @@ package org.edgegallery.mecm.appo.service.impl;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceMgrImageParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceMgrImportParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrImageService;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.ResourceMgrServiceHelper;
 import org.slf4j.Logger;
@@ -46,37 +47,39 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
     }
 
     @Override
-    public ResponseEntity<String> queryImages(String accessToken, String tenantId, String hostIp) {
+    public ResponseEntity<AppoV2Response> queryImages(String accessToken, String tenantId, String hostIp) {
         LOGGER.debug("Query images request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images").toString();
-        return restService.sendRequest(apiUrl, HttpMethod.GET, accessToken, null);
+        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
     @Override
-    public ResponseEntity<String> queryImagesById(String accessToken, String tenantId, String hostIp, String imageId) {
+    public ResponseEntity<AppoV2Response> queryImagesById(String accessToken, String tenantId, String hostIp,
+                                                          String imageId) {
         LOGGER.debug("Query image by ID request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images/" + imageId).toString();
-        return restService.sendRequest(apiUrl, HttpMethod.GET, accessToken, null);
+        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
     @Override
-    public ResponseEntity<String> deleteImage(String accessToken, String tenantId, String hostIp, String imageId) {
+    public ResponseEntity<AppoV2Response> deleteImage(String accessToken, String tenantId, String hostIp,
+                                                      String imageId) {
         LOGGER.debug("Delete image request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images/" + imageId).toString();
-        return restService.sendRequest(apiUrl, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
     }
 
     @Override
-    public ResponseEntity<String> createImage(String accessToken, String tenantId, String hostIp,
+    public ResponseEntity<AppoV2Response> createImage(String accessToken, String tenantId, String hostIp,
                                               ResourceMgrImageParam resourceMgrImageParam) {
         LOGGER.debug("Create image request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
@@ -84,20 +87,20 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images").toString();
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourceMgrImageParam));
-        return restService.sendRequest(apiUrl, HttpMethod.POST, accessToken,
+        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourceMgrImageParam));
     }
 
     @Override
-    public ResponseEntity<String> importImage(String accessToken, String tenantId, String hostIp, String imageId,
-                                              ResourceMgrImportParam resourceMgrImportParam) {
+    public ResponseEntity<AppoV2Response> importImage(String accessToken, String tenantId, String hostIp,
+                                                      String imageId, ResourceMgrImportParam resourceMgrImportParam) {
         LOGGER.debug("Import image request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
                 + "/images/" + imageId).toString();
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourceMgrImportParam));
-        return restService.sendRequest(apiUrl, HttpMethod.POST, accessToken,
+        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourceMgrImportParam));
     }
 
