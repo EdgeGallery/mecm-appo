@@ -114,8 +114,8 @@ public class ResourceMgrSecGrpTest {
         String url =  RESOURCE_CTRL_URL  + "/securityGroups";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"query security group" +
-                        " successfully.\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"query securityGroups " +
+                        "success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
     }
 
     private void querySecurityGroupRules(MockRestServiceServer server){
@@ -123,8 +123,8 @@ public class ResourceMgrSecGrpTest {
                 GROUP_ID + "/securityGroupRules";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"query security group" +
-                        "rules successfully.\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"query securityGroups " +
+                        "rules success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
     }
 
     private void querySecurityGroupById(MockRestServiceServer server){
@@ -132,8 +132,8 @@ public class ResourceMgrSecGrpTest {
                 GROUP_ID;
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"query security group" +
-                        "success\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"queryById securityGroups " +
+                        "success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
     }
 
     private void deleteSecurityGroup(MockRestServiceServer server){
@@ -141,8 +141,8 @@ public class ResourceMgrSecGrpTest {
                 GROUP_ID;
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"delete security " +
-                        "group successfully.\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"delete securityGroup " +
+                        "success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
     }
 
     private void deleteSecurityGroupRule(MockRestServiceServer server){
@@ -150,16 +150,16 @@ public class ResourceMgrSecGrpTest {
                 GROUP_ID + "/securityGroupRules/" + RULE_ID;
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"delete security" +
-                        " group rule successfully.\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"delete securityGroup " +
+                        "rules success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
     }
 
     private void createSecurityGroup(MockRestServiceServer server){
         String url =  RESOURCE_CTRL_URL  + "/securityGroups";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"create security " +
-                        "group successfully.\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"create securityGroups " +
+                        "success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
     }
 
     private void createSecurityGroupRule(MockRestServiceServer server){
@@ -167,8 +167,8 @@ public class ResourceMgrSecGrpTest {
                 GROUP_ID + "/securityGroupRules";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"create security " +
-                        "group rule successfully.\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"create securityGroups " +
+                        "rules success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
     }
 
     @Test
