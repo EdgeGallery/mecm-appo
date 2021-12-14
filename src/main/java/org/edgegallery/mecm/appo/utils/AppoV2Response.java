@@ -17,18 +17,28 @@
 package org.edgegallery.mecm.appo.utils;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.springframework.validation.annotation.Validated;
 
+@Validated
 @Getter
 @Setter
-public final class AppoV2Response {
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+public class AppoV2Response {
 
     private Object data;
 
-    private int code;
+    private int retCode;
 
-    private String msg;
+    private List<String> params;
+
+    private String message;
 
     /**
      * construct.
@@ -36,7 +46,8 @@ public final class AppoV2Response {
      */
     public AppoV2Response(Object result, ErrorMessage errorMsg, String detailMsg) {
         this.data = result;
-        this.code = errorMsg.getRetCode();
-        this.msg = detailMsg;
+        this.retCode = errorMsg.getRetCode();
+        this.params = errorMsg.getParams();
+        this.message = detailMsg;
     }
 }

@@ -19,6 +19,7 @@ package org.edgegallery.mecm.appo.service;
 
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceMgrSecGrpParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceMgrSecGrpRuleParam;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.springframework.http.ResponseEntity;
 
 public interface ResourceMgrSecGrpService {
@@ -32,7 +33,7 @@ public interface ResourceMgrSecGrpService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> querySecurityGroups(String accessToken, String tenantId, String hostIp);
+    ResponseEntity<AppoV2Response> querySecurityGroups(String accessToken, String tenantId, String hostIp);
 
     /**
      * Retrieves security groups based on ID.
@@ -44,7 +45,7 @@ public interface ResourceMgrSecGrpService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> querySecurityGroupById(String accessToken, String tenantId, String hostIp,
+    ResponseEntity<AppoV2Response> querySecurityGroupById(String accessToken, String tenantId, String hostIp,
                                                   String securityGroupId);
 
     /**
@@ -57,7 +58,7 @@ public interface ResourceMgrSecGrpService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> querySecurityGroupRules(String accessToken, String tenantId, String hostIp,
+    ResponseEntity<AppoV2Response> querySecurityGroupRules(String accessToken, String tenantId, String hostIp,
                                                    String securityGroupId);
 
     /**
@@ -70,7 +71,7 @@ public interface ResourceMgrSecGrpService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> deleteSecurityGroup(String accessToken, String tenantId, String hostIp,
+    ResponseEntity<AppoV2Response> deleteSecurityGroup(String accessToken, String tenantId, String hostIp,
                                                String securityGroupId);
 
     /**
@@ -84,7 +85,7 @@ public interface ResourceMgrSecGrpService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> deleteSecurityGroupRule(String accessToken, String tenantId, String hostIp,
+    ResponseEntity<AppoV2Response> deleteSecurityGroupRule(String accessToken, String tenantId, String hostIp,
                                                    String securityGroupId, String securityGroupRuleId);
 
     /**
@@ -97,7 +98,7 @@ public interface ResourceMgrSecGrpService {
      * @return status code 201 on success, error code on failure
      */
 
-    ResponseEntity<String> createSecurityGroup(String accessToken, String tenantId, String hostIp,
+    ResponseEntity<AppoV2Response> createSecurityGroup(String accessToken, String tenantId, String hostIp,
                                                ResourceMgrSecGrpParam securityGroupParams);
 
     /**
@@ -111,7 +112,7 @@ public interface ResourceMgrSecGrpService {
      * @return status code 201 on success, error code on failure
      */
 
-    ResponseEntity<String> createSecurityGroupRule(String accessToken, String tenantId,
-                                                   String hostIp, String securityGroupId,
-                                                   ResourceMgrSecGrpRuleParam securityGroupRuleParams);
+    ResponseEntity<AppoV2Response> createSecurityGroupRule(String accessToken, String tenantId,
+                                                           String hostIp, String securityGroupId,
+                                                           ResourceMgrSecGrpRuleParam securityGroupRuleParams);
 }
