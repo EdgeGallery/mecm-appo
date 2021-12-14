@@ -19,6 +19,7 @@ package org.edgegallery.mecm.appo.service;
 
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceMgrImageParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceMgrImportParam;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.springframework.http.ResponseEntity;
 
 public interface ResourceMgrImageService {
@@ -32,7 +33,7 @@ public interface ResourceMgrImageService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryImages(String accessToken, String tenantId, String hostIp);
+    ResponseEntity<AppoV2Response> queryImages(String accessToken, String tenantId, String hostIp);
 
     /**
      * Retrieves images.
@@ -44,7 +45,7 @@ public interface ResourceMgrImageService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryImagesById(String accessToken, String tenantId, String hostIp, String imageId);
+    ResponseEntity<AppoV2Response> queryImagesById(String accessToken, String tenantId, String hostIp, String imageId);
 
     /**
      * Delete images.
@@ -56,7 +57,7 @@ public interface ResourceMgrImageService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> deleteImage(String accessToken, String tenantId, String hostIp, String imageId);
+    ResponseEntity<AppoV2Response> deleteImage(String accessToken, String tenantId, String hostIp, String imageId);
 
     /**
      * Create images.
@@ -67,8 +68,8 @@ public interface ResourceMgrImageService {
      * @return status code 201 on success, error code on failure
      */
 
-    ResponseEntity<String> createImage(String accessToken, String tenantId, String hostIp,
-                                       ResourceMgrImageParam resourceMgrImageParam);
+    ResponseEntity<AppoV2Response> createImage(String accessToken, String tenantId, String hostIp,
+                                               ResourceMgrImageParam resourceMgrImageParam);
 
     /**
      * Import images.
@@ -81,6 +82,6 @@ public interface ResourceMgrImageService {
      * @return status code 201 on success, error code on failure
      */
 
-    ResponseEntity<String> importImage(String accessToken, String tenantId, String hostIp, String imageId,
-                                       ResourceMgrImportParam resourceMgrImageParam);
+    ResponseEntity<AppoV2Response> importImage(String accessToken, String tenantId, String hostIp, String imageId,
+                                               ResourceMgrImportParam resourceMgrImageParam);
 }

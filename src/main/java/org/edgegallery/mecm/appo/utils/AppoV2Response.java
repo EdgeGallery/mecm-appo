@@ -26,11 +26,9 @@ public final class AppoV2Response {
 
     private Object data;
 
-    private int retCode;
+    private int code;
 
-    private List<String> params;
-
-    private String message;
+    private String msg;
 
     /**
      * construct.
@@ -38,8 +36,7 @@ public final class AppoV2Response {
      */
     public AppoV2Response(Object result, ErrorMessage errorMsg, String detailMsg) {
         this.data = result;
-        this.retCode = errorMsg.getRetCode();
-        this.params = errorMsg.getParams();
-        this.message = detailMsg;
+        this.code = errorMsg.getRetCode();
+        this.msg = detailMsg;
     }
 }

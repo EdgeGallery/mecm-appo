@@ -19,6 +19,7 @@ package org.edgegallery.mecm.appo.service;
 
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.OperateVmParam;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourcesServerReqParam;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.springframework.http.ResponseEntity;
 
 public interface ResourceMgrServerService {
@@ -34,8 +35,8 @@ public interface ResourceMgrServerService {
      * @return status code 201 on success, error code on failure
      */
 
-    ResponseEntity<String> createServers(String accessToken, String tenantId, String hostId,
-                                          ResourcesServerReqParam resourcesServerReqParam);
+    ResponseEntity<AppoV2Response> createServers(String accessToken, String tenantId, String hostId,
+                                                 ResourcesServerReqParam resourcesServerReqParam);
 
     /**
      * Query Servers.
@@ -46,7 +47,7 @@ public interface ResourceMgrServerService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryServers(String accessToken, String tenantId, String hostId);
+    ResponseEntity<AppoV2Response> queryServers(String accessToken, String tenantId, String hostId);
 
     /**
      * Query Server By ID.
@@ -58,8 +59,8 @@ public interface ResourceMgrServerService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryServerById(String accessToken, String tenantId, String hostId,
-                                            String serverId);
+    ResponseEntity<AppoV2Response> queryServerById(String accessToken, String tenantId, String hostId,
+                                                   String serverId);
 
     /**
      * Operate VM.
@@ -71,8 +72,8 @@ public interface ResourceMgrServerService {
      * @param operateVmParam operate vm
      * @return status code 200 on success, error code on failure
      */
-    ResponseEntity<String> operateVM(String accessToken, String tenantId, String hostIp, String serverId,
-                                     OperateVmParam operateVmParam);
+    ResponseEntity<AppoV2Response> operateVM(String accessToken, String tenantId, String hostIp, String serverId,
+                                             OperateVmParam operateVmParam);
 
     /**
      * Delete Server By ID.
@@ -84,7 +85,7 @@ public interface ResourceMgrServerService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> deleteServerById(String accessToken, String tenantId, String hostId,
-                                             String serverId);
+    ResponseEntity<AppoV2Response> deleteServerById(String accessToken, String tenantId, String hostId,
+                                                    String serverId);
 
 }

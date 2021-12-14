@@ -17,20 +17,8 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 public final class ResourcesNetworkReqParam {
-    private String name;
-    private Boolean adminStateUp;
-    private String dnsDomain;
-    private Integer mtu;
-    private Boolean portSecurityEnabled;
-    private String providerNetworkType;
-    private String providerPhysicalNetwork;
-    private Integer providerSegmentationId;
-    private String qosPolicyId;
-    private Boolean routerExternal;
-    private List<Segment> segments = new ArrayList<Segment>();
-    private Boolean shared;
-    private Boolean vlanTransparent;
-    private Boolean isDefault;
-    private List<Subnet> subnets = new ArrayList<Subnet>();
+    public String name;
+    public boolean shared;
+    public Subnets subnets;
 }
 

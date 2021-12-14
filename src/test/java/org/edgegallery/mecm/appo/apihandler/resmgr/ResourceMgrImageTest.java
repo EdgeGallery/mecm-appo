@@ -115,38 +115,40 @@ public class ResourceMgrImageTest {
         String url =  RESOURCE_CTRL_URL  + "/images";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"query Image "
+                        + "successfully\"}", MediaType.APPLICATION_JSON));
     }
 
     private void queryImageById(MockRestServiceServer server){
         String url =  RESOURCE_CTRL_URL  + "/images/" + IMAGE_ID;
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"queryById image "
+                        + "successfully\"}", MediaType.APPLICATION_JSON));
     }
 
     private void deleteImage(MockRestServiceServer server){
         String url =  RESOURCE_CTRL_URL  + "/images/" + IMAGE_ID;
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"delete " +
-                        "image successfully.\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"delete image "
+                        + "successfully\"}", MediaType.APPLICATION_JSON));
     }
 
     private void createImage(MockRestServiceServer server){
         String url =  RESOURCE_CTRL_URL  + "/images";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"create " +
-                        "Image successfully.\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"create Image "
+                        + "successfully\"}", MediaType.APPLICATION_JSON));
     }
 
     private void importImage(MockRestServiceServer server){
         String url =  RESOURCE_CTRL_URL  + "/images/" + IMAGE_ID;
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"retCode\":\"0\",\"message\":\"import Image " +
-                        "successfully.\",\"params\":\"null\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"import image "
+                        + "successfully\"}", MediaType.APPLICATION_JSON));
     }
 
     @Test

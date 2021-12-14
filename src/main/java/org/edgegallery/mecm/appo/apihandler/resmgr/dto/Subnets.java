@@ -16,6 +16,8 @@
 
 package org.edgegallery.mecm.appo.apihandler.resmgr.dto;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,8 +31,8 @@ import org.springframework.validation.annotation.Validated;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-final class Segment {
-    private Integer providerSegmentationId;
-    private String providerPhysicalNetwork;
-    private String providerNetworkType;
+final class Subnets {
+    public String name;
+    public String gatewayIp;
+    public String cidr;
 }

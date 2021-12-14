@@ -26,6 +26,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceFlavorReqParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrFlavorService;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,14 +66,14 @@ public class ResourceManagerFlavorHandler {
      * @param tenantId      tenant ID
      * @return status code 201, error code on failure
      */
-    @ApiOperation(value = "Create Flavor", response = String.class)
+    @ApiOperation(value = "Create Flavor", response = AppoV2Response.class)
     @PostMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/flavors",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = String.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoV2Response.class),
+            @ApiResponse(code = 500, message = "internal server error", response = AppoV2Response.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
-    public ResponseEntity<String> createFlavor(
+    public ResponseEntity<AppoV2Response> createFlavor(
             @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
             @ApiParam(value = "tenant id") @PathVariable("tenant_id")
             @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,
@@ -94,10 +95,10 @@ public class ResourceManagerFlavorHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves Flavors", response = String.class)
+    @ApiOperation(value = "Retrieves Flavors", response = AppoV2Response.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/flavors")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> queryFlavors(@ApiParam(value = "access token")
+    public ResponseEntity<AppoV2Response> queryFlavors(@ApiParam(value = "access token")
                                               @RequestHeader("access_token") String accessToken,
                                               @PathVariable("tenant_id")
                                               @Pattern(regexp = Constants.TENENT_ID_REGEX)
@@ -117,10 +118,10 @@ public class ResourceManagerFlavorHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves flavor by Id", response = String.class)
+    @ApiOperation(value = "Retrieves flavor by Id", response = AppoV2Response.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/flavors/{flavor_id}")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> queryFlavorsById(@ApiParam(value = "access token")
+    public ResponseEntity<AppoV2Response> queryFlavorsById(@ApiParam(value = "access token")
                                                @RequestHeader("access_token") String accessToken,
                                                @PathVariable("tenant_id")
                                                @Pattern(regexp = Constants.TENENT_ID_REGEX)
@@ -143,14 +144,14 @@ public class ResourceManagerFlavorHandler {
      * @param tenantId      tenant ID
      * @return status code 201, error code on failure
      */
-    @ApiOperation(value = "Terminates Flavors By Id", response = String.class)
+    @ApiOperation(value = "Terminates Flavors By Id", response = AppoV2Response.class)
     @DeleteMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/flavors/{flavor_id}",
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = String.class),
-            @ApiResponse(code = 500, message = "internal server error", response = String.class)
+    @ApiResponses(value = {@ApiResponse(code = 201, message = "request accepted ", response = AppoV2Response.class),
+            @ApiResponse(code = 500, message = "internal server error", response = AppoV2Response.class)
     })
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
-    public ResponseEntity<String> deleteFlavorsById(
+    public ResponseEntity<AppoV2Response> deleteFlavorsById(
                                     @ApiParam(value = "access token") @RequestHeader("access_token") String accessToken,
                                     @ApiParam(value = "tenant id") @PathVariable("tenant_id")
                                     @Pattern(regexp = Constants.TENENT_ID_REGEX) @Size(max = 64) String tenantId,

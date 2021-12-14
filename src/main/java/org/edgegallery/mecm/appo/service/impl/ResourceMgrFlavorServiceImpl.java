@@ -18,6 +18,7 @@ package org.edgegallery.mecm.appo.service.impl;
 
 import org.edgegallery.mecm.appo.apihandler.resmgr.dto.ResourceFlavorReqParam;
 import org.edgegallery.mecm.appo.service.ResourceMgrFlavorService;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.edgegallery.mecm.appo.utils.ResourceMgrServiceHelper;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
     }
 
     @Override
-    public ResponseEntity<String> createFlavor(String accessToken, String tenantId,
+    public ResponseEntity<AppoV2Response> createFlavor(String accessToken, String tenantId,
                                                String hostId, ResourceFlavorReqParam resourceFlavorReqParam) {
 
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
@@ -56,12 +57,12 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/flavors").toString();
-        return restService.sendRequest(url, HttpMethod.POST, accessToken,
+        return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourceFlavorReqParam));
     }
 
     @Override
-    public ResponseEntity<String> queryFlavors(String accessToken, String tenantId, String hostId) {
+    public ResponseEntity<AppoV2Response> queryFlavors(String accessToken, String tenantId, String hostId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
@@ -69,11 +70,11 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/flavors").toString();
-        return restService.sendRequest(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
-    public ResponseEntity<String> queryFlavorsById(String accessToken, String tenantId,
+    public ResponseEntity<AppoV2Response> queryFlavorsById(String accessToken, String tenantId,
                                                    String hostId, String flavorId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
@@ -82,12 +83,12 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/flavors/").append(flavorId).toString();
-        return restService.sendRequest(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
-    public ResponseEntity<String> deleteFlavorsById(String accessToken, String tenantId, String hostId,
-                                                    String flavorId) {
+    public ResponseEntity<AppoV2Response> deleteFlavorsById(String accessToken, String tenantId, String hostId,
+                                                            String flavorId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
         LOGGER.info("url: {}", url);
 
@@ -95,7 +96,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
                 + "/flavors/").append(flavorId).toString();
-        return restService.sendRequest(url, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequest_ResourceManager(url, HttpMethod.DELETE, accessToken, null);
     }
 
 }
