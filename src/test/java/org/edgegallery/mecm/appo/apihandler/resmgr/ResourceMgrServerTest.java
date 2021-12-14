@@ -131,8 +131,8 @@ public class ResourceMgrServerTest {
         String url =  RESOURCE_CTRL_URL  + "/servers";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"create server " +
-                        "success\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"Create server " +
+                        "success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
     }
 
     private void operateVmInfos(MockRestServiceServer server){
@@ -141,8 +141,8 @@ public class ResourceMgrServerTest {
         String url =  RESOURCE_CTRL_URL  + "/servers/" + SERVER_ID;
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
-                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"operate vm " +
-                        "success\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"operate vm " +
+                        "success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -202,8 +202,8 @@ public class ResourceMgrServerTest {
                 + SERVER_ID;
         server.expect(requestTo(url1))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"queryById server " +
-                        "success\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"queryById server " +
+                        "success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
 
         // Create a queryFlavors By Id
         ResultActions getResult =
@@ -252,8 +252,8 @@ public class ResourceMgrServerTest {
         String url1 =  RESOURCE_CTRL_URL  + "/servers/" + SERVER_ID;
         server.expect(requestTo(url1))
                 .andExpect(method(HttpMethod.DELETE))
-                .andRespond(withSuccess("{\"data\":\"null\",\"code\":\"0\",\"msg\":\"delete server "
-                        + "success\"}", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 0,\n\"message\": \"delete server " +
+                        "success\",\n\"params\": null\n}", MediaType.APPLICATION_JSON));
 
         // Create a queryFlavors By Id
         ResultActions deleteResult =

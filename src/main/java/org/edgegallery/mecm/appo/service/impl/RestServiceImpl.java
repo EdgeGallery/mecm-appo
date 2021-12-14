@@ -16,7 +16,6 @@
 
 package org.edgegallery.mecm.appo.service.impl;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -25,10 +24,6 @@ import org.edgegallery.mecm.appo.exception.AppoException;
 import org.edgegallery.mecm.appo.service.RestService;
 import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
-import org.edgegallery.mecm.appo.utils.ErrorMessage;
-import org.jose4j.json.internal.json_simple.JSONObject;
-import org.jose4j.json.internal.json_simple.parser.JSONParser;
-import org.jose4j.json.internal.json_simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,12 +162,12 @@ public class RestServiceImpl implements RestService {
             httpEntity = new HttpEntity<>(httpHeaders);
         }
 
-        ResponseEntity<String> responseEntity;
+        ResponseEntity responseEntity;
         // Sending request
         try {
             LOGGER.info("{}: {}", method, url);
 
-            responseEntity = restTemplate.exchange(url, method, httpEntity, String.class);
+            responseEntity = restTemplate.exchange(url, method, httpEntity, AppoV2Response.class);
         } catch (RestClientException e) {
             throw new AppoException("Failure while sending request with error message: "
                     + e.getLocalizedMessage());
@@ -188,17 +183,6 @@ public class RestServiceImpl implements RestService {
         if (!statusCode.is2xxSuccessful()) {
             throw new AppoException("Failure while sending request status code: " + statusCode);
         }
-
-        JSONParser parser = new JSONParser();
-        JSONObject json = new JSONObject();
-        try {
-            json = (JSONObject) parser.parse(responseEntity.getBody());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        return new ResponseEntity<>(new AppoV2Response(json.get("data"),
-                new ErrorMessage(responseEntity.getStatusCode().value(), Collections.<String>emptyList()),
-                json.get("msg").toString()), responseEntity.getStatusCode());
+        return responseEntity;
     }
 }

@@ -1,6 +1,6 @@
 {
-    "code": 200,
-    "msg": "success",
+    "retCode": 200,
+    "message": "success",
     "data": [
         {
             "id": "45bd462d-aa9d-4326-9f04-ae11ce5d3eee",
