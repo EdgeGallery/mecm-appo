@@ -1,8 +1,6 @@
 
 package org.edgegallery.mecm.appo.apihandler.resmgr.dto;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +17,6 @@ import org.springframework.validation.annotation.Validated;
 public final class ResourcesNetworkReqParam {
     public String name;
     public boolean shared;
-    public Subnets subnets;
+    public Subnet subnet;
 }
 

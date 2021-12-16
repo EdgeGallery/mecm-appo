@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020-2021 Huawei Technologies Co., Ltd.
+ *  Copyright 2021 Huawei Technologies Co., Ltd.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.edgegallery.mecm.appo.utils;
+package org.edgegallery.mecm.appo.apihandler.resmgr.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,23 +27,10 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
-public class AppoV2Response {
-
-    private Object data;
-
-    private int retCode;
-
-    private String message;
-
-    /**
-     * construct.
-     *
-     */
-    public AppoV2Response(Object result, ErrorMessage errorMsg, String detailMsg) {
-        this.data = result;
-        this.retCode = errorMsg.getRetCode();
-        this.message = detailMsg;
-    }
+@AllArgsConstructor
+final class Subnet {
+    public String name;
+    public String gatewayIp;
+    public String cidr;
 }
