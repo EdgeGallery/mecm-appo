@@ -218,6 +218,11 @@ public abstract class ProcessflowAbstractTask {
                 return null;
             }
 
+            //This block can be removed once appo supports V2 format.
+            if(uri.toString().contains("/kpi")){
+                setProcessflowResponseAttributes(execution, response.getBody(), Constants.PROCESS_FLOW_SUCCESS);
+                return response.getBody();
+            }
             String responseBody = "{}";
             if (response.getBody() != null) {
                 responseBody = response.getBody();

@@ -24,6 +24,7 @@ import org.edgegallery.mecm.appo.apihandler.dto.BatchTerminateReqParam;
 import org.edgegallery.mecm.appo.apihandler.dto.CreateParam;
 import org.edgegallery.mecm.appo.model.AppRule;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.springframework.http.ResponseEntity;
 
 public interface AppoService {
@@ -122,7 +123,7 @@ public interface AppoService {
      * @return status code 200 on success, error code on failure
      */
 
-    ResponseEntity<String> queryKpi(String accessToken, String tenantId, String hostIp);
+    ResponseEntity<AppoV2Response> queryKpi(String accessToken, String tenantId, String hostIp);
 
     /**
      * Retrieves edge host platform capabilities.

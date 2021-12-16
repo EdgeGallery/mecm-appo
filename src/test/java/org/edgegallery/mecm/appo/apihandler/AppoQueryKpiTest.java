@@ -110,7 +110,12 @@ public class AppoQueryKpiTest {
         url = "http://3.3.3.3:10000/lcmcontroller/v2/tenants/" + TENANT_ID + "/hosts/3.3.3.3/kpi";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess());
+                .andRespond(
+                        withSuccess("{\n" +
+                                "    \"data\": null,\n" +
+                                "    \"retCode\": 0,\n" +
+                                "    \"message\": \"Queyr KPI success\"\n" +
+                                "}", MediaType.APPLICATION_JSON));
 
         // Create a app instantiate
         ResultActions getResult =
