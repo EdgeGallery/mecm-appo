@@ -16,6 +16,7 @@
 
 package org.edgegallery.mecm.appo.service.impl;
 
+import com.google.gson.Gson;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -162,12 +163,13 @@ public class RestServiceImpl implements RestService {
             httpEntity = new HttpEntity<>(httpHeaders);
         }
 
-        ResponseEntity responseEntity;
+        ResponseEntity<String> responseEntity;
         // Sending request
         try {
             LOGGER.info("{}: {}", method, url);
 
-            responseEntity = restTemplate.exchange(url, method, httpEntity, AppoV2Response.class);
+            responseEntity = restTemplate.exchange(url, method, httpEntity, String.class);
+
         } catch (RestClientException e) {
             throw new AppoException("Failure while sending request with error message: "
                     + e.getLocalizedMessage());
@@ -183,6 +185,10 @@ public class RestServiceImpl implements RestService {
         if (!statusCode.is2xxSuccessful()) {
             throw new AppoException("Failure while sending request status code: " + statusCode);
         }
-        return responseEntity;
+
+        Gson gson = new Gson();
+        AppoV2Response appoV2Response = gson.fromJson(responseEntity.getBody(), AppoV2Response.class);
+
+        return new ResponseEntity<>(appoV2Response,responseEntity.getStatusCode());
     }
 }

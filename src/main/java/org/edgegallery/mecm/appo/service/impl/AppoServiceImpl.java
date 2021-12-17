@@ -38,6 +38,7 @@ import org.edgegallery.mecm.appo.service.AppoProcessFlowResponse;
 import org.edgegallery.mecm.appo.service.AppoProcessflowService;
 import org.edgegallery.mecm.appo.service.AppoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -396,10 +397,10 @@ public class AppoServiceImpl implements AppoService {
     }
 
     @Override
-    public ResponseEntity<String> queryKpi(String accessToken, String tenantId, String hostIp) {
+    public ResponseEntity<AppoV2Response> queryKpi(String accessToken, String tenantId, String hostIp) {
         LOGGER.debug("Query KPI request received...");
 
-        return platformInfoQuery("queryKpi", accessToken, tenantId, hostIp, null);
+        return platformInfoKpiQuery("queryKpi", accessToken, tenantId, hostIp, null);
     }
 
     @Override
@@ -432,6 +433,34 @@ public class AppoServiceImpl implements AppoService {
         }
 
         return new ResponseEntity<>(response.getResponse(),
+                HttpStatus.valueOf(response.getResponseCode()));
+    }
+
+    private ResponseEntity<AppoV2Response> platformInfoKpiQuery(String process, String accessToken, String tenantId,
+                                                        String hostIp, String capabilityId) {
+
+        Map<String, String> requestBodyParam = new HashMap<>();
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.MEC_HOST, hostIp);
+        if (capabilityId != null) {
+            requestBodyParam.put(Constants.MEP_CAPABILITY_ID, capabilityId);
+        }
+
+        LOGGER.debug("Request input: {}", requestBodyParam);
+
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
+
+        AppoProcessFlowResponse response = processflowService.executeProcessSync(process, requestBodyParam);
+        LOGGER.debug("Query response : {} ", response.getResponse());
+
+        AppoV2Response appoV2Response = new Gson().fromJson(response.getResponse(), AppoV2Response.class);
+
+        if (response.getResponseCode() == HttpStatus.OK.value()) {
+
+            return new ResponseEntity<>(appoV2Response, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(appoV2Response,
                 HttpStatus.valueOf(response.getResponseCode()));
     }
 

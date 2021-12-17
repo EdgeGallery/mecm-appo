@@ -32,6 +32,7 @@ import org.edgegallery.mecm.appo.apihandler.dto.BatchTerminateReqParam;
 import org.edgegallery.mecm.appo.apihandler.dto.CreateParam;
 import org.edgegallery.mecm.appo.service.AppoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
+import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,15 +181,15 @@ public class AppOrchestratorHandler {
      * @param hostIp   edge host IP
      * @return status code 200 on success, error code on failure
      */
-    @ApiOperation(value = "Retrieves edge host performance statistics", response = String.class)
+    @ApiOperation(value = "Retrieves edge host performance statistics", response = AppoV2Response.class)
     @GetMapping(path = "/tenants/{tenant_id}/hosts/{host_ip}/kpi")
     @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN') || hasRole('MECM_GUEST')")
-    public ResponseEntity<String> queryKpi(@ApiParam(value = "access token")
+    public ResponseEntity<AppoV2Response> queryKpi(@ApiParam(value = "access token")
                                                  @RequestHeader("access_token") String accessToken,
-                                                 @PathVariable("tenant_id")
+                                                   @PathVariable("tenant_id")
                                                  @Pattern(regexp = Constants.TENENT_ID_REGEX)
                                                  @Size(max = 64) String tenantId,
-                                                 @ApiParam(value = "edge host ip")
+                                                   @ApiParam(value = "edge host ip")
                                                  @PathVariable("host_ip") @Pattern(regexp = Constants.HOST_IP_REGX)
                                                  @Size(max = 15) String hostIp) {
         logger.debug("Query KPI request received...");

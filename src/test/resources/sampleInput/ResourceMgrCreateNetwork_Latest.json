@@ -1,8 +1,7 @@
 {
   "name": "sample_network",
   "shared": true,
-  "subnets":
-    {
+  "subnet": {
       "name": "subnetA",
       "gatewayIp": "192.168.3.1",
       "cidr": "10.0.0.0/24"
