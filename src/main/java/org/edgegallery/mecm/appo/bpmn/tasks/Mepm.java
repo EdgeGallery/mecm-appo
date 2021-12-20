@@ -37,10 +37,11 @@ import org.springframework.web.client.RestTemplate;
 
 public class Mepm extends ProcessflowAbstractTask {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Mepm.class);
+
     public static final String HOST_IP = "hostIp";
     public static final String APPLICATION_NAME = "appName";
     public static final String APP_PACKAGE_ID = "packageId";
-    private static final Logger LOGGER = LoggerFactory.getLogger(Mepm.class);
     private static final String URL_PARAM_ERROR = "Failed to resolve url path parameters";
     private static final String DELETE_APP_RULES = "deleteAppRules";
     private static final String CONFIGURE_APP_RULES = "configureAppRules";
@@ -93,6 +94,9 @@ public class Mepm extends ProcessflowAbstractTask {
                 break;
             case DELETE_APP_RULES:
                 deleteAppRules(execution);
+                break;
+            case "appInstanceProfile":
+                appInstanceProfile(execution);
                 break;
             default:
                 LOGGER.info("Invalid MEPM action...{}", action);
@@ -298,6 +302,18 @@ public class Mepm extends ProcessflowAbstractTask {
             }
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, URL_PARAM_ERROR, Constants.PROCESS_FLOW_ERROR);
+        }
+    }
+
+    private void appInstanceProfile(DelegateExecution execution) {
+        LOGGER.info("App instance profile");
+        try {
+            String url = resolveUrlPathParameters(Constants.APPLCM_PROFILE_URI);
+
+            sendRequest(execution, restTemplate, url, HttpMethod.POST);
+        } catch (AppoException e) {
+            setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
+            return;
         }
     }
 }
