@@ -152,7 +152,7 @@ public class AppoBatchDeployTest {
                         MediaType.APPLICATION_JSON)); /// validate response , use this query , // mepm port ,
 
         // Mocking get mepm API
-        url = "http://3.3.3.3:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+        url = "http://3.3.3.3:10000/lcmcontroller/v2/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/instantiate";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))
@@ -203,7 +203,7 @@ public class AppoBatchDeployTest {
                 .andRespond(withStatus(HttpStatus.NOT_FOUND)); /// validate response , use this query , // mepm port ,
 
         // Mocking get mepm API
-        url = "http://3.3.3.3:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+        url = "http://3.3.3.3:10000/lcmcontroller/v2/tenants/" + TENANT_ID + APP_INSTANCE +
                 appInstanceId + "/terminate";
         server.expect(requestTo(url))
                 .andExpect(method(HttpMethod.POST))

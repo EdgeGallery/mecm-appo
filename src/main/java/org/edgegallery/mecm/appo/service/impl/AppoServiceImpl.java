@@ -14,6 +14,7 @@
 package org.edgegallery.mecm.appo.service.impl;
 
 import com.google.gson.Gson;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +41,7 @@ import org.edgegallery.mecm.appo.service.AppoService;
 import org.edgegallery.mecm.appo.utils.AppoResponse;
 import org.edgegallery.mecm.appo.utils.AppoV2Response;
 import org.edgegallery.mecm.appo.utils.Constants;
+import org.edgegallery.mecm.appo.utils.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -505,5 +507,41 @@ public class AppoServiceImpl implements AppoService {
         Map<String, String> response = new HashMap<>();
         response.put(Constants.APPRULE_TASK_ID, appRuleTaskId);
         return new ResponseEntity<>(new AppoResponse(response), HttpStatus.ACCEPTED);
+    }
+
+    @Override
+    public ResponseEntity<AppoV2Response> appInstanceProfile(String accessToken, String tenantId,
+                                                             String appInstanceId) {
+        LOGGER.debug("Application instance profile request received...");
+
+        AppInstanceInfo appInstanceInfo = appInstanceInfoService.getAppInstanceInfo(tenantId, appInstanceId);
+        String operationalStatus = appInstanceInfo.getOperationalStatus();
+        if (!Constants.OPER_STATUS_INSTANTIATED.equals(operationalStatus)) {
+            LOGGER.error("app instance profile failed, application instance operational status is : {}",
+                    appInstanceInfo.getOperationalStatus());
+            return new ResponseEntity<>(new AppoV2Response("", new ErrorMessage(HttpStatus.PRECONDITION_FAILED.value(),
+                    Collections.<String>emptyList()),
+                    "Application instance operational status is : " + appInstanceInfo.getOperationalStatus()),
+                    HttpStatus.PRECONDITION_FAILED);
+        }
+
+        Map<String, String> requestBodyParam = new HashMap<>();
+        requestBodyParam.put(Constants.TENANT_ID, tenantId);
+        requestBodyParam.put(Constants.APP_INSTANCE_ID, appInstanceId);
+        LOGGER.debug("application instance profile input params: {}", requestBodyParam);
+
+        requestBodyParam.put(Constants.ACCESS_TOKEN, accessToken);
+
+        AppoProcessFlowResponse response =
+                processflowService.executeProcessSync("appInstanceProfile", requestBodyParam);
+        LOGGER.debug("application instance profile response : {} ", response.getResponse());
+
+        AppoV2Response appoV2Response = new Gson().fromJson(response.getResponse(), AppoV2Response.class);
+        if (response.getResponseCode() == HttpStatus.OK.value()) {
+            appoV2Response.setMessage(response.getResponse());
+            return new ResponseEntity<>(appoV2Response, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(appoV2Response, HttpStatus.valueOf(response.getResponseCode()));
     }
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2020 Huawei Technologies Co., Ltd.
+ *  Copyright 2021 Huawei Technologies Co., Ltd.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ import org.springframework.web.client.RestTemplate;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AppoApplicationTest.class)
 @AutoConfigureMockMvc
-public class AppoHandlerTest {
+public class AppoAppInstanceProfileTest {
 
     @Autowired
     MockMvc mvc;
@@ -74,9 +74,6 @@ public class AppoHandlerTest {
 
     @InjectMocks
     AppRuleHandler handler;
-
-    @Mock
-    private AppoService appoService;
 
     private static final String TENANT_ID = "12db0288-3c67-4042-a708-a8e4a10c6b31";
     private static final String APP_INSTANCE = "/app_instances/";
@@ -234,6 +231,37 @@ public class AppoHandlerTest {
                 .andRespond(withSuccess());
     }
 
+    private void appInstanceProfile(MockRestServiceServer server, String appInstanceId) {
+        // Mocking get MEC host from inventory
+        String url = "http://10.9.9.1:11111/inventory/v1/tenants/" + TENANT_ID + "/mechosts/1.1.1"
+                + ".1";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"mechostIp\":\"1.1.1.1\",\"mechostName\":\"TestHost\","
+                                + "\"zipCode\":null,"
+                                + "\"city\":\"TestCity\","
+                                + "\"address\":\"Test Address\",\"affinity\":\"part1,part2\",\"userName\":null,\"edgerepoName\":null,"
+                                + "\"edgerepoIp\":\"1.1.1.1\",\"edgerepoPort\":\"10000\",\"edgerepoUsername\":null,"
+                                + "\"mepmIp\":\"1.1.1.1\"}",
+                        MediaType.APPLICATION_JSON)); // host response , json response, mepm ip ... use mepm url
+
+        // Mocking get mepm from inventory
+        url = "http://10.9.9.1:11111/inventory/v1/mepms/1.1.1"
+                + ".1";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.GET))
+                .andRespond(withSuccess("{\"mepmIp\":\"1.1.1.1\",\"mepmPort\":\"10000\",\"userName\":\"Test\"}",
+                        MediaType.APPLICATION_JSON)); /// validate response , use this query , // mepm port ,
+
+        // Mocking post profile API
+        url = "http://1.1.1.1:10000/lcmcontroller/v1/tenants/" + TENANT_ID + APP_INSTANCE +
+                appInstanceId + "/profile";
+        server.expect(requestTo(url))
+                .andExpect(method(HttpMethod.POST))
+                .andRespond(withSuccess("{\n\"data\": null,\n\"retCode\": 200,\n\"message\": \"success\"}",
+                        MediaType.APPLICATION_JSON));
+    }
+
     @Test
     @WithMockUser(roles = "MECM_TENANT")
     public void instantiateTerminateTest() throws Exception {
@@ -328,6 +356,19 @@ public class AppoHandlerTest {
                 .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andReturn();
         Thread.sleep(5000);
+        /***********************************************************************************************/
+        appInstanceProfile(resetServer(server), appInstanceId);
+
+        // profile
+        ResultActions profileResult =
+                mvc.perform(MockMvcRequestBuilders
+                        .post(APPO_TENANT + TENANT_ID + APP_INSTANCE + appInstanceId + "/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON).with(csrf())
+                        .header(ACCESS_TOKEN, SAMPLE_TOKEN));
+        profileResult.andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andReturn();
 
         /***********************************************************************************************/
         deleteAppInstanceFlowUrls(resetServer(server), appInstanceId);
@@ -345,21 +386,4 @@ public class AppoHandlerTest {
 
         deleteDir = new File("src/test/resources/packages/" + appInstanceId);
     }
-
-    @Test
-    public void testUpdateSyncAppInstanceRecords() throws Exception {
-        AppRuleDeleteConfigDto appRuleDeleteConfigDto = new AppRuleDeleteConfigDto();
-        Set<String> trafficRule = new HashSet<>();
-        trafficRule.add("traffic_rule");
-
-        Set<String> dnsRule = new HashSet<>();
-        dnsRule.add("dns_rule");
-
-        appRuleDeleteConfigDto.setAppDNSRule(trafficRule);
-        appRuleDeleteConfigDto.setAppTrafficRule(dnsRule);
-
-        handler.deleteApplicationRules(ACCESS_TOKEN, TENANT_ID, "instance_id", appRuleDeleteConfigDto);
-    }
-
-
 }

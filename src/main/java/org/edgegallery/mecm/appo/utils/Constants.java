@@ -77,6 +77,8 @@ public final class Constants {
             "/lcmcontroller/v2/tenants/{tenant_id}/app_instances/{app_instance_id}/instantiate";
     public static final String APPLCM_QUERY_URI = "/lcmcontroller/v2/tenants/{tenant_id}/app_instances"
             + "/{app_instance_id}";
+    public static final String APPLCM_PROFILE_URI = "/lcmcontroller/v1/tenants/{tenant_id}/app_instances"
+            + "/{app_instance_id}/profile";
     public static final String APPLCM_TERMINATE_URI =
             "/lcmcontroller/v2/tenants/{tenant_id}/app_instances/{app_instance_id}/terminate";
     public static final String APPLCM_QUERY_KPI_URI = "/lcmcontroller/v2/tenants/{tenant_id}/hosts/{mec_host}/kpi";

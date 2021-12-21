@@ -151,4 +151,15 @@ public interface AppoService {
 
     ResponseEntity<AppoResponse> configureAppRules(String accessToken, String tenantId, String appInstanceId,
                                                    AppRule appRule, String action);
+
+    /**
+     * Application instance profile execution.
+     *
+     * @param accessToken   access token
+     * @param tenantId      tenant ID
+     * @param appInstanceId application instance ID
+     * @return application instance info & status code 200 on success, error code on failure
+     */
+
+    ResponseEntity<AppoV2Response> appInstanceProfile(String accessToken, String tenantId, String appInstanceId);
 }

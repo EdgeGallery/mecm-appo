@@ -337,4 +337,29 @@ public class AppOrchestratorHandler {
 
         return appoService.terminateAppInstance(accessToken, tenantId, appInstanceParam);
     }
+
+    /**
+     * Application instance profile execution.
+     *
+     * @param tenantId      tenant ID
+     * @param appInstanceId application instance ID
+     * @return status code 200 on success, error code on failure
+     */
+    @ApiOperation(value = "Application instance profile execution", response = AppoV2Response.class)
+    @PostMapping(path = "/tenants/{tenant_id}/app_instances/{app_instance_id}/profile",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('MECM_TENANT') || hasRole('MECM_ADMIN')")
+    public ResponseEntity<AppoV2Response> appInstanceProfile(@ApiParam(value = "access token")
+                                                       @RequestHeader("access_token") String accessToken,
+                                                       @ApiParam(value = "tenant id") @PathVariable("tenant_id")
+                                                       @Pattern(regexp = Constants.TENENT_ID_REGEX)
+                                                       @Size(max = 64) String tenantId,
+                                                       @ApiParam(value = "application instance id")
+                                                       @PathVariable("app_instance_id")
+                                                       @Pattern(regexp = Constants.APP_INST_ID_REGX)
+                                                       @Size(max = 64) String appInstanceId) {
+        logger.debug("Application instance profile request received...");
+
+        return appoService.appInstanceProfile(accessToken, tenantId, appInstanceId);
+    }
 }

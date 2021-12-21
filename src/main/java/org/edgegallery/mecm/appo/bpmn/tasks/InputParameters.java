@@ -50,6 +50,7 @@ public class InputParameters {
             case "InstantiateAppInstance":
             case "TerminateAppInstance":
             case "QueryAppInstance":
+            case "AppInstanceProfile":
                 instantiateAppInstance(delegateExecution);
                 break;
             case "QueryCapabilities":
