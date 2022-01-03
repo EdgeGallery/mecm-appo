@@ -89,6 +89,11 @@ public final class Constants {
     public static final String INVENTORY_APPRULE_URI =
             "/inventory/v1/tenants/{tenant_id}/app_instances/{app_instance_id}/appd_configuration";
     public static final String RESOURCE_CONTROLLER_URI = "/rescontroller/v1/tenants/";
+    public static final String HOSTS = "/hosts/";
+    public static final String IMAGES = "/images/";
+    public static final String SECURITY_GROUPS = "/securityGroups/";
+    public static final String URL = "url: {}";
+    public static final String SERVERS = "/servers/";
 
     public static final String PROCESS_FLOW_SUCCESS = "200";
     public static final String PROCESS_FLOW_ERROR = "500";
@@ -126,6 +131,8 @@ public final class Constants {
     public static final String OPER_STATUS_CREATE_FAILED = "Create failed";
     public static final String OPER_STATUS_INSTANTIATED = "Instantiated";
     public static final String FAILED_TO_UNZIP_CSAR = "failed to unzip the csar file";
+
+    public static final String APP_INSTANCE_OPERATIONAL_STATUS = "Application instance operational status is : ";
 
     private Constants() {
     }

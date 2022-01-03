@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.util.Arrays;
-import java.util.Map;
 import org.edgegallery.mecm.appo.exception.ResourceMgrException;
 import org.edgegallery.mecm.appo.service.impl.RestServiceImpl;
 import org.slf4j.Logger;
@@ -30,11 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -50,10 +44,6 @@ public final class ResourceMgrServiceHelper {
 
     @Autowired
     private RestServiceImpl restService;
-
-    private ResourceMgrServiceHelper(RestServiceImpl restService) {
-        this.restService = restService;
-    }
 
     /**
      * Gets MEPM configurations from inventory.
@@ -72,7 +62,6 @@ public final class ResourceMgrServiceHelper {
         ResponseEntity<String> response = restService.sendRequest(url, HttpMethod.GET, accessToken, null);
 
         LOGGER.info("response: {}", response);
-        //String mepmIp = new JsonParser().parse(response.getBody()).getAsJsonObject().get("mempIp").getAsString();
         JsonObject jsonObject = new JsonParser().parse(response.getBody()).getAsJsonObject();
         JsonElement mepmIp = jsonObject.get("mepmIp");
         if (mepmIp == null) {
@@ -116,8 +105,7 @@ public final class ResourceMgrServiceHelper {
     public String convertToJson(Object obj) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            String json = mapper.writeValueAsString(obj);
-            return json;
+            return mapper.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

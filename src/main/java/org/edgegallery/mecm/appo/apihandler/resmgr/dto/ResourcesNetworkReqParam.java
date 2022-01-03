@@ -15,8 +15,8 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 public final class ResourcesNetworkReqParam {
-    public String name;
-    public boolean shared;
-    public Subnet subnet;
+    private String name;
+    private boolean shared;
+    private Subnet subnet;
 }
 

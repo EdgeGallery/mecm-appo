@@ -51,12 +51,12 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     public ResponseEntity<AppoV2Response> createServers(String accessToken, String tenantId, String hostId,
                                                         ResourcesServerReqParam resourcesServerReqParam) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
-        LOGGER.info("url: {}", url);
+        LOGGER.info(Constants.URL, url);
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourcesServerReqParam));
 
         LOGGER.debug("Create Servers request received...");
         StringBuilder sb = new StringBuilder(url);
-        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
+        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/servers").toString();
         return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourcesServerReqParam));
@@ -66,13 +66,13 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     public ResponseEntity<AppoV2Response> operateVM(String accessToken, String tenantId, String hostId,
                                                     String serverId, OperateVmParam operateVmParam) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
-        LOGGER.info("url: {}", url);
+        LOGGER.info(Constants.URL, url);
         LOGGER.info("request body: {}",resourceMgrServiceHelper.convertToJson(operateVmParam));
 
         LOGGER.debug("Operate VM request received...");
         StringBuilder sb = new StringBuilder(url);
-        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
-                + "/servers/").append(serverId).toString();
+        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
+                + Constants.SERVERS).append(serverId).toString();
         return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(operateVmParam));
     }
@@ -80,11 +80,11 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     @Override
     public ResponseEntity<AppoV2Response> queryServers(String accessToken, String tenantId, String hostId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
-        LOGGER.info("url: {}", url);
+        LOGGER.info(Constants.URL, url);
 
         LOGGER.debug("Query Servers request received...");
         StringBuilder sb = new StringBuilder(url);
-        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
+        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/servers").toString();
         return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
@@ -93,12 +93,12 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     public ResponseEntity<AppoV2Response> queryServerById(String accessToken, String tenantId, String hostId,
                                                           String serverId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
-        LOGGER.info("url: {}", url);
+        LOGGER.info(Constants.URL, url);
 
         LOGGER.debug("Query Servers by Id request received...");
         StringBuilder sb = new StringBuilder(url);
-        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
-                + "/servers/").append(serverId).toString();
+        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
+                + Constants.SERVERS).append(serverId).toString();
         return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
@@ -106,12 +106,12 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
     public ResponseEntity<AppoV2Response> deleteServerById(String accessToken, String tenantId, String hostId,
                                                            String serverId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
-        LOGGER.info("url: {}", url);
+        LOGGER.info(Constants.URL, url);
 
         LOGGER.debug("Delete Servers by Id request received...");
         StringBuilder sb = new StringBuilder(url);
-        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
-                + "/servers/").append(serverId).toString();
+        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
+                + Constants.SERVERS).append(serverId).toString();
         return restService.sendRequest_ResourceManager(url, HttpMethod.DELETE, accessToken, null);
     }
 }

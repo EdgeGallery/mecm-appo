@@ -17,7 +17,6 @@
 
 package org.edgegallery.mecm.appo.bpmn.tasks;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.net.MalformedURLException;

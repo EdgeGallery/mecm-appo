@@ -16,8 +16,6 @@
 
 package org.edgegallery.mecm.appo.apihandler.resmgr.dto;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +30,7 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 final class Subnets {
-    public String name;
-    public String gatewayIp;
-    public String cidr;
+    private String name;
+    private String gatewayIp;
+    private String cidr;
 }
