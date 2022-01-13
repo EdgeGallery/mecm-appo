@@ -47,12 +47,12 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
     public ResponseEntity<AppoV2Response> createNetworks(String accessToken, String tenantId, String hostId,
                                                 ResourcesNetworkReqParam resourcesNetworkReqParam) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
-        LOGGER.info("url: {}", url);
+        LOGGER.info(Constants.URL, url);
         LOGGER.info("request body: {}",resourceMgrServiceHelper.convertToJson(resourcesNetworkReqParam));
 
         LOGGER.debug("Create Flavor request received...");
         StringBuilder sb = new StringBuilder(url);
-        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
+        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/networks").toString();
         return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourcesNetworkReqParam));
@@ -61,11 +61,11 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
     @Override
     public ResponseEntity<AppoV2Response> queryNetwork(String accessToken, String tenantId, String hostId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
-        LOGGER.info("url: {}", url);
+        LOGGER.info(Constants.URL, url);
 
         LOGGER.debug("Query Networks request received...");
         StringBuilder sb = new StringBuilder(url);
-        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
+        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/networks").toString();
         return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
@@ -74,11 +74,11 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
     public ResponseEntity<AppoV2Response> queryNetworkById(String accessToken, String tenantId, String hostId,
                                                    String networkId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
-        LOGGER.info("url: {}", url);
+        LOGGER.info(Constants.URL, url);
 
         LOGGER.debug("Query Networks by Id request received...");
         StringBuilder sb = new StringBuilder(url);
-        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
+        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/networks/").append(networkId).toString();
         return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
     }
@@ -87,11 +87,11 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
     public ResponseEntity<AppoV2Response> deleteNetworkById(String accessToken, String tenantId, String hostId,
                                                     String networkId) {
         String url = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostId);
-        LOGGER.info("url: {}", url);
+        LOGGER.info(Constants.URL, url);
 
         LOGGER.debug("Delete Networks by Id request received...");
         StringBuilder sb = new StringBuilder(url);
-        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostId
+        url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/networks/").append(networkId).toString();
         return restService.sendRequest_ResourceManager(url, HttpMethod.DELETE, accessToken, null);
     }

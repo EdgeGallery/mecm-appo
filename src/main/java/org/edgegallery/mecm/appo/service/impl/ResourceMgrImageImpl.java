@@ -51,7 +51,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         LOGGER.debug("Query images request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + "/images").toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
@@ -62,8 +62,8 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         LOGGER.debug("Query image by ID request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
-                + "/images/" + imageId).toString();
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
+                + Constants.IMAGES + imageId).toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
@@ -73,8 +73,8 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         LOGGER.debug("Delete image request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
-                + "/images/" + imageId).toString();
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
+                + Constants.IMAGES + imageId).toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
     }
 
@@ -84,7 +84,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         LOGGER.debug("Create image request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + "/images").toString();
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourceMgrImageParam));
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
@@ -97,8 +97,8 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         LOGGER.debug("Import image request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
-                + "/images/" + imageId).toString();
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
+                + Constants.IMAGES + imageId).toString();
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourceMgrImportParam));
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourceMgrImportParam));

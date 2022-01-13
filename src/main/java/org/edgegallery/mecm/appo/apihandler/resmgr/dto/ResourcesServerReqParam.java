@@ -24,6 +24,6 @@ public final class ResourcesServerReqParam {
     private String userData;
     private Boolean configDrive;
     private List<String> securityGroups;
-    private List<NetWork> netWorks = new ArrayList<NetWork>();
+    private List<NetWork> netWorks = new ArrayList<>();
 }
 

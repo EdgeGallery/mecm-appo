@@ -51,7 +51,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         LOGGER.debug("Query security groups request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + "/securityGroups").toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
@@ -62,8 +62,8 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         LOGGER.debug("Query security group rules request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
-                + "/securityGroups/").append(securityGroupId + "/securityGroupRules").toString();
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
+                + Constants.SECURITY_GROUPS).append(securityGroupId + "/securityGroupRules").toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
@@ -73,8 +73,8 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         LOGGER.debug("Query security group by ID request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
-                + "/securityGroups/" + securityGroupId).toString();
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
+                + Constants.SECURITY_GROUPS + securityGroupId).toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
@@ -84,8 +84,8 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         LOGGER.debug("Delete security groups request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
-                + "/securityGroups/" + securityGroupId).toString();
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
+                + Constants.SECURITY_GROUPS + securityGroupId).toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
     }
 
@@ -95,8 +95,8 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         LOGGER.debug("Delete security group rule request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
-                + "/securityGroups/" + securityGroupId + "/securityGroupRules/" + securityGroupRuleId).toString();
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
+                + Constants.SECURITY_GROUPS + securityGroupId + "/securityGroupRules/" + securityGroupRuleId).toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
     }
 
@@ -106,9 +106,8 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         LOGGER.debug("Create security group request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + "/securityGroups").toString();
-        System.out.print("example: " + resourceMgrServiceHelper.convertToJson(securityGroupParam));
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(securityGroupParam));
     }
@@ -120,8 +119,8 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         LOGGER.debug("Create security group rule request received...");
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
-        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append("/hosts/").append(hostIp
-                + "/securityGroups/" + securityGroupId + "/securityGroupRules").toString();
+        apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
+                + Constants.SECURITY_GROUPS + securityGroupId + "/securityGroupRules").toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(securityGroupRuleParam));
     }

@@ -30,7 +30,7 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 final class Subnet {
-    public String name;
-    public String gatewayIp;
-    public String cidr;
+    private String name;
+    private String gatewayIp;
+    private String cidr;
 }

@@ -218,7 +218,7 @@ public class AppoServiceImpl implements AppoService {
             LOGGER.error("Application instance operational status is : {}", appInstanceInfo.getOperationalStatus());
             return new ResponseEntity<>(
                     new AppoResponse(
-                            "Application instance operational status is : " + appInstanceInfo.getOperationalStatus()),
+                            Constants.APP_INSTANCE_OPERATIONAL_STATUS + appInstanceInfo.getOperationalStatus()),
                     HttpStatus.PRECONDITION_FAILED);
         }
 
@@ -302,7 +302,7 @@ public class AppoServiceImpl implements AppoService {
                     appInstanceInfo.getOperationalStatus());
             return new ResponseEntity<>(
                     new AppoResponse(
-                            "Application instance operational status is : " + appInstanceInfo.getOperationalStatus()),
+                            Constants.APP_INSTANCE_OPERATIONAL_STATUS + appInstanceInfo.getOperationalStatus()),
                     HttpStatus.PRECONDITION_FAILED);
         }
 
