@@ -58,7 +58,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/servers").toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
+        return restService.sendRequestResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourcesServerReqParam));
     }
 
@@ -73,7 +73,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + Constants.SERVERS).append(serverId).toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
+        return restService.sendRequestResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(operateVmParam));
     }
 
@@ -86,7 +86,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/servers").toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + Constants.SERVERS).append(serverId).toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -112,6 +112,6 @@ public class ResourceMgrServerServiceImpl implements ResourceMgrServerService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + Constants.SERVERS).append(serverId).toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequestResourceManager(url, HttpMethod.DELETE, accessToken, null);
     }
 }

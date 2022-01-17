@@ -30,6 +30,6 @@ import org.springframework.validation.annotation.Validated;
 @NoArgsConstructor
 @AllArgsConstructor
 final class NetWork {
-    private String network;
+    private String networkInfo;
     private String fixedIp;
 }

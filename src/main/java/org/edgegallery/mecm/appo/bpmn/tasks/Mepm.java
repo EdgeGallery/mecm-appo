@@ -313,7 +313,6 @@ public class Mepm extends ProcessflowAbstractTask {
             sendRequest(execution, restTemplate, url, HttpMethod.POST);
         } catch (AppoException e) {
             setProcessflowExceptionResponseAttributes(execution, e.getMessage(), Constants.PROCESS_FLOW_ERROR);
-            return;
         }
     }
 }

@@ -54,7 +54,7 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/networks").toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
+        return restService.sendRequestResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourcesNetworkReqParam));
     }
 
@@ -67,7 +67,7 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/networks").toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/networks/").append(networkId).toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -93,6 +93,6 @@ public class ResourceMgrNetworkServiceImpl implements ResourceMgrNetworkService 
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/networks/").append(networkId).toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequestResourceManager(url, HttpMethod.DELETE, accessToken, null);
     }
 }
