@@ -57,7 +57,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/flavors").toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.POST, accessToken,
+        return restService.sendRequestResourceManager(url, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourceFlavorReqParam));
     }
 
@@ -70,7 +70,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/flavors").toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/flavors/").append(flavorId).toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(url, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ResourceMgrFlavorServiceImpl implements ResourceMgrFlavorService {
         StringBuilder sb = new StringBuilder(url);
         url = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostId
                 + "/flavors/").append(flavorId).toString();
-        return restService.sendRequest_ResourceManager(url, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequestResourceManager(url, HttpMethod.DELETE, accessToken, null);
     }
 
 }

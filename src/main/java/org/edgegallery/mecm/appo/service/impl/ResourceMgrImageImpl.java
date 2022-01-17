@@ -53,7 +53,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + "/images").toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + Constants.IMAGES + imageId).toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + Constants.IMAGES + imageId).toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + "/images").toString();
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourceMgrImageParam));
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourceMgrImageParam));
     }
 
@@ -100,7 +100,7 @@ public class ResourceMgrImageImpl implements ResourceMgrImageService {
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + Constants.IMAGES + imageId).toString();
         LOGGER.info("request body: {}", resourceMgrServiceHelper.convertToJson(resourceMgrImportParam));
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(resourceMgrImportParam));
     }
 

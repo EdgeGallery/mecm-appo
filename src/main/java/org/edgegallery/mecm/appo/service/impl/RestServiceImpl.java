@@ -144,8 +144,8 @@ public class RestServiceImpl implements RestService {
     }
 
     @Override
-    public ResponseEntity<AppoV2Response> sendRequest_ResourceManager(String uri, HttpMethod method, String token,
-                                                                      String data) {
+    public ResponseEntity<AppoV2Response> sendRequestResourceManager(String uri, HttpMethod method, String token,
+                                                                     String data) {
         String protocol = HTTP_PROTO;
         if ("true".equals(isSslEnabled)) {
             protocol = HTTPS_PROTO;

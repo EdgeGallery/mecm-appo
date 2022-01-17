@@ -48,6 +48,6 @@ public interface RestService {
      */
     ResponseEntity<String> sendRequest(String uri, HttpMethod method, String token, String data);
 
-    ResponseEntity<AppoV2Response> sendRequest_ResourceManager(String uri, HttpMethod method, String token,
-                                                               String data);
+    ResponseEntity<AppoV2Response> sendRequestResourceManager(String uri, HttpMethod method, String token,
+                                                              String data);
 }

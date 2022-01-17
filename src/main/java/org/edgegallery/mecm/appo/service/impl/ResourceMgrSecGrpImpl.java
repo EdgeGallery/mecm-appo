@@ -53,7 +53,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + "/securityGroups").toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + Constants.SECURITY_GROUPS).append(securityGroupId + "/securityGroupRules").toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + Constants.SECURITY_GROUPS + securityGroupId).toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.GET, accessToken, null);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + Constants.SECURITY_GROUPS + securityGroupId).toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + Constants.SECURITY_GROUPS
                 + securityGroupId + "/securityGroupRules/" + securityGroupRuleId).toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + "/securityGroups").toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(securityGroupParam));
     }
 
@@ -122,7 +122,7 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
                 + Constants.SECURITY_GROUPS + securityGroupId + "/securityGroupRules").toString();
-        return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.POST, accessToken,
+        return restService.sendRequestResourceManager(apiUrl, HttpMethod.POST, accessToken,
                 resourceMgrServiceHelper.convertToJson(securityGroupRuleParam));
     }
 }
