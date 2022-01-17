@@ -96,7 +96,8 @@ public class ResourceMgrSecGrpImpl implements ResourceMgrSecGrpService {
         String apiUrl = resourceMgrServiceHelper.getInventoryMecHostsCfg(accessToken, tenantId, hostIp);
         StringBuilder sb = new StringBuilder(apiUrl);
         apiUrl = sb.append(Constants.RESOURCE_CONTROLLER_URI).append(tenantId).append(Constants.HOSTS).append(hostIp
-                + Constants.SECURITY_GROUPS + securityGroupId + "/securityGroupRules/" + securityGroupRuleId).toString();
+                + Constants.SECURITY_GROUPS
+                + securityGroupId + "/securityGroupRules/" + securityGroupRuleId).toString();
         return restService.sendRequest_ResourceManager(apiUrl, HttpMethod.DELETE, accessToken, null);
     }
 
