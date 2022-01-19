@@ -103,6 +103,12 @@
             <artifactId>netty-handler</artifactId>
             <groupId>io.netty</groupId>
             <version>4.1.72.Final</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-tcnative-classes</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <artifactId>netty-handler-proxy</artifactId>
@@ -167,6 +173,10 @@
                 <exclusion>
                     <artifactId>netty-resolver-dns</artifactId>
                     <groupId>io.netty</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
