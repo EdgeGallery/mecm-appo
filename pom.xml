@@ -55,6 +55,50 @@
     </dependencyManagement>
     <dependencies>
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>5.2.19.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>5.2.19.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>5.2.19.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.3.25.Final</version>
+        </dependency>
+        <!-- Tomcat -->
+        <dependency>
+            <artifactId>tomcat-embed-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>tomcat-annotations-api</artifactId>
+                    <groupId>org.apache.tomcat</groupId>
+                </exclusion>
+            </exclusions>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <version>9.0.56</version>
+        </dependency>
+        <dependency>
+            <artifactId>tomcat-embed-websocket</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>tomcat-embed-core</artifactId>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                </exclusion>
+            </exclusions>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <version>9.0.56</version>
+        </dependency>
+
+        <dependency>
             <artifactId>netty-common</artifactId>
             <groupId>io.netty</groupId>
             <version>4.1.72.Final</version>
@@ -221,7 +265,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>5.1.13.RELEASE</version>
+            <version>5.2.19.RELEASE</version>
         </dependency>
         <!--dependency>
             <groupId>org.springframework</groupId>
@@ -238,12 +282,12 @@
         <dependency>
           <artifactId>spring-web</artifactId>
           <groupId>org.springframework</groupId>
-          <version>5.1.13.RELEASE</version>
+          <version>5.2.19.RELEASE</version>
         </dependency>
         <dependency>
           <artifactId>spring-aop</artifactId>
           <groupId>org.springframework</groupId>
-          <version>5.1.13.RELEASE</version>
+          <version>5.2.19.RELEASE</version>
         </dependency>
         <dependency>
           <groupId>org.junit.jupiter</groupId>
