@@ -1,5 +1,5 @@
 
-    create table appinstanceinfo (
+    create table if not exists appinstanceinfo (
        app_instance_id  varchar(64) not null,
         app_package_id varchar(64) not null,
         app_id varchar(64),
@@ -15,7 +15,7 @@
         primary key (app_instance_id)
     );
 
-    create table appruletask (
+    create table if not exists appruletask (
        app_rule_task_id  varchar(64) not null,
         tenant varchar(64) not null,
         task_id varchar(64),
@@ -28,7 +28,7 @@
         primary key (app_rule_task_id)
     );
 
-    create table appotenant (
+    create table if not exists appotenant (
         tenant  varchar(255) not null,
         primary key (tenant)
     );
