@@ -1,4 +1,4 @@
-create table appinstancedependency (
+create table if not exists appinstancedependency (
         id varchar(64) not null,
         tenant varchar(64)  not null,
         app_instance_id varchar(64) not null,
