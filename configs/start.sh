@@ -171,50 +171,52 @@ validate_ip()
 }
 
 # ssl parameters validation
-validate_file_exists "/usr/app/ssl/keystore.p12"
-valid_ssl_key_store_path="$?"
-if [ ! "$valid_ssl_key_store_path" -eq "0" ]; then
-  echo "invalid ssl key store path"
-  exit 1
-fi
+if [ $SSL_ENABLED = "true" ]; then
+    validate_file_exists "/usr/app/ssl/keystore.p12"
+    valid_ssl_key_store_path="$?"
+    if [ ! "$valid_ssl_key_store_path" -eq "0" ]; then
+      echo "invalid ssl key store path"
+      exit 1
+    fi
 
-validate_password "$SSL_KEY_STORE_PASSWORD"
-valid_ssl_key_store_password="$?"
-if [ ! "$valid_ssl_key_store_password" -eq "0" ]; then
-  echo "invalid ssl key store password, complexity validation failed"
-  exit 1
-fi
+    validate_password "$SSL_KEY_STORE_PASSWORD"
+    valid_ssl_key_store_password="$?"
+    if [ ! "$valid_ssl_key_store_password" -eq "0" ]; then
+      echo "invalid ssl key store password, complexity validation failed"
+      exit 1
+    fi
 
-if [ ! -z "$SSL_KEY_STORE_TYPE" ]; then
-  validate_name "$SSL_KEY_STORE_TYPE"
-  valid_name="$?"
-  if [ ! "$valid_name" -eq "0" ]; then
-    echo "invalid ssl key store type"
-    exit 1
-  fi
-fi
+    if [ ! -z "$SSL_KEY_STORE_TYPE" ]; then
+      validate_name "$SSL_KEY_STORE_TYPE"
+      valid_name="$?"
+      if [ ! "$valid_name" -eq "0" ]; then
+        echo "invalid ssl key store type"
+        exit 1
+      fi
+    fi
 
-if [ ! -z "$SSL_KEY_ALIAS" ]; then
-  validate_name "$SSL_KEY_ALIAS"
-  valid_name="$?"
-  if [ ! "$valid_name" -eq "0" ]; then
-    echo "invalid ssl key alias"
-    exit 1
-  fi
-fi
+    if [ ! -z "$SSL_KEY_ALIAS" ]; then
+      validate_name "$SSL_KEY_ALIAS"
+      valid_name="$?"
+      if [ ! "$valid_name" -eq "0" ]; then
+        echo "invalid ssl key alias"
+        exit 1
+      fi
+    fi
 
-validate_file_exists "/usr/app/ssl/keystore.jks"
-valid_ssl_trust_store="$?"
-if [ ! "$valid_ssl_trust_store" -eq "0" ]; then
-  echo "ssl trust store does not exist"
-  exit 1
-fi
+    validate_file_exists "/usr/app/ssl/keystore.jks"
+    valid_ssl_trust_store="$?"
+    if [ ! "$valid_ssl_trust_store" -eq "0" ]; then
+      echo "ssl trust store does not exist"
+      exit 1
+    fi
 
-validate_password "$SSL_TRUST_PASSWORD"
-valid_ssl_trust_password="$?"
-if [ ! "$valid_ssl_trust_password" -eq "0" ]; then
-  echo "invalid ssl trust store password, complexity validation failed"
-  exit 1
+    validate_password "$SSL_TRUST_PASSWORD"
+    valid_ssl_trust_password="$?"
+    if [ ! "$valid_ssl_trust_password" -eq "0" ]; then
+      echo "invalid ssl trust store password, complexity validation failed"
+      exit 1
+    fi
 fi
 
 # db parameters validation
