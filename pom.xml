@@ -21,7 +21,7 @@
     <parent>
       <groupId>org.edgegallery</groupId>
       <artifactId>eg-parent</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>1.0.0</version>
     </parent>
 
     <groupId>org.edgegallery.mecm</groupId>
