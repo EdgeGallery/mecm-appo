@@ -82,6 +82,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
+            <version>5.3.25.Final</version>
         </dependency>
         <!-- Tomcat -->
         <dependency>
